@@ -590,7 +590,7 @@ definitions:
         example: asdfasdf
         type: string
     type: object
-host: 192.168.3.73:5487
+host: 127.0.0.1:5487
 info:
   contact:
     email: wwilson008@gmail.com

@@ -38,7 +38,7 @@ func init() {
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      192.168.3.73:5487
+// @host      127.0.0.1:5487
 
 func main() {
 	// Create context that listens for the interrupt signal from the OS.
