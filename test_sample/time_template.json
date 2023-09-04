@@ -1,0 +1,34 @@
+[
+  {
+    "id": 2,
+    "name": "update2",
+    "time_data": {
+      "end_date": "2023-06-02T00:00:00+08:00",
+      "end_time": "04:02:02",
+      "interval_seconds": 20,
+      "t_condition": [
+        0
+      ],
+      "m_condition_type": null,
+      "repeat_type": "daily",
+      "start_date": "2023-06-22T00:00:00+08:00",
+      "start_time": "05:01:01"
+    }
+  },
+  {
+    "id": 1,
+    "name": "update1",
+    "time_data": {
+      "end_date": "2023-06-01T00:00:00+08:00",
+      "end_time": "3",
+      "interval_seconds": 20,
+      "t_condition": [
+        0
+      ],
+      "m_condition_type": null,
+      "repeat_type": "daily",
+      "start_date": "2023-06-02T00:00:00+08:00",
+      "start_time": "01:01:01"
+    }
+  }
+]

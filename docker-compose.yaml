@@ -1,0 +1,76 @@
+services:
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: schedule
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: wilson
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - ./migration/000001_init.up.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./docker/mysql:/var/lib/mysql
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis
+    volumes:
+      - ./docker/redis:/usr/local/etc/redis
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      timeout: 20s
+      retries: 10
+
+  influxdb:
+    image: influxdb
+    volumes:
+      - ./docker/influxdb/data:/var/lib/influxdb2
+      - ./docker/influxdb/config:/etc/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: wilson
+      DOCKER_INFLUXDB_INIT_PASSWORD: 123456123456
+      DOCKER_INFLUXDB_INIT_ORG: my-org
+      DOCKER_INFLUXDB_INIT_BUCKET: schedule
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: my-super-influxdb-auth-token
+    healthcheck:
+      test: [ "CMD", "curl", "influxdb:8086/api/v2/ping" ]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+
+  schedule:
+    build:
+      context: .
+      dockerfile: deploy/api/linux/Dockerfile
+#      dockerfile: deploy/api/windows/Dockerfile
+    environment:
+      DB_HOST: mysql
+      DB_USER: wilson
+      DB_PASSWORD: 123456
+      DB_DB: schedule
+      INFLUXDB_HOST: influxdb
+      INFLUXDB_ORG: my-org
+      INFLUXDB_BUCKET: schedule
+      INFLUXDB_TOKEN: my-super-influxdb-auth-token
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 1
+
+    ports:
+      - 5487:5487
+    volumes:
+      - ./docker/log:/app/log
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
