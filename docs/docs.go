@@ -1699,7 +1699,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "127.0.0.1:5487",
+	Host:             "192.168.1.10:5487",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Schedule-Task-Command swagger API",
