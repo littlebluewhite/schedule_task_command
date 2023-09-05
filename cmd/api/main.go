@@ -39,7 +39,6 @@ func init() {
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host      127.0.0.1:5487
-
 func main() {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

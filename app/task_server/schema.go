@@ -29,4 +29,11 @@ type stageMapValue struct {
 	execute []e_task_template.TaskStage
 }
 
+type doStagesCh struct {
+	commandId         string
+	commandTemplateId int
+	status            int
+	err               error
+}
+
 var cannotFindTemplate = errors.New("can not find task template")

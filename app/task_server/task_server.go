@@ -3,6 +3,7 @@ package task_server
 import (
 	"context"
 	"fmt"
+	"github.com/goccy/go-json"
 	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
@@ -15,7 +16,7 @@ import (
 
 type CommandServer interface {
 	Start(removeTime time.Duration)
-	Execute(templateId int, triggerFrom []string,
+	Execute(ctx context.Context, templateId int, triggerFrom []string,
 		triggerAccount string, token string) (com e_command.Command, err error)
 }
 
@@ -50,10 +51,9 @@ func (t *TaskServer) Start(removeTime time.Duration) {
 }
 
 func (t *TaskServer) Execute(ep executeParams) (taskId string, err error) {
-	ctx := context.Background()
 	task, err := t.generateTask(ep)
 	// publish to redis
-	_ = t.rdbPub(ctx, task)
+	_ = t.rdbPub(task)
 	if err != nil {
 		t.l.Error().Println(err)
 		return
@@ -87,7 +87,8 @@ func (t *TaskServer) generateTask(ep executeParams) (task e_task.Task, err error
 	return
 }
 
-func (t *TaskServer) rdbPub(ctx context.Context, task e_task.Task) (e error) {
+func (t *TaskServer) rdbPub(task e_task.Task) (e error) {
+	ctx := context.Background()
 	trb, _ := json.Marshal(e_task.ToPub(task))
 	e = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
 	if e != nil {
@@ -95,4 +96,8 @@ func (t *TaskServer) rdbPub(ctx context.Context, task e_task.Task) (e error) {
 		return
 	}
 	return
+}
+
+func (t *TaskServer) aaa() {
+	fmt.Println("aaa")
 }

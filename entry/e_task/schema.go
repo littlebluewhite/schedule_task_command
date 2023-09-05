@@ -1,6 +1,7 @@
 package e_task
 
 import (
+	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_task_template"
 	"time"
 )
@@ -33,10 +34,11 @@ type TaskPub struct {
 }
 
 type Status struct {
-	TStatus         TStatus `json:"task_status"`
-	Stages          int     `json:"stages"`
-	FailedCommandId string  `json:"failed_command_id"`
-	FailedMessage   string  `json:"failed_message"`
+	TStatus                 TStatus `json:"task_status"`
+	Stages                  int     `json:"stages"`
+	FailedCommandId         string  `json:"failed_command_id"`
+	FailedCommandTemplateId int     `json:"failed_command_template_id"`
+	FailedMessage           string  `json:"failed_message"`
 }
 
 type TStatus int

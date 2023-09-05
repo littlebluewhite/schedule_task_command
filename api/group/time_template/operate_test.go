@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func setUpOperate() (o Operate, l logFile.LogFile) {
+func setUpOperate() (o hOperate, l logFile.LogFile) {
 	l = logFile.NewLogFile("test", "Operate.log")
 	DBS := dbs.NewDbs(l, true)
 	o = NewOperate(DBS)

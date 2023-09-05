@@ -31,13 +31,6 @@ type httpHeader struct {
 	DataType string `json:"data_type"`
 }
 
-type doResult struct {
-	statusCode int
-	respData   []byte
-	status     e_command.Status
-	message    string
-}
-
 type analyzeResult struct {
 	getSuccess  bool
 	valueResult any

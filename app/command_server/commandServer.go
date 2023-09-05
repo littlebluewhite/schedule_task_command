@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
@@ -63,6 +64,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 		b := []byte(msg.Payload)
 		var s SendCommand
 		err = json.Unmarshal(b, &s)
+		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
 		if err != nil {
 			continue
 		}
@@ -74,29 +76,28 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	}
 }
 
-func (c *CommandServer) doCommand(com e_command.Command) e_command.Command {
+func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
 	ctx, cancel := context.WithTimeout(context.Background(),
 		time.Duration(com.Template.Timeout)*time.Millisecond)
 	defer cancel()
-	c.chs.mu.Lock()
+
 	com.Status = e_command.Process
 	com.CancelFunc = cancel
-	c.c[com.CommandId] = com
-	c.chs.mu.Unlock()
-	result := c.requestProtocol(ctx, com)
+
+	// write command
+	c.writeCommand(com)
+
+	com = c.requestProtocol(ctx, com)
 	now := time.Now()
 	com.To = &now
-	com.RespData = result.respData
-	com.Status = result.status
-	com.Message = result.message
-	com.CancelFunc = nil
-	c.chs.mu.Lock()
-	c.c[com.CommandId] = com
-	c.chs.mu.Unlock()
+
+	// write command
+	c.writeCommand(com)
+
 	// write to history in influxdb
 	c.writeToHistory(com)
 	// send to redis channel
-	if e := c.rdbPub(ctx, com); e != nil {
+	if e := c.rdbPub(com); e != nil {
 		panic(e)
 	}
 	return com
@@ -106,21 +107,20 @@ func (c *CommandServer) execute(ep executeParams) (commandId string, err error) 
 	ctx := context.Background()
 	com, err := c.generateCommand(ep)
 	// publish to redis
-	_ = c.rdbPub(ctx, com)
+	_ = c.rdbPub(com)
 	if err != nil {
 		c.l.Error().Println(err)
 		return
 	}
 	go func() {
-		c.doCommand(com)
+		c.doCommand(ctx, com)
 	}()
 	commandId = com.CommandId
 	return
 }
 
-func (c *CommandServer) Execute(templateId int, triggerFrom []string,
+func (c *CommandServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
 	triggerAccount string, token string) (com e_command.Command, err error) {
-	ctx := context.Background()
 	ep := executeParams{
 		templateId:     templateId,
 		triggerFrom:    triggerFrom,
@@ -129,14 +129,14 @@ func (c *CommandServer) Execute(templateId int, triggerFrom []string,
 	}
 	com, err = c.generateCommand(ep)
 	// publish to redis
-	_ = c.rdbPub(ctx, com)
+	_ = c.rdbPub(com)
 	if err != nil {
 		c.l.Error().Println(err)
 		return
 	}
 	ch := make(chan e_command.Command)
 	go func() {
-		ch <- c.doCommand(com)
+		ch <- c.doCommand(ctx, com)
 	}()
 	com = <-ch
 	return
@@ -162,7 +162,7 @@ func (c *CommandServer) generateCommand(ep executeParams) (com e_command.Command
 		From:           from,
 		TriggerFrom:    ep.triggerFrom,
 		TriggerAccount: ep.triggerAccount,
-		TemplateID:     ep.templateId,
+		TemplateId:     ep.templateId,
 		Template:       e_command_template.Format([]model.CommandTemplate{ct})[0],
 	}
 	return
@@ -256,7 +256,8 @@ func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (
 	return
 }
 
-func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (e error) {
+func (c *CommandServer) rdbPub(com e_command.Command) (e error) {
+	ctx := context.Background()
 	cb, _ := json.Marshal(e_command.ToPub(com))
 	e = c.dbs.GetRdb().Publish(ctx, "CommandRec", cb).Err()
 	if e != nil {
@@ -264,4 +265,10 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (e er
 		return
 	}
 	return
+}
+
+func (c *CommandServer) writeCommand(com e_command.Command) {
+	c.chs.mu.Lock()
+	defer c.chs.mu.Unlock()
+	c.c[com.CommandId] = com
 }
