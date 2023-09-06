@@ -2,15 +2,17 @@ package task_server
 
 import (
 	"context"
+	"fmt"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
+	"schedule_task_command/util"
 	"sort"
 	"time"
 )
 
-func (t *TaskServer) doTask(task e_task.Task) e_task.Task {
-	ctx, cancel := context.WithCancel(context.Background())
+func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	task.Status.TStatus = e_task.Process
@@ -29,6 +31,8 @@ func (t *TaskServer) doTask(task e_task.Task) e_task.Task {
 		s := gsr.stageMap[sn]
 		task = t.doStages(ctx, s, task)
 		if task.Status.FailedCommandId != "" {
+			e := fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn)
+			task.Message = util.MyErr(e)
 			break
 		}
 	}
@@ -50,7 +54,7 @@ func (t *TaskServer) doTask(task e_task.Task) e_task.Task {
 	return task
 }
 
-// getStages return stage number array without duplicates and return the map (stage number as key stages as value)
+// getStages return stage number array without duplicates and return the map (monitor and execute commands slice)
 func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 	snSet := make(map[int32]struct{})
 	gsr.stageMap = make(map[int32]stageMapValue)
@@ -85,7 +89,7 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 	triggerFrom := append(task.TriggerFrom, "task")
 	for _, stage := range sv.monitor {
 		go func(stage e_task_template.TaskStage) {
-			com, _ := t.cs.Execute(
+			com := t.cs.Execute(
 				ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
 			ch <- com
 		}(stage)
@@ -94,7 +98,7 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 	time.Sleep(500 * time.Millisecond)
 	for _, stage := range sv.execute {
 		go func(stage e_task_template.TaskStage) {
-			com, _ := t.cs.Execute(
+			com := t.cs.Execute(
 				ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
 			ch <- com
 		}(stage)

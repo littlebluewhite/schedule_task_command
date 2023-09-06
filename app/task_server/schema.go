@@ -1,22 +1,15 @@
 package task_server
 
 import (
-	"errors"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
+	"schedule_task_command/util"
 	"sync"
 )
 
 type chs struct {
 	rec chan e_task.Task
 	mu  *sync.RWMutex
-}
-
-type executeParams struct {
-	templateId     int
-	triggerFrom    []string
-	triggerAccount string
-	token          string
 }
 
 type getStagesResult struct {
@@ -29,11 +22,11 @@ type stageMapValue struct {
 	execute []e_task_template.TaskStage
 }
 
-type doStagesCh struct {
-	commandId         string
-	commandTemplateId int
-	status            int
-	err               error
+type SendTask struct {
+	TemplateId     int      `json:"template_id"`
+	TriggerFrom    []string `json:"trigger_from"`
+	TriggerAccount string   `json:"trigger_account"`
+	Token          string   `json:"token"`
 }
 
-var cannotFindTemplate = errors.New("can not find task template")
+var CannotFindTemplate = util.MyErr("can not find task template")

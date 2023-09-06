@@ -64,16 +64,55 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 		b := []byte(msg.Payload)
 		var s SendCommand
 		err = json.Unmarshal(b, &s)
-		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
 		if err != nil {
+			c.l.Error().Println(SendToRedisErr)
 			continue
 		}
-		ep := executeParams{s.TemplateId, s.TriggerFrom, s.TriggerAccount, s.Token}
-		_, err = c.execute(ep)
+		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
+		_, err = c.execute(s)
 		if err != nil {
 			c.l.Error().Println("Error executing Command")
 		}
 	}
+}
+
+func (c *CommandServer) execute(sc SendCommand) (commandId string, err error) {
+	ctx := context.Background()
+	com := c.generateCommand(sc)
+	// publish to redis
+	_ = c.rdbPub(com)
+	if err = com.Message; err != nil {
+		c.l.Error().Println(err)
+		return
+	}
+	go func() {
+		c.doCommand(ctx, com)
+	}()
+	commandId = com.CommandId
+	return
+}
+
+func (c *CommandServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
+	triggerAccount string, token string) (com e_command.Command) {
+	sc := SendCommand{
+		TemplateId:     templateId,
+		TriggerFrom:    triggerFrom,
+		TriggerAccount: triggerAccount,
+		Token:          token,
+	}
+	com = c.generateCommand(sc)
+	// publish to redis
+	_ = c.rdbPub(com)
+	if com.Message != nil {
+		c.l.Error().Println(com.Message)
+		return
+	}
+	ch := make(chan e_command.Command)
+	go func() {
+		ch <- c.doCommand(ctx, com)
+	}()
+	com = <-ch
+	return
 }
 
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
@@ -103,66 +142,26 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	return com
 }
 
-func (c *CommandServer) execute(ep executeParams) (commandId string, err error) {
-	ctx := context.Background()
-	com, err := c.generateCommand(ep)
-	// publish to redis
-	_ = c.rdbPub(com)
-	if err != nil {
-		c.l.Error().Println(err)
-		return
-	}
-	go func() {
-		c.doCommand(ctx, com)
-	}()
-	commandId = com.CommandId
-	return
-}
-
-func (c *CommandServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
-	triggerAccount string, token string) (com e_command.Command, err error) {
-	ep := executeParams{
-		templateId:     templateId,
-		triggerFrom:    triggerFrom,
-		triggerAccount: triggerAccount,
-		token:          token,
-	}
-	com, err = c.generateCommand(ep)
-	// publish to redis
-	_ = c.rdbPub(com)
-	if err != nil {
-		c.l.Error().Println(err)
-		return
-	}
-	ch := make(chan e_command.Command)
-	go func() {
-		ch <- c.doCommand(ctx, com)
-	}()
-	com = <-ch
-	return
-}
-
-func (c *CommandServer) generateCommand(ep executeParams) (com e_command.Command, err error) {
+func (c *CommandServer) generateCommand(sc SendCommand) (com e_command.Command) {
 	cache := c.dbs.GetCache()
 	var cacheMap map[int]model.CommandTemplate
 	if x, found := cache.Get("commandTemplates"); found {
 		cacheMap = x.(map[int]model.CommandTemplate)
 	}
-	ct, ok := cacheMap[ep.templateId]
+	ct, ok := cacheMap[sc.TemplateId]
 	if !ok {
-		err = cannotFindTemplate
-		com = e_command.Command{Token: ep.token, Message: "can not find Command template", Status: e_command.Failure}
+		com = e_command.Command{Token: sc.Token, Message: CannotFindTemplate, Status: e_command.Failure}
 		return
 	}
 	from := time.Now()
-	commandId := fmt.Sprintf("%v_%v_%v_%v", ep.templateId, ct.Name, ct.Protocol, from.UnixMicro())
+	commandId := fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
 	com = e_command.Command{
 		CommandId:      commandId,
-		Token:          ep.token,
+		Token:          sc.Token,
 		From:           from,
-		TriggerFrom:    ep.triggerFrom,
-		TriggerAccount: ep.triggerAccount,
-		TemplateId:     ep.templateId,
+		TriggerFrom:    sc.TriggerFrom,
+		TriggerAccount: sc.TriggerAccount,
+		TemplateId:     sc.TemplateId,
 		Template:       e_command_template.Format([]model.CommandTemplate{ct})[0],
 	}
 	return
