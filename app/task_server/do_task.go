@@ -2,6 +2,7 @@ package task_server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
@@ -47,6 +48,9 @@ func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 	// write task
 	t.writeTask(task)
 
+	// write to history in influxdb
+	t.writeToHistory(task)
+
 	//send to redis channel
 	if e := t.rdbPub(task); e != nil {
 		panic(e)
@@ -82,44 +86,47 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 }
 
 func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
-	comNumber := len(sv.monitor) + len(sv.execute)
-	ch := make(chan e_command.Command, comNumber)
-	defer close(ch)
+	select {
+	case <-ctx.Done():
+		if errors.Is(ctx.Err(), context.Canceled) {
+			task.Status.TStatus = e_task.Cancel
+			task.Message = TaskCanceled
+		}
+		return task
+	default:
+		comNumber := len(sv.monitor) + len(sv.execute)
+		ch := make(chan e_command.Command, comNumber)
+		defer close(ch)
 
-	triggerFrom := append(task.TriggerFrom, "task")
-	for _, stage := range sv.monitor {
-		go func(stage e_task_template.TaskStage) {
-			com := t.cs.Execute(
-				ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
-			ch <- com
-		}(stage)
-	}
-	// wait 500 milliseconds to execute "execute command"
-	time.Sleep(500 * time.Millisecond)
-	for _, stage := range sv.execute {
-		go func(stage e_task_template.TaskStage) {
-			com := t.cs.Execute(
-				ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
-			ch <- com
-		}(stage)
-	}
-	for i := 0; i < comNumber; i++ {
-		select {
-		case com := <-ch:
-			if com.Status != e_command.Success {
-				task.Status.TStatus = e_task.TStatus(com.Status)
-				task.Status.FailedCommandId = com.CommandId
-				task.Status.FailedCommandTemplateId = com.TemplateId
-				task.Status.FailedMessage = com.Message
-				return task
+		triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
+		for _, stage := range sv.monitor {
+			go func(stage e_task_template.TaskStage) {
+				com := t.cs.Execute(
+					ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				ch <- com
+			}(stage)
+		}
+		// wait 500 milliseconds to execute "execute command"
+		time.Sleep(500 * time.Millisecond)
+		for _, stage := range sv.execute {
+			go func(stage e_task_template.TaskStage) {
+				com := t.cs.Execute(
+					ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				ch <- com
+			}(stage)
+		}
+		for i := 0; i < comNumber; i++ {
+			select {
+			case com := <-ch:
+				if com.Status != e_command.Success {
+					task.Status.TStatus = e_task.TStatus(com.Status)
+					task.Status.FailedCommandId = com.CommandId
+					task.Status.FailedCommandTemplateId = com.TemplateId
+					task.Status.FailedMessage = com.Message
+					return task
+				}
 			}
 		}
+		return task
 	}
-	return task
-}
-
-func (t *TaskServer) writeTask(task e_task.Task) {
-	t.chs.mu.Lock()
-	defer t.chs.mu.Unlock()
-	t.t[task.TaskId] = task
 }

@@ -1,8 +1,10 @@
 package e_task_template
 
 import (
+	"fmt"
 	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command_template"
+	"schedule_task_command/util"
 	"time"
 )
 
@@ -27,10 +29,10 @@ type TaskStage struct {
 }
 
 type TaskTemplateCreate struct {
-	Name     string             `json:"name" binding:"required"`
-	Variable json.RawMessage    `json:"variable"`
-	Stages   []*TaskStageCreate `json:"stages"`
-	Tags     json.RawMessage    `json:"tags"`
+	Name     string            `json:"name" binding:"required"`
+	Variable json.RawMessage   `json:"variable"`
+	Stages   []TaskStageCreate `json:"stages"`
+	Tags     json.RawMessage   `json:"tags"`
 }
 
 type TaskStageCreate struct {
@@ -42,11 +44,11 @@ type TaskStageCreate struct {
 }
 
 type TaskTemplateUpdate struct {
-	ID       int32              `json:"id" binding:"required"`
-	Name     *string            `json:"name"`
-	Variable *json.RawMessage   `json:"variable"`
-	Stages   []*TaskStageUpdate `json:"stages"`
-	Tags     *json.RawMessage   `json:"tags"`
+	ID       int32             `json:"id" binding:"required"`
+	Name     *string           `json:"name"`
+	Variable *json.RawMessage  `json:"variable"`
+	Stages   []TaskStageUpdate `json:"stages"`
+	Tags     *json.RawMessage  `json:"tags"`
 }
 
 type TaskStageUpdate struct {
@@ -67,4 +69,9 @@ const (
 
 func (m Mode) String() string {
 	return [...]string{"monitor", "execute"}[m]
+}
+
+func TaskTemplateNotFound(id int) util.MyErr {
+	e := fmt.Sprintf("task template id: %d not found", id)
+	return util.MyErr(e)
 }

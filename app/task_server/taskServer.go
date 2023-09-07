@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/goccy/go-json"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
@@ -130,6 +131,57 @@ func (t *TaskServer) generateTask(sc SendTask) (task e_task.Task) {
 		TemplateID:     sc.TemplateId,
 	}
 	return
+}
+
+func (t *TaskServer) writeToHistory(task e_task.Task) {
+	ctx := context.Background()
+	p := influxdb2.NewPoint("task_history",
+		map[string]string{"task_id": task.TaskId, "status": task.Status.TStatus.String()},
+		map[string]interface{}{"data": task},
+		task.From,
+	)
+	if err := t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
+		panic(err)
+	}
+}
+
+func (t *TaskServer) ReadFromHistory(taskId, start, stop, status string) (ht []e_task.Task) {
+	ctx := context.Background()
+	stopValue := ""
+	if stop != "" {
+		stopValue = fmt.Sprintf(", stop: %s", stop)
+	}
+	statusValue := ""
+	if status != "" {
+		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s"`, status)
+	}
+	stmt := fmt.Sprintf(`from(bucket:"schedule"
+|> range(start: %s%s)
+|> filter(fn: (r) => r._measurement == "task_history"
+|> filter(fn: (r) => r.command_id == "%s")
+|> filter(fn: (r) => r."_field" == "data")
+%s
+`, start, stopValue, taskId, statusValue)
+	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
+	if err == nil {
+		for result.Next() {
+			var task e_task.Task
+			v := result.Record().Value()
+			if e := json.Unmarshal([]byte(v.(string)), &task); e != nil {
+				panic(e)
+			}
+			ht = append(ht, task)
+		}
+	} else {
+		panic(err)
+	}
+	return
+}
+
+func (t *TaskServer) writeTask(task e_task.Task) {
+	t.chs.mu.Lock()
+	defer t.chs.mu.Unlock()
+	t.t[task.TaskId] = task
 }
 
 func (t *TaskServer) rdbPub(task e_task.Task) (e error) {

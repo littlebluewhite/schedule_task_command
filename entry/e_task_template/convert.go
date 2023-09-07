@@ -69,9 +69,13 @@ func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 	return result
 }
 
-func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) (result []*model.TaskTemplate) {
+func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) (result []*model.TaskTemplate, err error) {
 	for _, u := range utt {
-		tt := ttMap[int(u.ID)]
+		tt, ok := ttMap[int(u.ID)]
+		if !ok {
+			err = TaskTemplateNotFound(int(u.ID))
+			return
+		}
 		if u.Name != nil {
 			tt.Name = *u.Name
 		}

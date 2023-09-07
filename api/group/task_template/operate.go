@@ -142,7 +142,10 @@ func (o *Operate) Create(c []*e_task_template.TaskTemplateCreate) ([]model.TaskT
 
 func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 	cacheMap := o.getCacheMap()
-	tt := e_task_template.UpdateConvert(cacheMap, u)
+	tt, e := e_task_template.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {
@@ -152,13 +155,14 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 			sCreate := make([]*model.TaskStage, 0, 10)
 			sDelete := make([]int32, 0, 10)
 			for _, stage := range item.Stages {
+				s := stage
 				switch {
 				case stage.ID < 0:
-					sDelete = append(sDelete, -stage.ID)
+					sDelete = append(sDelete, -s.ID)
 				case stage.ID == 0:
-					sCreate = append(sCreate, &stage)
+					sCreate = append(sCreate, &s)
 				case stage.ID > 0:
-					sUpdate = append(sUpdate, util.StructToMap(stage))
+					sUpdate = append(sUpdate, util.StructToMap(s))
 				}
 			}
 			t["stages"] = sUpdate

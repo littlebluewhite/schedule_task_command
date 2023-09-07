@@ -2,7 +2,6 @@ package command_server
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -172,10 +171,10 @@ func (c *CommandServer) CancelCommand(commandId string) error {
 	com, ok := c.c[commandId]
 	c.chs.mu.RUnlock()
 	if !ok {
-		return errors.New("can not find Command")
+		return CommandNotFind
 	}
 	if com.Status != e_command.Process {
-		return fmt.Errorf("command id %v finished. Can not cancel", commandId)
+		return CommandCannotCancel
 	} else {
 		com.CancelFunc()
 	}

@@ -30,3 +30,4 @@ type SendTask struct {
 }
 
 var CannotFindTemplate = util.MyErr("can not find task template")
+var TaskCanceled = util.MyErr("Task has been canceled")
