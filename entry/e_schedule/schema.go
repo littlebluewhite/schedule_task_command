@@ -1,8 +1,10 @@
 package e_schedule
 
 import (
+	"fmt"
 	"github.com/goccy/go-json"
 	"gorm.io/datatypes"
+	"schedule_task_command/util"
 	"time"
 )
 
@@ -69,4 +71,9 @@ type TimeDatumUpdate struct {
 	IntervalSeconds *int32          `json:"interval_seconds"`
 	ConditionType   *string         `json:"condition_type"`
 	TCondition      json.RawMessage `json:"t_condition" binding:"required"`
+}
+
+func ScheduleNotFound(id int) util.MyErr {
+	e := fmt.Sprintf("schedule id: %d not found", id)
+	return util.MyErr(e)
 }

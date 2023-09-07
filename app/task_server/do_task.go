@@ -102,7 +102,7 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 		for _, stage := range sv.monitor {
 			go func(stage e_task_template.TaskStage) {
 				com := t.cs.Execute(
-					ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
 				ch <- com
 			}(stage)
 		}
@@ -111,7 +111,7 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 		for _, stage := range sv.execute {
 			go func(stage e_task_template.TaskStage) {
 				com := t.cs.Execute(
-					ctx, int(*stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
 				ch <- com
 			}(stage)
 		}

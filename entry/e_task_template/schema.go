@@ -23,7 +23,7 @@ type TaskStage struct {
 	Name              string                              `json:"name"`
 	StageNumber       int32                               `json:"stage_number"`
 	Mode              string                              `json:"mode"`
-	CommandTemplateID *int32                              `json:"command_template_id,omitempty"`
+	CommandTemplateID int32                               `json:"command_template_id,omitempty"`
 	Tags              json.RawMessage                     `json:"tags"`
 	CommandTemplate   *e_command_template.CommandTemplate `json:"command_template,omitempty"`
 }
@@ -39,7 +39,7 @@ type TaskStageCreate struct {
 	Name              string          `json:"name" binding:"required"`
 	StageNumber       int32           `json:"stage_number" binding:"required"`
 	Mode              string          `json:"mode" binding:"required"`
-	CommandTemplateID *int32          `json:"command_template_id"`
+	CommandTemplateID int32           `json:"command_template_id"`
 	Tags              json.RawMessage `json:"tags"`
 }
 
@@ -52,12 +52,12 @@ type TaskTemplateUpdate struct {
 }
 
 type TaskStageUpdate struct {
-	ID                int32           `json:"id"`
-	Name              string          `json:"name" binding:"required"`
-	StageNumber       int32           `json:"stage_number" binding:"required"`
-	Mode              string          `json:"mode" binding:"required"`
-	CommandTemplateID *int32          `json:"command_template_id"`
-	Tags              json.RawMessage `json:"tags"`
+	ID                int32            `json:"id"`
+	Name              *string          `json:"name" binding:"required"`
+	StageNumber       *int32           `json:"stage_number" binding:"required"`
+	Mode              *string          `json:"mode" binding:"required"`
+	CommandTemplateID *int32           `json:"command_template_id"`
+	Tags              *json.RawMessage `json:"tags"`
 }
 
 type Mode int

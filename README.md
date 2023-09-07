@@ -1,4 +1,4 @@
-# Schedule_Task_Command
+# Schedule_Task_Command 2.1.1
 
 * API Server
 
@@ -78,11 +78,11 @@
          DB_HOST可指定特定的DB IP
 
          `docker run --name schedule-migrate --rm --network="host" schedule-migrate:latest`
-         `docker run --name schedule-migrate --rm -e DB_HOST=192.168.1.11 schedule-migrate:latest`
+         `docker run --name schedule-migrate --rm -e DB_HOST=192.168.1.11 schedule-migrate:2.1.1`
       2. run api container
 
          `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:latest`
-         `docker run --name schedule -p 5487:5487 -e DB_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:latest`
+         `docker run --name schedule -p 5487:5487 -e DB_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.1.1`
 
 # Log File
 

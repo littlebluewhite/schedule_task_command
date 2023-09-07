@@ -84,9 +84,8 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
-func (o *Operate) findDB(ids []int32) ([]*model.HeaderTemplate, error) {
-	t := query.Use(o.db).HeaderTemplate
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.HeaderTemplate, error) {
+	t := q.HeaderTemplate
 	headerTemplates, err := t.WithContext(ctx).Preload(field.Associations).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
@@ -141,7 +140,10 @@ func (o *Operate) Create(c []*e_header_template.HeaderTemplateCreate) ([]model.H
 
 func (o *Operate) Update(u []*e_header_template.HeaderTemplateUpdate) error {
 	cacheMap := o.getCacheMap()
-	ht := e_header_template.UpdateConvert(cacheMap, u)
+	ht, e := e_header_template.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {

@@ -84,9 +84,8 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
-func (o *Operate) findDB(ids []int32) ([]*model.TimeTemplate, error) {
-	t := query.Use(o.db).TimeTemplate
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TimeTemplate, error) {
+	t := q.TimeTemplate
 	timeTemplates, err := t.WithContext(ctx).Preload(field.Associations).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
@@ -141,11 +140,16 @@ func (o *Operate) Create(c []*e_time_template.TimeTemplateCreate) ([]model.TimeT
 
 func (o *Operate) Update(u []*e_time_template.TimeTemplateUpdate) error {
 	cacheMap := o.getCacheMap()
-	tt := e_time_template.UpdateConvert(cacheMap, u)
+	tt, e := e_time_template.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
+	ids := make([]int32, 0, len(tt))
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {
 		for _, item := range tt {
+			ids = append(ids, item.ID)
 			t := util.StructToMap(item)
 			td := t["time_data"].(map[string]interface{})
 			delete(t, "time_data")
@@ -160,7 +164,14 @@ func (o *Operate) Update(u []*e_time_template.TimeTemplateUpdate) error {
 				td); err != nil {
 				return err
 			}
-			cacheMap[int(item.ID)] = *item
+		}
+		// update cache
+		newTimeTemplate, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, t := range newTimeTemplate {
+			cacheMap[int(t.ID)] = *t
 		}
 		o.setCacheMap(cacheMap)
 		return nil

@@ -85,9 +85,8 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
-func (o *Operate) findDB(ids []int32) ([]*model.TaskTemplate, error) {
-	t := query.Use(o.db).TaskTemplate
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TaskTemplate, error) {
+	t := q.TaskTemplate
 	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
@@ -146,10 +145,12 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 	if e != nil {
 		return e
 	}
+	ids := make([]int32, 0, len(tt))
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {
 		for _, item := range tt {
+			ids = append(ids, item.ID)
 			t := util.StructToMap(item)
 			sUpdate := make([]map[string]interface{}, 0, 10)
 			sCreate := make([]*model.TaskStage, 0, 10)
@@ -195,6 +196,14 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 				return err
 			}
 		}
+		newTaskTemplate, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, t := range newTaskTemplate {
+			cacheMap[int(t.ID)] = *t
+		}
+		o.setCacheMap(cacheMap)
 		return nil
 	})
 	if err != nil {
@@ -226,6 +235,10 @@ func (o *Operate) Delete(ids []int32) error {
 			tx.TaskStage.ID.In(sIds...)).Delete(); err != nil {
 			return err
 		}
+		for _, id := range ids {
+			delete(cacheMap, int(id))
+		}
+		o.setCacheMap(cacheMap)
 		return nil
 	})
 	if err != nil {

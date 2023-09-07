@@ -57,9 +57,13 @@ func CreateConvert(c []*ScheduleCreate) []*model.Schedule {
 	return result
 }
 
-func UpdateConvert(sMap map[int]model.Schedule, us []*ScheduleUpdate) (result []*model.Schedule) {
+func UpdateConvert(sMap map[int]model.Schedule, us []*ScheduleUpdate) (result []*model.Schedule, err error) {
 	for _, u := range us {
-		s := sMap[int(u.ID)]
+		s, ok := sMap[int(u.ID)]
+		if !ok {
+			err = ScheduleNotFound(int(u.ID))
+			return
+		}
 		if u.Name != nil {
 			s.Name = *u.Name
 		}

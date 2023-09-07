@@ -139,7 +139,7 @@ CREATE TABLE `task_stage`
     `name`                varchar(255)                NOT NULL,
     `stage_number`        int                         NOT NULL,
     `mode`                ENUM ('monitor', 'execute') NOT NULL,
-    `command_template_id` int,
+    `command_template_id` int NOT NULL,
     `tags`                json DEFAULT (JSON_ARRAY())
 );
 

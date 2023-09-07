@@ -85,29 +85,37 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 		if u.Tags != nil {
 			tt.Tags = *u.Tags
 		}
-		sId := make(map[int32]struct{})
+		sId := make(map[int32]model.TaskStage)
 		for _, s := range tt.Stages {
-			sId[s.ID] = struct{}{}
+			sId[s.ID] = s
 		}
+		sResult := make([]model.TaskStage, 0, len(u.Stages))
 		if u.Stages != nil {
-			sResult := make([]model.TaskStage, 0, len(u.Stages))
 			for _, s := range u.Stages {
-				_, ok := sId[int32(math.Abs(float64(s.ID)))]
+				ts, ok := sId[int32(math.Abs(float64(s.ID)))]
 				if !ok && s.ID != 0 {
 					continue
 				}
-				ts := model.TaskStage{
-					ID:                s.ID,
-					Name:              s.Name,
-					StageNumber:       s.StageNumber,
-					Mode:              s.Mode,
-					CommandTemplateID: s.CommandTemplateID,
-					Tags:              s.Tags,
+				ts.ID = s.ID
+				if s.Name != nil {
+					ts.Name = *s.Name
+				}
+				if s.StageNumber != nil {
+					ts.StageNumber = *s.StageNumber
+				}
+				if s.Mode != nil {
+					ts.Mode = *s.Mode
+				}
+				if s.CommandTemplateID != nil {
+					ts.CommandTemplateID = *s.CommandTemplateID
+				}
+				if s.Tags != nil {
+					ts.Tags = *s.Tags
 				}
 				sResult = append(sResult, ts)
 			}
-			tt.Stages = sResult
 		}
+		tt.Stages = sResult
 		result = append(result, &tt)
 	}
 	return
