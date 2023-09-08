@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	"io"
 	"net/http"
 	"regexp"
@@ -17,42 +18,42 @@ import (
 	"time"
 )
 
-func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Command) (result doResult) {
+func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Command) e_command.Command {
 	for {
 		select {
 		case <-ctx.Done():
 			if errors.Is(ctx.Err(), context.Canceled) {
-				result.status = e_command.Cancel
-				result.message = "Command has been canceled"
+				com.Status = e_command.Cancel
+				com.Message = CommandCanceled
 			} else if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-				result.status = e_command.Failure
-				result.message = "Command not match monitor timeout"
+				com.Status = e_command.Failure
+				com.Message = CommandTimeout
 			}
-			return
+			return com
 		default:
 			switch com.Template.Protocol {
 			case https.String():
-				result = c.doHttp(ctx, com)
+				com = c.doHttp(ctx, com)
 			case websocket.String():
 			case mqtt.String():
 			case redisTopic.String():
 			default:
 			}
 			if com.Template.Monitor == nil {
-				result.status = e_command.Success
-				return
+				com.Status = e_command.Success
+				return com
 			} else {
-				result = monitorData(result, *com.Template.Monitor)
-				if result.status == e_command.Success {
-					return
+				com = monitorData(com, *com.Template.Monitor)
+				if com.Status == e_command.Success {
+					return com
 				}
-				time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Second)
+				time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Millisecond)
 			}
 		}
 	}
 }
 
-func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) (result doResult) {
+func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_command.Command {
 	// TODO: add variable function
 	var body io.Reader
 	h := com.Template.Http
@@ -74,9 +75,9 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) (resu
 	header := make([]httpHeader, 0, 20)
 	req, e := http.NewRequestWithContext(ctx, h.Method, h.URL, body)
 	if e != nil {
-		result.status = e_command.Failure
-		result.message = "http request timeout"
-		return
+		com.Status = e_command.Failure
+		com.Message = HttpTimeout
+		return com
 	}
 	if h.Header != nil {
 		if e := json.Unmarshal(h.Header, &header); e != nil {
@@ -92,46 +93,46 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) (resu
 	client := &http.Client{}
 	var resp *http.Response
 	if resp1, e := client.Do(req); e != nil {
-		result.respData = []byte{}
+		com.RespData = []byte{}
 		c.l.Error().Printf("id: %s request failed", com.CommandId)
 	} else {
 		resp = resp1
 	}
-	result.statusCode = resp.StatusCode
+	com.StatusCode = resp.StatusCode
 	if respBody1, e := io.ReadAll(resp.Body); e != nil {
-		result.respData = []byte{}
+		com.RespData = []byte{}
 		c.l.Error().Printf("id: %s request body failed", com.CommandId)
-		return
+		return com
 	} else {
-		result.respData = respBody1
+		com.RespData = respBody1
 	}
 	defer func() {
 		if e := resp.Body.Close(); e != nil {
 			c.l.Error().Println("Response body closed failed")
 		}
 	}()
-	c.l.Info().Printf("id: %s request status: %v\nrequest result: %s\n", com.CommandId, result.status, result.respData)
-	return
+	c.l.Info().Printf("id: %s request status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
+	return com
 }
 
-func monitorData(result doResult, m e_command_template.Monitor) doResult {
-	if result.statusCode != int(m.StatusCode) {
-		result.message = "status code error"
-		return result
+func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.Command {
+	if com.StatusCode != int(m.StatusCode) {
+		com.Message = HttpCodeErr
+		return com
 	}
 	asserts := make([]assertResult, 0, len(m.MConditions))
 	for _, condition := range m.MConditions {
-		ar := stringAnalyze(result.respData, condition.SearchRule)
+		ar := stringAnalyze(com.RespData, condition.SearchRule)
 		assert := assertValue(ar, condition)
 		asserts = append(asserts, assert)
 	}
 	logicResult := assertLogic(asserts)
 	if logicResult {
-		result.status = e_command.Success
+		com.Status = e_command.Success
 	} else {
-		result.message = "monitor condition is not suitable now"
+		com.Message = ConditionFailed
 	}
-	return result
+	return com
 }
 
 func stringAnalyze(data []byte, rule string) (result analyzeResult) {

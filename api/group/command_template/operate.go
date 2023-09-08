@@ -82,9 +82,8 @@ func (o *Operate) ReloadCache() (e error) {
 	o.setCacheMap(cacheMap)
 	return
 }
-func (o *Operate) findDB(ids []int32) ([]*model.CommandTemplate, error) {
-	c := query.Use(o.db).CommandTemplate
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.CommandTemplate, error) {
+	c := q.CommandTemplate
 	CommandTemplates, err := c.WithContext(ctx).Preload(field.Associations).Preload(c.Monitor.MConditions).Where(c.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err

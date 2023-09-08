@@ -14,9 +14,13 @@ func CreateConvert(c []*HeaderTemplateCreate) []*model.HeaderTemplate {
 	return result
 }
 
-func UpdateConvert(htMap map[int]model.HeaderTemplate, uht []*HeaderTemplateUpdate) (result []*model.HeaderTemplate) {
+func UpdateConvert(htMap map[int]model.HeaderTemplate, uht []*HeaderTemplateUpdate) (result []*model.HeaderTemplate, err error) {
 	for _, u := range uht {
-		ht := htMap[int(u.ID)]
+		ht, ok := htMap[int(u.ID)]
+		if !ok {
+			err = HeaderNotFound(int(u.ID))
+			return
+		}
 		if u.Name != nil {
 			ht.Name = *u.Name
 		}

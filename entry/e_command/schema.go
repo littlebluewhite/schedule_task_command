@@ -1,7 +1,9 @@
 package e_command
 
 import (
+	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command_template"
+	"schedule_task_command/util"
 	"time"
 )
 
@@ -33,8 +35,8 @@ type Command struct {
 	StatusCode     int                                `json:"status_code"`
 	RespData       json.RawMessage                    `json:"resp_data"`
 	Status         Status                             `json:"status"`
-	Message        string                             `json:"message"`
-	TemplateID     int                                `json:"template_id"`
+	Message        util.JsonErr                       `json:"message"`
+	TemplateId     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
 	CancelFunc     func()
 }

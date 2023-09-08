@@ -85,9 +85,8 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
-func (o *Operate) findDB(ids []int32) ([]*model.TaskTemplate, error) {
-	t := query.Use(o.db).TaskTemplate
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TaskTemplate, error) {
+	t := q.TaskTemplate
 	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
@@ -142,23 +141,29 @@ func (o *Operate) Create(c []*e_task_template.TaskTemplateCreate) ([]model.TaskT
 
 func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 	cacheMap := o.getCacheMap()
-	tt := e_task_template.UpdateConvert(cacheMap, u)
+	tt, e := e_task_template.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
+	ids := make([]int32, 0, len(tt))
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {
 		for _, item := range tt {
+			ids = append(ids, item.ID)
 			t := util.StructToMap(item)
 			sUpdate := make([]map[string]interface{}, 0, 10)
 			sCreate := make([]*model.TaskStage, 0, 10)
 			sDelete := make([]int32, 0, 10)
 			for _, stage := range item.Stages {
+				s := stage
 				switch {
 				case stage.ID < 0:
-					sDelete = append(sDelete, -stage.ID)
+					sDelete = append(sDelete, -s.ID)
 				case stage.ID == 0:
-					sCreate = append(sCreate, &stage)
+					sCreate = append(sCreate, &s)
 				case stage.ID > 0:
-					sUpdate = append(sUpdate, util.StructToMap(stage))
+					sUpdate = append(sUpdate, util.StructToMap(s))
 				}
 			}
 			t["stages"] = sUpdate
@@ -191,6 +196,14 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 				return err
 			}
 		}
+		newTaskTemplate, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, t := range newTaskTemplate {
+			cacheMap[int(t.ID)] = *t
+		}
+		o.setCacheMap(cacheMap)
 		return nil
 	})
 	if err != nil {
@@ -222,6 +235,10 @@ func (o *Operate) Delete(ids []int32) error {
 			tx.TaskStage.ID.In(sIds...)).Delete(); err != nil {
 			return err
 		}
+		for _, id := range ids {
+			delete(cacheMap, int(id))
+		}
+		o.setCacheMap(cacheMap)
 		return nil
 	})
 	if err != nil {

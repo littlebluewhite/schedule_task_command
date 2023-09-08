@@ -28,7 +28,6 @@ func StructToMap(item interface{}) map[string]interface{} {
 		}
 	}
 	return res
-
 }
 func MapDeleteNil(m map[string]interface{}) {
 	for k, v := range m {

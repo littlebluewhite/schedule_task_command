@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	t := Command{}
+	t := Command{Message: MyError("asdf")}
 	tb, e := json.Marshal(t)
 	if e != nil {
 		fmt.Println(e)
@@ -43,6 +43,16 @@ type Command struct {
 	StatusCode     int             `json:"status_code"`
 	RespData       json.RawMessage `json:"resp_data"`
 	Status         Status          `json:"status"`
-	Message        string          `json:"message"`
+	Message        error           `json:"message"`
 	TemplateID     int             `json:"template_id"`
+}
+
+type MyError string
+
+func (m MyError) Error() string {
+	return string(m)
+}
+
+func (m MyError) MarshalJSON() ([]byte, error) {
+	return json.Marshal(string(m))
 }

@@ -47,9 +47,13 @@ func CreateConvert(c []*TimeTemplateCreate) []*model.TimeTemplate {
 	return result
 }
 
-func UpdateConvert(ttMap map[int]model.TimeTemplate, utt []*TimeTemplateUpdate) (result []*model.TimeTemplate) {
+func UpdateConvert(ttMap map[int]model.TimeTemplate, utt []*TimeTemplateUpdate) (result []*model.TimeTemplate, err error) {
 	for _, u := range utt {
-		tt := ttMap[int(u.ID)]
+		tt, ok := ttMap[int(u.ID)]
+		if !ok {
+			err = TimeTemplateNotFound(int(u.ID))
+			return
+		}
 		if u.Name != nil {
 			tt.Name = *u.Name
 		}

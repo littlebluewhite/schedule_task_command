@@ -88,9 +88,8 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
-func (o *Operate) findDB(ids []int32) ([]*model.Schedule, error) {
-	t := query.Use(o.db).Schedule
-	ctx := context.Background()
+func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.Schedule, error) {
+	t := q.Schedule
 	schedules, err := t.WithContext(ctx).Preload(field.Associations).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
@@ -146,11 +145,16 @@ func (o *Operate) Create(c []*e_schedule.ScheduleCreate) ([]model.Schedule, erro
 
 func (o *Operate) Update(u []*e_schedule.ScheduleUpdate) error {
 	cacheMap := o.getCacheMap()
-	s := e_schedule.UpdateConvert(cacheMap, u)
+	s, e := e_schedule.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
+	ids := make([]int32, 0, len(s))
 	q := query.Use(o.db)
 	ctx := context.Background()
 	err := q.Transaction(func(tx *query.Query) error {
 		for _, item := range s {
+			ids = append(ids, item.ID)
 			s := util.StructToMap(item)
 			td := s["time_data"].(map[string]interface{})
 			util.MapDeleteNil(s)
@@ -166,7 +170,13 @@ func (o *Operate) Update(u []*e_schedule.ScheduleUpdate) error {
 				td); err != nil {
 				return err
 			}
-			cacheMap[int(item.ID)] = *item
+		}
+		newSchedule, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, t := range newSchedule {
+			cacheMap[int(t.ID)] = *t
 		}
 		o.setCacheMap(cacheMap)
 		o.ts.ReloadSchedule(cacheMap)

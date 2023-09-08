@@ -22,7 +22,7 @@ func TestGetStages(t *testing.T) {
 			{StageNumber: 6, Name: "j", Mode: e_task_template.Mode(0).String()},
 		}
 		gsr := getStages(ts)
-		fmt.Println(gsr.sns)
+		fmt.Println(gsr.stageMap)
 		//fmt.Printf("gsr: %+v", gsr)
 		require.Contains(t, gsr.sns, int32(1))
 		require.Contains(t, gsr.sns, int32(2))

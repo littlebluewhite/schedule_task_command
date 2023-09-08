@@ -1,7 +1,9 @@
 package e_task
 
 import (
+	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_task_template"
+	"schedule_task_command/util"
 	"time"
 )
 
@@ -13,7 +15,7 @@ type Task struct {
 	TriggerFrom    []string                     `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
-	Message        string                       `json:"message"`
+	Message        util.JsonErr                 `json:"message"`
 	TemplateID     int                          `json:"template_id"`
 	Template       e_task_template.TaskTemplate `json:"template"`
 	CancelFunc     func()
@@ -33,10 +35,11 @@ type TaskPub struct {
 }
 
 type Status struct {
-	TStatus         TStatus `json:"task_status"`
-	Stages          int     `json:"stages"`
-	FailedCommandId string  `json:"failed_command_id"`
-	FailedMessage   string  `json:"failed_message"`
+	TStatus                 TStatus      `json:"task_status"`
+	Stages                  int          `json:"stages"`
+	FailedCommandId         string       `json:"failed_command_id"`
+	FailedCommandTemplateId int          `json:"failed_command_template_id"`
+	FailedMessage           util.JsonErr `json:"failed_message"`
 }
 
 type TStatus int
