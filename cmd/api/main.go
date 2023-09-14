@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/time_server"
+	"schedule_task_command/app/schedule_server"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
@@ -54,7 +54,7 @@ func main() {
 	}()
 
 	// create new time-server
-	timeServer := time_server.NewTimeServer[int](DBS, 1*time.Second)
+	scheduleServer := schedule_server.ScheduleServer{}
 
 	// start time-server
 	//go func() {
@@ -77,7 +77,7 @@ func main() {
 		},
 	)
 
-	api.Inject(apiServer, DBS, timeServer)
+	api.Inject(apiServer, DBS, scheduleServer)
 
 	// for api server shout down gracefully
 	serverShutdown := make(chan struct{})

@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-type CommandServer interface {
+type commandServer interface {
 	Start(removeTime time.Duration)
 	Execute(ctx context.Context, templateId int, triggerFrom []string,
 		triggerAccount string, token string) (com e_command.Command)
@@ -25,7 +25,7 @@ type TaskServer struct {
 	dbs dbs.Dbs
 	l   logFile.LogFile
 	t   map[string]e_task.Task
-	cs  CommandServer
+	cs  commandServer
 	chs chs
 }
 
@@ -64,7 +64,7 @@ func (t *TaskServer) rdbSub(ctx context.Context) {
 		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
 		_, err = t.execute(s)
 		if err != nil {
-			t.l.Error().Println("Error executing Command")
+			t.l.Error().Println("Error executing Task")
 		}
 	}
 }
@@ -158,7 +158,7 @@ func (t *TaskServer) ReadFromHistory(taskId, start, stop, status string) (ht []e
 	stmt := fmt.Sprintf(`from(bucket:"schedule"
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "task_history"
-|> filter(fn: (r) => r.command_id == "%s")
+|> filter(fn: (r) => r.task_id == "%s")
 |> filter(fn: (r) => r."_field" == "data")
 %s
 `, start, stopValue, taskId, statusValue)

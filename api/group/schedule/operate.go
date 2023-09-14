@@ -8,7 +8,7 @@ import (
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/time_server"
+	"schedule_task_command/app/schedule_server"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_schedule"
@@ -18,14 +18,14 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
-	ts    time_server.TimeServer
+	ss    schedule_server.ScheduleSer
 }
 
-func NewOperate(dbs dbs.Dbs, ts time_server.TimeServer) *Operate {
+func NewOperate(dbs dbs.Dbs, ss schedule_server.ScheduleSer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
-		ts:    ts,
+		ss:    ss,
 	}
 	err := o.ReloadCache()
 	if err != nil {
@@ -36,7 +36,7 @@ func NewOperate(dbs dbs.Dbs, ts time_server.TimeServer) *Operate {
 
 func (o *Operate) getCacheMap() map[int]model.Schedule {
 	var cacheMap map[int]model.Schedule
-	if x, found := o.cache.Get("Schedules"); found {
+	if x, found := o.cache.Get("schedules"); found {
 		cacheMap = x.(map[int]model.Schedule)
 	} else {
 		return make(map[int]model.Schedule)
@@ -45,7 +45,7 @@ func (o *Operate) getCacheMap() map[int]model.Schedule {
 }
 
 func (o *Operate) setCacheMap(cacheMap map[int]model.Schedule) {
-	o.cache.Set("Schedules", cacheMap, cache.NoExpiration)
+	o.cache.Set("schedules", cacheMap, cache.NoExpiration)
 }
 
 func (o *Operate) listDB() ([]*model.Schedule, error) {
@@ -84,7 +84,6 @@ func (o *Operate) ReloadCache() (e error) {
 		cacheMap[int(entry.ID)] = *entry
 	}
 	o.setCacheMap(cacheMap)
-	o.ts.ReloadSchedule(cacheMap)
 	return
 }
 
@@ -100,7 +99,7 @@ func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*m
 func (o *Operate) findCache(ids []int32) ([]model.Schedule, error) {
 	s := make([]model.Schedule, 0, len(ids))
 	var cacheMap map[int]model.Schedule
-	if x, found := o.cache.Get("Schedules"); found {
+	if x, found := o.cache.Get("schedules"); found {
 		cacheMap = x.(map[int]model.Schedule)
 	} else {
 		return nil, errors.New("cache error")
@@ -134,7 +133,6 @@ func (o *Operate) Create(c []*e_schedule.ScheduleCreate) ([]model.Schedule, erro
 			result = append(result, *t)
 		}
 		o.setCacheMap(cacheMap)
-		o.ts.ReloadSchedule(cacheMap)
 		return nil
 	})
 	if err != nil {
@@ -179,7 +177,6 @@ func (o *Operate) Update(u []*e_schedule.ScheduleUpdate) error {
 			cacheMap[int(t.ID)] = *t
 		}
 		o.setCacheMap(cacheMap)
-		o.ts.ReloadSchedule(cacheMap)
 		return nil
 	})
 	if err != nil {
@@ -213,7 +210,6 @@ func (o *Operate) Delete(ids []int32) error {
 			delete(cacheMap, int(id))
 		}
 		o.setCacheMap(cacheMap)
-		o.ts.ReloadSchedule(cacheMap)
 		return nil
 	})
 	if err != nil {

@@ -2,6 +2,7 @@ package e_schedule
 
 import (
 	"schedule_task_command/dal/model"
+	"schedule_task_command/entry/e_time_data"
 )
 
 func Format(sd []model.Schedule) []Schedule {
@@ -16,20 +17,44 @@ func Format(sd []model.Schedule) []Schedule {
 			UpdatedAt:   item.UpdatedAt,
 			CreatedAt:   item.CreatedAt,
 			Tags:        item.Tags,
-			TimeData: TimeDatum{
-				RepeatType:      item.TimeData.RepeatType,
+			TimeData: e_time_data.TimeDatum{
+				RepeatType:      e_time_data.S2RepeatType(item.TimeData.RepeatType),
 				StartDate:       item.TimeData.StartDate,
 				EndDate:         item.TimeData.EndDate,
 				StartTime:       string(item.TimeData.StartTime),
 				EndTime:         string(item.TimeData.EndTime),
 				IntervalSeconds: item.TimeData.IntervalSeconds,
-				ConditionType:   item.TimeData.ConditionType,
+				ConditionType:   e_time_data.S2ConditionType(item.TimeData.ConditionType),
 				TCondition:      item.TimeData.TCondition,
 			},
 		}
 		result = append(result, i)
 	}
 	return result
+}
+
+func Model2Entry(s model.Schedule) Schedule {
+	se := Schedule{
+		ID:          s.ID,
+		Name:        s.Name,
+		Description: s.Description,
+		TaskID:      s.TaskID,
+		Enabled:     s.Enabled,
+		UpdatedAt:   s.UpdatedAt,
+		CreatedAt:   s.CreatedAt,
+		Tags:        s.Tags,
+		TimeData: e_time_data.TimeDatum{
+			RepeatType:      e_time_data.S2RepeatType(s.TimeData.RepeatType),
+			StartDate:       s.TimeData.StartDate,
+			EndDate:         s.TimeData.EndDate,
+			StartTime:       string(s.TimeData.StartTime),
+			EndTime:         string(s.TimeData.EndTime),
+			IntervalSeconds: s.TimeData.IntervalSeconds,
+			ConditionType:   e_time_data.S2ConditionType(s.TimeData.ConditionType),
+			TCondition:      s.TimeData.TCondition,
+		},
+	}
+	return se
 }
 
 func CreateConvert(c []*ScheduleCreate) []*model.Schedule {
@@ -42,13 +67,13 @@ func CreateConvert(c []*ScheduleCreate) []*model.Schedule {
 			Enabled:     item.Enabled,
 			Tags:        item.Tags,
 			TimeData: model.TimeDatum{
-				RepeatType:      item.TimeData.RepeatType,
+				RepeatType:      item.TimeData.RepeatType.ToModel(),
 				StartDate:       item.TimeData.StartDate,
 				EndDate:         item.TimeData.EndDate,
 				StartTime:       []byte(item.TimeData.StartTime.String()),
 				EndTime:         []byte(item.TimeData.EndTime.String()),
 				IntervalSeconds: item.TimeData.IntervalSeconds,
-				ConditionType:   item.TimeData.ConditionType,
+				ConditionType:   item.TimeData.ConditionType.ToModel(),
 				TCondition:      item.TimeData.TCondition,
 			},
 		}
@@ -76,13 +101,13 @@ func UpdateConvert(sMap map[int]model.Schedule, us []*ScheduleUpdate) (result []
 			s.Tags = *u.Tags
 		}
 		if u.TimeData != nil {
-			s.TimeData.RepeatType = u.TimeData.RepeatType
+			s.TimeData.RepeatType = u.TimeData.RepeatType.ToModel()
 			s.TimeData.StartDate = u.TimeData.StartDate
 			s.TimeData.EndDate = u.TimeData.EndDate
 			s.TimeData.StartTime = []byte(u.TimeData.StartTime.String())
 			s.TimeData.EndTime = []byte(u.TimeData.EndTime.String())
 			s.TimeData.IntervalSeconds = u.TimeData.IntervalSeconds
-			s.TimeData.ConditionType = u.TimeData.ConditionType
+			s.TimeData.ConditionType = u.TimeData.ConditionType.ToModel()
 			s.TimeData.TCondition = u.TimeData.TCondition
 		}
 		result = append(result, &s)
