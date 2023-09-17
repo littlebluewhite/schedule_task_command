@@ -8,7 +8,7 @@ func ToPub(t Task) (tp TaskPub) {
 	tp.TriggerFrom = t.TriggerFrom
 	tp.TriggerAccount = t.TriggerAccount
 	tp.Status = t.Status
-	tp.Message = t.Message
+	tp.Message = t.Message.Error()
 	tp.TemplateID = t.TemplateID
 	tp.Template = t.Template
 	return

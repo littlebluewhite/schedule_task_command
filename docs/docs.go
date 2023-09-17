@@ -746,6 +746,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/time_template/checkTime/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Check time templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "check time body",
+                        "name": "checkTime",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/time_template.CheckTime"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/api/time_template/{id}": {
             "get": {
                 "description": "Get time templates by id",
@@ -1142,7 +1182,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatum"
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
                 "time_data_id": {
                     "type": "integer"
@@ -1178,7 +1218,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatumCreate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
                 }
             }
         },
@@ -1210,115 +1250,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatumUpdate"
-                }
-            }
-        },
-        "e_schedule.TimeDatum": {
-            "type": "object",
-            "properties": {
-                "condition_type": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "interval_seconds": {
-                    "type": "integer"
-                },
-                "repeat_type": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "t_condition": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "e_schedule.TimeDatumCreate": {
-            "type": "object",
-            "required": [
-                "end_time",
-                "start_date",
-                "start_time"
-            ],
-            "properties": {
-                "condition_type": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "interval_seconds": {
-                    "type": "integer"
-                },
-                "repeat_type": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "t_condition": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "e_schedule.TimeDatumUpdate": {
-            "type": "object",
-            "required": [
-                "end_time",
-                "repeat_type",
-                "start_date",
-                "start_time",
-                "t_condition"
-            ],
-            "properties": {
-                "condition_type": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "interval_seconds": {
-                    "type": "integer"
-                },
-                "repeat_type": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "t_condition": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
                 }
             }
         },
@@ -1506,11 +1438,11 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatum": {
+        "e_time_data.TimeDatum": {
             "type": "object",
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1522,7 +1454,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1538,17 +1470,16 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatumCreate": {
+        "e_time_data.TimeDatumCreate": {
             "type": "object",
             "required": [
                 "end_time",
                 "start_date",
-                "start_time",
-                "t_condition"
+                "start_time"
             ],
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1560,7 +1491,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1576,7 +1507,7 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatumUpdate": {
+        "e_time_data.TimeDatumUpdate": {
             "type": "object",
             "required": [
                 "end_time",
@@ -1587,7 +1518,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1599,7 +1530,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1628,7 +1559,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatum"
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1646,7 +1577,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatumCreate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
                 }
             }
         },
@@ -1663,7 +1594,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatumUpdate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
                 }
             }
         },
@@ -1690,6 +1621,23 @@ const docTemplate = `{
                 "example": {
                     "type": "string",
                     "example": "asdfasdf"
+                }
+            }
+        },
+        "time_template.CheckTime": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

@@ -29,6 +29,18 @@ func NewTimeServer(dbs dbs.Dbs) *TimeServer {
 	}
 }
 
+func (t *TimeServer) Start(ctx context.Context) {
+	t.l.Info().Println("Time server started")
+	defer t.l.Error().Println("Time server stopped")
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		t.rdbSub(ctx)
+		wg.Done()
+	}(wg)
+	wg.Wait()
+}
+
 func (t *TimeServer) rdbSub(ctx context.Context) {
 	pubsub := t.dbs.GetRdb().Subscribe(ctx, "sendTask")
 	for {
@@ -48,7 +60,7 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 }
 
 func (t *TimeServer) Execute(templateId int, triggerFrom []string,
-	triggerAccount string, token string) {
+	triggerAccount string, token string) bool {
 	pt := publishTime{
 		TemplateId:     templateId,
 		TriggerFrom:    triggerFrom,
@@ -64,6 +76,8 @@ func (t *TimeServer) Execute(templateId int, triggerFrom []string,
 
 	// send to redis channel
 	_ = t.rdbPub(pt)
+
+	return pt.IsTime
 }
 
 func (t *TimeServer) checkTime(pt publishTime) publishTime {
@@ -76,8 +90,7 @@ func (t *TimeServer) checkTime(pt publishTime) publishTime {
 		return pt
 	}
 	pt.Status = Success
-	timeData := timeTemplate.GetTimeData()
-	isTime := timeData.CheckTimeData(nowTime)
+	isTime := timeTemplate.CheckTimeData(nowTime)
 	pt.IsTime = isTime
 	return pt
 }

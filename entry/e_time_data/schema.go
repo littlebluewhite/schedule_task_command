@@ -48,20 +48,30 @@ const (
 	monthly
 )
 
-func (r RepeatType) String() string {
-	return [...]string{"", "daily", "weekly", "monthly"}[r]
+func (r *RepeatType) String() string {
+	return [...]string{"", "daily", "weekly", "monthly"}[*r]
 }
 
-func (r RepeatType) MarshalJSON() ([]byte, error) {
+func (r *RepeatType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(r.String())
 }
 
-func (r RepeatType) ToModel() (s *string) {
-	*s = r.String()
-	if *s == "" {
-		s = nil
+func (r *RepeatType) UnmarshalJSON(data []byte) error {
+	var repeatTypeStr string
+	err := json.Unmarshal(data, &repeatTypeStr)
+	if err != nil {
+		return err
 	}
-	return
+	*r = S2RepeatType(&repeatTypeStr)
+	return nil
+}
+
+func (r *RepeatType) ToModel() *string {
+	s := r.String()
+	if s == "" {
+		return nil
+	}
+	return &s
 }
 
 type ConditionType int
@@ -76,22 +86,32 @@ const (
 	weeklyFourth
 )
 
-func (c ConditionType) String() string {
+func (c *ConditionType) String() string {
 	return [...]string{
 		"", "monthly_day", "weekly_day", "weekly_first",
-		"weekly_second", "weekly_third", "weekly_fourth"}[c]
+		"weekly_second", "weekly_third", "weekly_fourth"}[*c]
 }
 
-func (c ConditionType) MarshalJSON() ([]byte, error) {
+func (c *ConditionType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 
-func (c ConditionType) ToModel() (s *string) {
-	*s = c.String()
-	if *s == "" {
-		s = nil
+func (c *ConditionType) UnmarshalJSON(data []byte) error {
+	var repeatTypeStr string
+	err := json.Unmarshal(data, &repeatTypeStr)
+	if err != nil {
+		return err
 	}
-	return
+	*c = S2ConditionType(&repeatTypeStr)
+	return nil
+}
+
+func (c *ConditionType) ToModel() *string {
+	s := c.String()
+	if s == "" {
+		return nil
+	}
+	return &s
 }
 
 var allWeekDay = [...]int{0, 1, 2, 3, 4, 5, 6}

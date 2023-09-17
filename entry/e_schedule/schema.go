@@ -13,7 +13,7 @@ type Schedule struct {
 	Name        string                `json:"name"`
 	Description *string               `json:"description"`
 	TimeDataID  int32                 `json:"time_data_id"`
-	TaskID      *int32                `json:"task_id"`
+	TaskID      int32                 `json:"task_id"`
 	Enabled     bool                  `json:"enabled"`
 	UpdatedAt   *time.Time            `json:"updated_at"`
 	CreatedAt   *time.Time            `json:"created_at"`
@@ -24,7 +24,7 @@ type Schedule struct {
 type ScheduleCreate struct {
 	Name        string                      `json:"name" binding:"required"`
 	Description *string                     `json:"description"`
-	TaskID      *int32                      `json:"task_id"`
+	TaskID      int32                       `json:"task_id"`
 	Enabled     bool                        `json:"enabled"`
 	TimeData    e_time_data.TimeDatumCreate `json:"time_data" binding:"required"`
 	Tags        json.RawMessage             `json:"tags"`

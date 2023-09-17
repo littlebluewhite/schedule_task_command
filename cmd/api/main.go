@@ -6,8 +6,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"os/signal"
 	"schedule_task_command/api"
+	"schedule_task_command/api/group"
+	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/app/schedule_server"
+	"schedule_task_command/app/task_server"
+	"schedule_task_command/app/time_server"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
@@ -53,13 +57,18 @@ func main() {
 		mainLog.Info().Println("influxDB Disconnect")
 	}()
 
-	// create new time-server
-	scheduleServer := schedule_server.ScheduleServer{}
+	// create servers
+	commandServer := command_server.NewCommandServer(DBS)
+	// task server need commandServer
+	taskServer := task_server.NewTaskServer(DBS, commandServer)
+	timeServer := time_server.NewTimeServer(DBS)
+	// schedule server need task server and time server
+	scheduleServer := schedule_server.NewScheduleServer[group.TaskServer, group.TimeServer](DBS, taskServer, timeServer)
 
-	// start time-server
-	//go func() {
-	//	timeServer.Start(ctx)
-	//}()
+	// start schedule server
+	go func() {
+		scheduleServer.Start(ctx, 1*time.Second, 24*time.Hour)
+	}()
 
 	ServerConfig := config.NewConfig[config.ServerConfig](".", "env", "server")
 

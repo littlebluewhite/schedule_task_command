@@ -10,7 +10,7 @@ func ToPub(c Command) (cp CommandPub) {
 	cp.StatusCode = c.StatusCode
 	cp.RespData = c.RespData
 	cp.Status = c.Status
-	cp.Message = c.Message
+	cp.Message = c.Message.Error()
 	cp.TemplateID = c.TemplateId
 	cp.Template = c.Template
 	return

@@ -1,6 +1,7 @@
 package e_time_template
 
 import (
+	"fmt"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_time_data"
 )
@@ -52,6 +53,8 @@ func Model2Entry(t model.TimeTemplate) TimeTemplate {
 func CreateConvert(c []*TimeTemplateCreate) []*model.TimeTemplate {
 	result := make([]*model.TimeTemplate, 0, len(c))
 	for _, item := range c {
+		fmt.Printf("%+v\n", item)
+		fmt.Printf("%[1]T, %+[1]v\n", item.TimeData.RepeatType)
 		i := model.TimeTemplate{
 			Name: item.Name,
 			TimeData: model.TimeDatum{

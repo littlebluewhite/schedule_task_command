@@ -37,10 +37,10 @@ func NewCommandServer(dbs dbs.Dbs) *CommandServer {
 	}
 }
 
-func (c *CommandServer) Start(removeTime time.Duration) {
+func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
+	c.l.Info().Println("Command server started")
+	defer c.l.Info().Println("Command server stopped")
 	wg := &sync.WaitGroup{}
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	wg.Add(2)
 	go func(wg *sync.WaitGroup) {
 		c.removeFinishedCommand(ctx, removeTime)

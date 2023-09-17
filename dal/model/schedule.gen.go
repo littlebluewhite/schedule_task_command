@@ -17,7 +17,7 @@ type Schedule struct {
 	Name        string          `gorm:"column:name;not null" json:"name"`
 	Description *string         `gorm:"column:description" json:"description"`
 	TimeDataID  int32           `gorm:"column:time_data_id;not null" json:"time_data_id"`
-	TaskID      *int32          `gorm:"column:task_id" json:"task_id"`
+	TaskID      int32           `gorm:"column:task_id;not null" json:"task_id"`
 	Enabled     bool            `gorm:"column:enabled;not null" json:"enabled"`
 	UpdatedAt   *time.Time      `gorm:"column:updated_at" json:"updated_at"`
 	CreatedAt   *time.Time      `gorm:"column:created_at" json:"created_at"`

@@ -15,6 +15,7 @@ type hOperate interface {
 	Update([]*e_time_template.TimeTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
+	CheckTime(id int, c CheckTime) bool
 }
 type Handler struct {
 	o hOperate
@@ -132,4 +133,28 @@ func (h *Handler) DeleteTimeTemplate(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
+}
+
+// CheckTime swagger
+// @Summary Check time templates
+// @Tags    time_template
+// @Accept  json
+// @Produce json
+// @Param       id  path     int true "time template id"
+// @Param   checkTime body     time_template.CheckTime true "check time body"
+// @Success 200           {boolean} boolean
+// @Router  /api/time_template/checkTime/{id} [post]
+func (h *Handler) CheckTime(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		h.l.Error().Println("CheckTime: ", err)
+		return util.Err(c, err, 0)
+	}
+	entry := CheckTime{}
+	if err := c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("CheckTime: ", err)
+		return util.Err(c, err, 0)
+	}
+	isTime := h.o.CheckTime(id, entry)
+	return c.Status(200).JSON(isTime)
 }

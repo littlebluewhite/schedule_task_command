@@ -1,7 +1,9 @@
 package e_schedule
 
-import "schedule_task_command/entry/e_time_data"
+import (
+	"time"
+)
 
-func (s *Schedule) GetTimeData() e_time_data.TimeDatum {
-	return s.TimeData
+func (s *Schedule) CheckTimeData(t time.Time) (result bool) {
+	return s.TimeData.CheckTimeData(t)
 }

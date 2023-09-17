@@ -93,7 +93,9 @@ func UpdateConvert(sMap map[int]model.Schedule, us []*ScheduleUpdate) (result []
 			s.Name = *u.Name
 		}
 		s.Description = u.Description
-		s.TaskID = u.TaskID
+		if u.TaskID != nil {
+			s.TaskID = *u.TaskID
+		}
 		if u.Enabled != nil {
 			s.Enabled = *u.Enabled
 		}

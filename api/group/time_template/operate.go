@@ -7,6 +7,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
+	group2 "schedule_task_command/api/group"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
@@ -17,12 +18,14 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
+	timeS group2.TimeServer
 }
 
-func NewOperate(dbs dbs.Dbs) *Operate {
+func NewOperate(dbs dbs.Dbs, timeS group2.TimeServer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
+		timeS: timeS,
 	}
 	err := o.ReloadCache()
 	if err != nil {
@@ -213,4 +216,9 @@ func (o *Operate) Delete(ids []int32) error {
 		return err
 	}
 	return nil
+}
+
+func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool) {
+	isTime = o.timeS.Execute(id, c.TriggerFrom, c.TriggerAccount, c.Token)
+	return
 }

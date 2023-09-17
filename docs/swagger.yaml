@@ -222,7 +222,7 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatum'
+        $ref: '#/definitions/e_time_data.TimeDatum'
       time_data_id:
         type: integer
       updated_at:
@@ -243,7 +243,7 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatumCreate'
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
     required:
     - name
     - time_data
@@ -265,82 +265,9 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatumUpdate'
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
     required:
     - id
-    type: object
-  e_schedule.TimeDatum:
-    properties:
-      condition_type:
-        type: string
-      end_date:
-        type: string
-      end_time:
-        type: string
-      interval_seconds:
-        type: integer
-      repeat_type:
-        type: string
-      start_date:
-        type: string
-      start_time:
-        type: string
-      t_condition:
-        items:
-          type: integer
-        type: array
-    type: object
-  e_schedule.TimeDatumCreate:
-    properties:
-      condition_type:
-        type: string
-      end_date:
-        type: string
-      end_time:
-        type: string
-      interval_seconds:
-        type: integer
-      repeat_type:
-        type: string
-      start_date:
-        type: string
-      start_time:
-        type: string
-      t_condition:
-        items:
-          type: integer
-        type: array
-    required:
-    - end_time
-    - start_date
-    - start_time
-    type: object
-  e_schedule.TimeDatumUpdate:
-    properties:
-      condition_type:
-        type: string
-      end_date:
-        type: string
-      end_time:
-        type: string
-      interval_seconds:
-        type: integer
-      repeat_type:
-        type: string
-      start_date:
-        type: string
-      start_time:
-        type: string
-      t_condition:
-        items:
-          type: integer
-        type: array
-    required:
-    - end_time
-    - repeat_type
-    - start_date
-    - start_time
-    - t_condition
     type: object
   e_task_template.TaskStage:
     properties:
@@ -464,10 +391,10 @@ definitions:
     required:
     - id
     type: object
-  e_time_template.TimeDatum:
+  e_time_data.TimeDatum:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -475,7 +402,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -485,10 +412,10 @@ definitions:
           type: integer
         type: array
     type: object
-  e_time_template.TimeDatumCreate:
+  e_time_data.TimeDatumCreate:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -496,7 +423,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -509,12 +436,11 @@ definitions:
     - end_time
     - start_date
     - start_time
-    - t_condition
     type: object
-  e_time_template.TimeDatumUpdate:
+  e_time_data.TimeDatumUpdate:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -522,7 +448,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -547,7 +473,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatum'
+        $ref: '#/definitions/e_time_data.TimeDatum'
       updated_at:
         type: string
     type: object
@@ -556,7 +482,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatumCreate'
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
     required:
     - name
     - time_data
@@ -568,7 +494,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatumUpdate'
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
     required:
     - id
     type: object
@@ -589,6 +515,17 @@ definitions:
       example:
         example: asdfasdf
         type: string
+    type: object
+  time_template.CheckTime:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
     type: object
 host: 127.0.0.1:5487
 info:
@@ -1089,6 +1026,32 @@ paths:
           schema:
             $ref: '#/definitions/e_time_template.TimeTemplate'
       summary: Show time templates
+      tags:
+      - time_template
+  /api/time_template/checkTime/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: check time body
+        in: body
+        name: checkTime
+        required: true
+        schema:
+          $ref: '#/definitions/time_template.CheckTime'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      summary: Check time templates
       tags:
       - time_template
   /task_template/{id}:

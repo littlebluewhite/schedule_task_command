@@ -7,8 +7,8 @@ import (
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
+	group2 "schedule_task_command/api/group"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/schedule_server"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_schedule"
@@ -18,10 +18,10 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
-	ss    schedule_server.ScheduleSer
+	ss    group2.ScheduleSer
 }
 
-func NewOperate(dbs dbs.Dbs, ss schedule_server.ScheduleSer) *Operate {
+func NewOperate(dbs dbs.Dbs, ss group2.ScheduleSer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),

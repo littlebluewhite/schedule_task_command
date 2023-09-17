@@ -1,13 +1,16 @@
 package schedule_server
 
 import (
-	"sync"
+	"context"
+	"time"
 )
 
-type taskServer interface{}
-
-type chs struct {
-	mu *sync.RWMutex
+type taskServer interface {
+	Start(ctx context.Context, removeTime time.Duration)
+	Execute(ctx context.Context, templateId int, triggerFrom []string,
+		triggerAccount string, token string) (taskId string)
 }
 
-type ScheduleSer interface{}
+type timeServer interface {
+	Start(ctx context.Context)
+}

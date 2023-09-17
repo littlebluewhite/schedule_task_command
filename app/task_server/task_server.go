@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
@@ -16,7 +15,7 @@ import (
 )
 
 type commandServer interface {
-	Start(removeTime time.Duration)
+	Start(ctx context.Context, removeTime time.Duration)
 	Execute(ctx context.Context, templateId int, triggerFrom []string,
 		triggerAccount string, token string) (com e_command.Command)
 }
@@ -29,12 +28,11 @@ type TaskServer struct {
 	chs chs
 }
 
-func NewTaskServer(dbs dbs.Dbs) *TaskServer {
+func NewTaskServer(dbs dbs.Dbs, cs commandServer) *TaskServer {
 	l := logFile.NewLogFile("app", "task_server")
 	t := make(map[string]e_task.Task)
 	rec := make(chan e_task.Task)
 	mu := new(sync.RWMutex)
-	cs := command_server.NewCommandServer(dbs)
 	return &TaskServer{
 		dbs: dbs,
 		l:   l,
@@ -47,8 +45,24 @@ func NewTaskServer(dbs dbs.Dbs) *TaskServer {
 	}
 }
 
-func (t *TaskServer) Start(removeTime time.Duration) {
-	t.cs.Start(removeTime)
+func (t *TaskServer) Start(ctx context.Context, removeTime time.Duration) {
+	t.l.Info().Println("Task server started")
+	defer t.l.Error().Println("Task server stopped")
+	wg := &sync.WaitGroup{}
+	wg.Add(3)
+	go func(wg *sync.WaitGroup) {
+		t.removeFinishedTask(ctx, removeTime)
+		wg.Done()
+	}(wg)
+	go func(wg *sync.WaitGroup) {
+		t.rdbSub(ctx)
+		wg.Done()
+	}(wg)
+	go func(wg *sync.WaitGroup) {
+		t.cs.Start(ctx, removeTime)
+		wg.Done()
+	}(wg)
+	wg.Wait()
 }
 
 func (t *TaskServer) rdbSub(ctx context.Context) {
@@ -131,6 +145,25 @@ func (t *TaskServer) generateTask(sc SendTask) (task e_task.Task) {
 		TemplateID:     sc.TemplateId,
 	}
 	return
+}
+
+func (t *TaskServer) removeFinishedTask(ctx context.Context, s time.Duration) {
+Loop1:
+	for {
+		select {
+		case <-ctx.Done():
+			break Loop1
+		default:
+			t.chs.mu.Lock()
+			now := time.Now()
+			for tId, item := range t.t {
+				if item.Status.TStatus != e_task.Process && item.To.Add(s).After(now) {
+					delete(t.t, tId)
+				}
+			}
+			time.Sleep(s)
+		}
+	}
 }
 
 func (t *TaskServer) writeToHistory(task e_task.Task) {
