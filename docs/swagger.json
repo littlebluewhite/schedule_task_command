@@ -778,6 +778,53 @@
                 }
             }
         },
+        "/api/time_template/history/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Check time templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time_data.PublishTime"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/time_template/{id}": {
             "get": {
                 "description": "Get time templates by id",
@@ -1426,6 +1473,38 @@
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_time_data.PublishTime": {
+            "type": "object",
+            "properties": {
+                "is_time": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }

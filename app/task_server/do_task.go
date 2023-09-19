@@ -32,8 +32,8 @@ func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 		s := gsr.stageMap[sn]
 		task = t.doStages(ctx, s, task)
 		if task.Status.FailedCommandId != "" {
-			e := fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn)
-			task.Message = util.MyErr(e)
+			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn))
+			task.Message = &e
 			break
 		}
 	}
@@ -90,7 +90,7 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 	case <-ctx.Done():
 		if errors.Is(ctx.Err(), context.Canceled) {
 			task.Status.TStatus = e_task.Cancel
-			task.Message = TaskCanceled
+			task.Message = &TaskCanceled
 		}
 		return task
 	default:

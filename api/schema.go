@@ -1,7 +1,8 @@
-package group
+package api
 
 import (
 	"context"
+	"schedule_task_command/entry/e_time_data"
 	"time"
 )
 
@@ -12,7 +13,8 @@ type TaskServer interface {
 
 type TimeServer interface {
 	Execute(templateId int, triggerFrom []string,
-		triggerAccount string, token string) bool
+		triggerAccount string, token string) (bool, error)
+	ReadFromHistory(templateId, start, stop string) ([]e_time_data.PublishTime, error)
 }
 
 type ScheduleSer interface {

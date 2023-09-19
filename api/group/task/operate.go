@@ -1,4 +1,4 @@
-package task_template
+package task
 
 import (
 	"context"

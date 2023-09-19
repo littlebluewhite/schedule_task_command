@@ -7,6 +7,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
+	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util/logFile"
 	"sync"
@@ -51,23 +52,22 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 		b := []byte(msg.Payload)
 		var st SendTime
 		err = json.Unmarshal(b, &st)
-		st.TriggerFrom = append(st.TriggerFrom, "redis channel")
-		t.Execute(st.TemplateId, st.TriggerFrom, st.TriggerAccount, st.Token)
 		if err != nil {
 			t.l.Error().Println("Error executing Command")
 		}
+		st.TriggerFrom = append(st.TriggerFrom, "redis channel")
+		_, _ = t.Execute(st.TemplateId, st.TriggerFrom, st.TriggerAccount, st.Token)
 	}
 }
 
 func (t *TimeServer) Execute(templateId int, triggerFrom []string,
-	triggerAccount string, token string) bool {
-	pt := publishTime{
+	triggerAccount string, token string) (bool, error) {
+	pt := e_time_data.PublishTime{
 		TemplateId:     templateId,
 		TriggerFrom:    triggerFrom,
 		TriggerAccount: triggerAccount,
 		Token:          token,
 	}
-
 	// check time
 	pt = t.checkTime(pt)
 
@@ -77,19 +77,23 @@ func (t *TimeServer) Execute(templateId int, triggerFrom []string,
 	// send to redis channel
 	_ = t.rdbPub(pt)
 
-	return pt.IsTime
+	if pt.Message != nil {
+		return false, pt.Message
+	}
+
+	return pt.IsTime, nil
 }
 
-func (t *TimeServer) checkTime(pt publishTime) publishTime {
+func (t *TimeServer) checkTime(pt e_time_data.PublishTime) e_time_data.PublishTime {
 	timeTemplate, ok := t.getTimeTemplate()[pt.TemplateId]
 	nowTime := time.Now()
 	pt.Time = nowTime
 	if !ok {
-		pt.Status = Failure
-		pt.Message = CannotFindTemplate
+		pt.Status = e_time_data.Failure
+		pt.Message = &CannotFindTemplate
 		return pt
 	}
-	pt.Status = Success
+	pt.Status = e_time_data.Success
 	isTime := timeTemplate.CheckTimeData(nowTime)
 	pt.IsTime = isTime
 	return pt
@@ -106,20 +110,24 @@ func (t *TimeServer) getTimeTemplate() map[int]e_time_template.TimeTemplate {
 	return cacheMap
 }
 
-func (t *TimeServer) writeToHistory(pt publishTime) {
+func (t *TimeServer) writeToHistory(pt e_time_data.PublishTime) {
 	ctx := context.Background()
 	templateId := fmt.Sprintf("%d", pt.TemplateId)
+	jsonPt, err := json.Marshal(pt)
+	if err != nil {
+		panic(err)
+	}
 	p := influxdb2.NewPoint("time_history",
 		map[string]string{"template_id": templateId},
-		map[string]interface{}{"data": pt},
+		map[string]interface{}{"data": jsonPt},
 		pt.Time,
 	)
-	if err := t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
+	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
 		panic(err)
 	}
 }
 
-func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []publishTime) {
+func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []e_time_data.PublishTime, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -127,18 +135,18 @@ func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []publi
 	}
 	templateIdValue := ""
 	if templateId != "" {
-		templateIdValue = fmt.Sprintf(`|> filter(fn: (r) => r.template_id == "%s"`, templateId)
+		templateIdValue = fmt.Sprintf(`|> filter(fn: (r) => r.template_id == "%s")`, templateId)
 	}
-	stmt := fmt.Sprintf(`from(bucket:"schedule"
+	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
-|> filter(fn: (r) => r._measurement == "time_history"
-|> filter(fn: (r) => r."_field" == "data")
+|> filter(fn: (r) => r._measurement == "time_history")
+|> filter(fn: (r) => r._field == "data")
 %s
 `, start, stopValue, templateIdValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {
-			var pt publishTime
+			var pt e_time_data.PublishTime
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &pt); e != nil {
 				panic(e)
@@ -146,12 +154,12 @@ func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []publi
 			ht = append(ht, pt)
 		}
 	} else {
-		panic(err)
+		return nil, err
 	}
 	return
 }
 
-func (t *TimeServer) rdbPub(pt publishTime) (e error) {
+func (t *TimeServer) rdbPub(pt e_time_data.PublishTime) (e error) {
 	ctx := context.Background()
 	trb, _ := json.Marshal(pt)
 	e = t.dbs.GetRdb().Publish(ctx, "timeRec", trb).Err()

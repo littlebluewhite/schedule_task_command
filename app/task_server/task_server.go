@@ -130,7 +130,7 @@ func (t *TaskServer) generateTask(sc SendTask) (task e_task.Task) {
 	}
 	tt, ok := cacheMap[sc.TemplateId]
 	if !ok {
-		task = e_task.Task{Token: sc.Token, Message: CannotFindTemplate,
+		task = e_task.Task{Token: sc.Token, Message: &CannotFindTemplate,
 			Status: e_task.Status{TStatus: e_task.Failure}}
 		return
 	}
@@ -168,9 +168,13 @@ Loop1:
 
 func (t *TaskServer) writeToHistory(task e_task.Task) {
 	ctx := context.Background()
+	jTask, err := json.Marshal(task)
+	if err != nil {
+		panic(err)
+	}
 	p := influxdb2.NewPoint("task_history",
 		map[string]string{"task_id": task.TaskId, "status": task.Status.TStatus.String()},
-		map[string]interface{}{"data": task},
+		map[string]interface{}{"data": jTask},
 		task.From,
 	)
 	if err := t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
@@ -186,13 +190,13 @@ func (t *TaskServer) ReadFromHistory(taskId, start, stop, status string) (ht []e
 	}
 	statusValue := ""
 	if status != "" {
-		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s"`, status)
+		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s")`, status)
 	}
-	stmt := fmt.Sprintf(`from(bucket:"schedule"
+	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
-|> filter(fn: (r) => r._measurement == "task_history"
+|> filter(fn: (r) => r._measurement == "task_history")
 |> filter(fn: (r) => r.task_id == "%s")
-|> filter(fn: (r) => r."_field" == "data")
+|> filter(fn: (r) => r._field == "data")
 %s
 `, start, stopValue, taskId, statusValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)

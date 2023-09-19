@@ -35,7 +35,7 @@ type Command struct {
 	StatusCode     int                                `json:"status_code"`
 	RespData       json.RawMessage                    `json:"resp_data"`
 	Status         Status                             `json:"status"`
-	Message        util.JsonErr                       `json:"message"`
+	Message        *util.MyErr                        `json:"message"`
 	TemplateId     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
 	CancelFunc     func()

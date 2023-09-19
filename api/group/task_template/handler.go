@@ -133,3 +133,14 @@ func (h *Handler) DeleteTaskTemplate(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON("delete successfully")
 }
+
+// ExecuteTask swagger
+// @Summary execute task templates
+// @Tags    task_template
+// @Produce json
+// @Param id path int true "task_template id"
+// @Success 200 {string} string "execute successfully"
+// @Router  /api/task_template/execute/{id} [post]
+func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
+	return nil
+}

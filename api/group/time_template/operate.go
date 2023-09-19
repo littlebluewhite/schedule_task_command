@@ -7,10 +7,11 @@ import (
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
-	group2 "schedule_task_command/api/group"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
+	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
 )
@@ -18,10 +19,10 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
-	timeS group2.TimeServer
+	timeS api.TimeServer
 }
 
-func NewOperate(dbs dbs.Dbs, timeS group2.TimeServer) *Operate {
+func NewOperate(dbs dbs.Dbs, timeS api.TimeServer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
@@ -218,7 +219,12 @@ func (o *Operate) Delete(ids []int32) error {
 	return nil
 }
 
-func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool) {
-	isTime = o.timeS.Execute(id, c.TriggerFrom, c.TriggerAccount, c.Token)
+func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool, err error) {
+	isTime, err = o.timeS.Execute(id, c.TriggerFrom, c.TriggerAccount, c.Token)
 	return
+}
+
+func (o *Operate) ReadFromHistory(templateId, start, stop string) ([]e_time_data.PublishTime, error) {
+	data, err := o.timeS.ReadFromHistory(templateId, start, stop)
+	return data, err
 }

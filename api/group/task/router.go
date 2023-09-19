@@ -1,4 +1,4 @@
-package task_template
+package task
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -10,17 +10,16 @@ import (
 func RegisterRouter(g group) {
 	taskS := g.GetScheduleServer().GetTaskServer()
 	o := NewOperate(g.GetDbs(), taskS)
-	log := logFile.NewLogFile("router", "task_template.log")
+	log := logFile.NewLogFile("router", "task.log")
 	app := g.GetApp()
 
-	tt := app.Group("/task_template")
+	tt := app.Group("/task")
 
 	h := NewHandler(o, log)
-	tt.Get("/", h.GetTaskTemplates)
-	tt.Get("/:id", h.GetTaskTemplateById)
-	tt.Post("/", h.AddTaskTemplate)
-	tt.Patch("/", h.UpdateTaskTemplate)
-	tt.Delete("/", h.DeleteTaskTemplate)
+	tt.Get("/", h.GetTasks)
+	tt.Get("/:taskId", h.GetTaskByTaskId)
+	tt.Delete("/:taskId", h.CancelTask)
+	tt.Patch("/history", h.GetHistory)
 }
 
 type group interface {

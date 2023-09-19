@@ -149,7 +149,7 @@ func (c *CommandServer) generateCommand(sc SendCommand) (com e_command.Command) 
 	}
 	ct, ok := cacheMap[sc.TemplateId]
 	if !ok {
-		com = e_command.Command{Token: sc.Token, Message: CannotFindTemplate, Status: e_command.Failure}
+		com = e_command.Command{Token: sc.Token, Message: &CannotFindTemplate, Status: e_command.Failure}
 		return
 	}
 	from := time.Now()
@@ -229,13 +229,13 @@ func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (
 	}
 	statusValue := ""
 	if status != "" {
-		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s"`, status)
+		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s")`, status)
 	}
-	stmt := fmt.Sprintf(`from(bucket:"schedule"
+	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
-|> filter(fn: (r) => r._measurement == "command_history"
+|> filter(fn: (r) => r._measurement == "command_history")
 |> filter(fn: (r) => r.command_id == "%s")
-|> filter(fn: (r) => r."_field" == "data")
+|> filter(fn: (r) => r._field == "data")
 %s
 `, start, stopValue, commandId, statusValue)
 	result, err := c.dbs.GetIdb().Querier().Query(ctx, stmt)

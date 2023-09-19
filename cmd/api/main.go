@@ -63,7 +63,7 @@ func main() {
 	taskServer := task_server.NewTaskServer(DBS, commandServer)
 	timeServer := time_server.NewTimeServer(DBS)
 	// schedule server need task server and time server
-	scheduleServer := schedule_server.NewScheduleServer[group.TaskServer, group.TimeServer](DBS, taskServer, timeServer)
+	scheduleServer := schedule_server.NewScheduleServer[api.TaskServer, api.TimeServer](DBS, taskServer, timeServer)
 
 	// start schedule server
 	go func() {
@@ -86,7 +86,7 @@ func main() {
 		},
 	)
 
-	api.Inject(apiServer, DBS, scheduleServer)
+	group.Inject(apiServer, DBS, scheduleServer)
 
 	// for api server shout down gracefully
 	serverShutdown := make(chan struct{})

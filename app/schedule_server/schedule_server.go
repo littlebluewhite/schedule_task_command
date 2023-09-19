@@ -106,5 +106,5 @@ func (s *ScheduleServer[T, U]) GetTimeServer() U {
 }
 
 func (s *ScheduleServer[T, U]) GetTaskServer() T {
-	return s.timeS.(T)
+	return s.taskS.(T)
 }
