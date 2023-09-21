@@ -15,12 +15,18 @@ func RegisterRouter(g group) {
 
 	tt := app.Group("/task_template")
 
+	// subscribe to redis
+	go func() {
+		rdbSub(o, log)
+	}()
+
 	h := NewHandler(o, log)
 	tt.Get("/", h.GetTaskTemplates)
 	tt.Get("/:id", h.GetTaskTemplateById)
 	tt.Post("/", h.AddTaskTemplate)
 	tt.Patch("/", h.UpdateTaskTemplate)
 	tt.Delete("/", h.DeleteTaskTemplate)
+	tt.Post("/execute/:id", h.ExecuteTask)
 }
 
 type group interface {

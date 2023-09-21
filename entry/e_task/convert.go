@@ -13,3 +13,21 @@ func ToPub(t Task) (tp TaskPub) {
 	tp.Template = t.Template
 	return
 }
+
+func S2Status(s *string) TStatus {
+	if s == nil {
+		return Prepared
+	}
+	switch *s {
+	case "Process":
+		return Process
+	case "Success":
+		return Success
+	case "Failure":
+		return Failure
+	case "Cancel":
+		return Cancel
+	default:
+		return Prepared
+	}
+}

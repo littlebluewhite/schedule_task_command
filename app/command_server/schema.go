@@ -48,13 +48,6 @@ var (
 	sliceCalculate = []string{"include", "exclude"}
 )
 
-type SendCommand struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
-}
-
 var CannotFindTemplate = util.MyErr("can not find Command template")
 var CommandCanceled = util.MyErr("Command has been canceled")
 var CommandTimeout = util.MyErr("Command not match monitor and timeout")

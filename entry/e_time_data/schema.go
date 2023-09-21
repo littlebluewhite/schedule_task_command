@@ -3,7 +3,6 @@ package e_time_data
 import (
 	"github.com/goccy/go-json"
 	"gorm.io/datatypes"
-	"schedule_task_command/util"
 	"time"
 )
 
@@ -118,41 +117,3 @@ func (c *ConditionType) ToModel() *string {
 var allWeekDay = [...]int{0, 1, 2, 3, 4, 5, 6}
 var allMonthDay = [...]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}
-
-type PublishTime struct {
-	TemplateId     int         `json:"template_id"`
-	TriggerFrom    []string    `json:"trigger_from"`
-	TriggerAccount string      `json:"trigger_account"`
-	Token          string      `json:"token"`
-	Time           time.Time   `json:"time"`
-	IsTime         bool        `json:"is_time"`
-	Status         Status      `json:"status"`
-	Message        *util.MyErr `json:"message"`
-}
-
-type Status int
-
-const (
-	Prepared Status = iota
-	Success
-	Failure
-)
-
-func (s *Status) String() string {
-	return [...]string{
-		"Prepared", "Success", "Failure"}[*s]
-}
-
-func (s Status) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
-}
-
-func (s *Status) UnmarshalJSON(data []byte) error {
-	var statusStr string
-	err := json.Unmarshal(data, &statusStr)
-	if err != nil {
-		return err
-	}
-	*s = S2Status(&statusStr)
-	return nil
-}

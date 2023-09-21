@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_time_data"
+	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
 	"schedule_task_command/util/logFile"
@@ -18,7 +18,7 @@ type hOperate interface {
 	Delete([]int32) error
 	ReloadCache() error
 	CheckTime(id int, c CheckTime) (bool, error)
-	ReadFromHistory(templateId, start, stop string) ([]e_time_data.PublishTime, error)
+	ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
 }
 type Handler struct {
 	o hOperate
@@ -154,7 +154,7 @@ func (h *Handler) CheckTime(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	entry := CheckTime{}
-	if err := c.BodyParser(&entry); err != nil {
+	if err = c.BodyParser(&entry); err != nil {
 		h.l.Error().Println("CheckTime: ", err)
 		return util.Err(c, err, 0)
 	}
@@ -174,7 +174,7 @@ func (h *Handler) CheckTime(c *fiber.Ctx) error {
 // @Param       id  path     int true "time template id"
 // @Param       start  query     string true "start time"
 // @Param       stop  query     string false "stop time"
-// @Success 200 {array} e_time_data.PublishTime
+// @Success 200 {array} e_time.PublishTime
 // @Router  /api/time_template/history/{id} [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	id := c.Params("id")

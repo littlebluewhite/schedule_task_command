@@ -59,3 +59,13 @@ func (s TStatus) String() string {
 func (s TStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }
+
+func (s *TStatus) UnmarshalJSON(data []byte) error {
+	var tStatus string
+	err := json.Unmarshal(data, &tStatus)
+	if err != nil {
+		return err
+	}
+	*s = S2Status(&tStatus)
+	return nil
+}

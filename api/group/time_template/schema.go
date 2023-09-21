@@ -11,3 +11,5 @@ type CheckTime struct {
 }
 
 var NoStartTime = util.MyErr("No start time input")
+
+var CannotFindTemplate = util.MyErr("can not find time template")

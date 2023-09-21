@@ -496,6 +496,132 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/task/": {
+            "get": {
+                "description": "Get all tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show all tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.Task"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/history/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "get task history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.Task"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/{taskId}": {
+            "get": {
+                "description": "Get task by taskId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "taskId",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task.Task"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel task by taskId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "cancel task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "taskId",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/task_template/": {
             "get": {
                 "description": "Get all task templates",
@@ -614,6 +740,43 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "execute task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send task body",
+                        "name": "sendTask",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task_template.SendTask"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "task id",
                         "schema": {
                             "type": "string"
                         }
@@ -797,7 +960,7 @@ const docTemplate = `{
                 "tags": [
                     "time_template"
                 ],
-                "summary": "Check time templates",
+                "summary": "get time history",
                 "parameters": [
                     {
                         "type": "integer",
@@ -826,7 +989,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/e_time_data.PublishTime"
+                                "$ref": "#/definitions/e_time.PublishTime"
                             }
                         }
                     }
@@ -1301,6 +1464,64 @@ const docTemplate = `{
                 }
             }
         },
+        "e_task.Status": {
+            "type": "object",
+            "properties": {
+                "failed_command_id": {
+                    "type": "string"
+                },
+                "failed_command_template_id": {
+                    "type": "integer"
+                },
+                "failed_message": {
+                    "type": "string"
+                },
+                "stages": {
+                    "type": "integer"
+                },
+                "task_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_task.Task": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/e_task.Status"
+                },
+                "task_id": {
+                    "type": "string"
+                },
+                "template": {
+                    "$ref": "#/definitions/e_task_template.TaskTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "e_task_template.TaskStage": {
             "type": "object",
             "properties": {
@@ -1485,7 +1706,7 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_data.PublishTime": {
+        "e_time.PublishTime": {
             "type": "object",
             "properties": {
                 "is_time": {
@@ -1496,6 +1717,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                },
+                "template": {
+                    "$ref": "#/definitions/e_time_template.TimeTemplate"
                 },
                 "template_id": {
                     "type": "integer"
@@ -1700,6 +1924,27 @@ const docTemplate = `{
                 "example": {
                     "type": "string",
                     "example": "asdfasdf"
+                }
+            }
+        },
+        "task_template.SendTask": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
                 }
             }
         },

@@ -2,19 +2,20 @@ package api
 
 import (
 	"context"
-	"schedule_task_command/entry/e_time_data"
+	"schedule_task_command/entry/e_task"
+	"schedule_task_command/entry/e_time"
 	"time"
 )
 
 type TaskServer interface {
-	Execute(ctx context.Context, templateId int, triggerFrom []string,
-		triggerAccount string, token string) (taskId string)
+	ReadMap() map[string]e_task.Task
+	GetList() []e_task.Task
+	ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error)
 }
 
 type TimeServer interface {
-	Execute(templateId int, triggerFrom []string,
-		triggerAccount string, token string) (bool, error)
-	ReadFromHistory(templateId, start, stop string) ([]e_time_data.PublishTime, error)
+	Execute(pt e_time.PublishTime) (bool, error)
+	ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
 }
 
 type ScheduleSer interface {

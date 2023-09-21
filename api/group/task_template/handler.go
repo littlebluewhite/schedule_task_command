@@ -1,6 +1,7 @@
 package task_template
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_task_template"
@@ -15,6 +16,7 @@ type hOperate interface {
 	Update([]*e_task_template.TaskTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
+	Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (taskId string, err error)
 }
 
 type Handler struct {
@@ -139,8 +141,29 @@ func (h *Handler) DeleteTaskTemplate(c *fiber.Ctx) error {
 // @Tags    task_template
 // @Produce json
 // @Param id path int true "task_template id"
-// @Success 200 {string} string "execute successfully"
+// @Param   sendTask body  task_template.SendTask true "send task body"
+// @Success 200 {string} string "task id"
 // @Router  /api/task_template/execute/{id} [post]
 func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
-	return nil
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		h.l.Error().Println("ExecuteTask: ", err)
+		return util.Err(c, err, 0)
+	}
+	entry := SendTask{}
+	if err = c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("ExecuteTask: ", err)
+		return util.Err(c, err, 0)
+	}
+	st := e_task_template.SendTaskTemplate{
+		TemplateId:     id,
+		TriggerFrom:    entry.TriggerFrom,
+		TriggerAccount: entry.TriggerAccount,
+		Token:          entry.Token,
+	}
+	taskId, err := h.o.Execute(c.UserContext(), st)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(taskId)
 }

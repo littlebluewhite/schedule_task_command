@@ -15,6 +15,11 @@ func RegisterRouter(g group) {
 
 	tt := app.Group("/time_template")
 
+	// subscribe to redis
+	go func() {
+		rdbSub(o, log)
+	}()
+
 	h := NewHandler(o, log)
 	tt.Get("/", h.GetTimeTemplates)
 	tt.Get("/:id", h.GetTimeTemplateById)

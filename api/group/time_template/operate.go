@@ -5,13 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
-	"schedule_task_command/entry/e_time_data"
+	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
 )
@@ -19,6 +20,7 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
+	rdb   *redis.Client
 	timeS api.TimeServer
 }
 
@@ -26,6 +28,7 @@ func NewOperate(dbs dbs.Dbs, timeS api.TimeServer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
+		rdb:   dbs.GetRdb(),
 		timeS: timeS,
 	}
 	err := o.ReloadCache()
@@ -220,11 +223,35 @@ func (o *Operate) Delete(ids []int32) error {
 }
 
 func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool, err error) {
-	isTime, err = o.timeS.Execute(id, c.TriggerFrom, c.TriggerAccount, c.Token)
+	st := e_time_template.SendTimeTemplate{
+		TemplateId:     id,
+		TriggerFrom:    c.TriggerFrom,
+		TriggerAccount: c.TriggerAccount,
+		Token:          c.Token,
+	}
+	pt := o.generatePublishTime(st)
+	isTime, err = o.timeS.Execute(pt)
 	return
 }
 
-func (o *Operate) ReadFromHistory(templateId, start, stop string) ([]e_time_data.PublishTime, error) {
+func (o *Operate) ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error) {
 	data, err := o.timeS.ReadFromHistory(templateId, start, stop)
 	return data, err
+}
+
+func (o *Operate) generatePublishTime(st e_time_template.SendTimeTemplate) (pt e_time.PublishTime) {
+	pt = e_time.PublishTime{
+		TemplateId:     st.TemplateId,
+		TriggerFrom:    st.TriggerFrom,
+		TriggerAccount: st.TriggerAccount,
+		Token:          st.Token,
+	}
+	ttList, err := o.findCache([]int32{int32(st.TemplateId)})
+	if err != nil {
+		pt.Status = e_time.Failure
+		pt.Message = &CannotFindTemplate
+		return
+	}
+	pt.Template = e_time_template.Format(ttList)[0]
+	return
 }

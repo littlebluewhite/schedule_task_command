@@ -22,12 +22,4 @@ type stageMapValue struct {
 	execute []e_task_template.TaskStage
 }
 
-type SendTask struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
-}
-
-var CannotFindTemplate = util.MyErr("can not find task template")
 var TaskCanceled = util.MyErr("Task has been canceled")

@@ -55,3 +55,10 @@ type CommandPub struct {
 	TemplateID     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
 }
+
+type SendCommand struct {
+	TemplateId     int      `json:"template_id"`
+	TriggerFrom    []string `json:"trigger_from"`
+	TriggerAccount string   `json:"trigger_account"`
+	Token          string   `json:"token"`
+}

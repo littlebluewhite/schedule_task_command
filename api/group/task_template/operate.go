@@ -5,19 +5,23 @@ import (
 	"errors"
 	"fmt"
 	"github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
+	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
+	"time"
 )
 
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
+	rdb   *redis.Client
 	taskS api.TaskServer
 }
 
@@ -25,6 +29,7 @@ func NewOperate(dbs dbs.Dbs, taskS api.TaskServer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
+		rdb:   dbs.GetRdb(),
 		taskS: taskS,
 	}
 	err := o.ReloadCache()
@@ -248,4 +253,31 @@ func (o *Operate) Delete(ids []int32) error {
 		return err
 	}
 	return nil
+}
+
+func (o *Operate) Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (taskId string, err error) {
+	task := o.generateTask(st)
+	taskId, err = o.taskS.ExecuteReturnId(ctx, task)
+	return
+}
+
+func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
+	task = e_task.Task{
+		TemplateID:     st.TemplateId,
+		TriggerFrom:    st.TriggerFrom,
+		TriggerAccount: st.TriggerAccount,
+		Token:          st.Token,
+	}
+	ttList, err := o.findCache([]int32{int32(st.TemplateId)})
+	if err != nil {
+		task.Status = e_task.Status{TStatus: e_task.Failure}
+		task.Message = &CannotFindTemplate
+		return
+	}
+	n := time.Now()
+	tt := e_task_template.Format(ttList)[0]
+	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, n.UnixMicro())
+	task.From = n
+	task.Template = tt
+	return
 }

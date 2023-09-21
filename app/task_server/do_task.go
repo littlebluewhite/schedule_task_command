@@ -58,7 +58,7 @@ func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 	return task
 }
 
-// getStages return stage number array without duplicates and return the map (monitor and execute commands slice)
+// getStages return stage number array without duplicates and return the map (monitor and ExecuteReturnId commands slice)
 func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 	snSet := make(map[int32]struct{})
 	gsr.stageMap = make(map[int32]stageMapValue)
@@ -101,17 +101,27 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 		triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
 		for _, stage := range sv.monitor {
 			go func(stage e_task_template.TaskStage) {
-				com := t.cs.Execute(
-					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				sc := e_command.SendCommand{
+					TemplateId:     int(stage.CommandTemplateID),
+					TriggerFrom:    triggerFrom,
+					TriggerAccount: task.TriggerAccount,
+					Token:          task.Token,
+				}
+				com := t.cs.Execute(ctx, sc)
 				ch <- com
 			}(stage)
 		}
-		// wait 500 milliseconds to execute "execute command"
+		// wait 500 milliseconds to ExecuteReturnId "ExecuteReturnId command"
 		time.Sleep(500 * time.Millisecond)
 		for _, stage := range sv.execute {
 			go func(stage e_task_template.TaskStage) {
-				com := t.cs.Execute(
-					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				sc := e_command.SendCommand{
+					TemplateId:     int(stage.CommandTemplateID),
+					TriggerFrom:    triggerFrom,
+					TriggerAccount: task.TriggerAccount,
+					Token:          task.Token,
+				}
+				com := t.cs.Execute(ctx, sc)
 				ch <- com
 			}(stage)
 		}

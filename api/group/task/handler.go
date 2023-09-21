@@ -1,20 +1,17 @@
 package task
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_task_template"
+	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util"
 	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
-	List() ([]model.TaskTemplate, error)
-	Find(ids []int32) ([]model.TaskTemplate, error)
-	Create([]*e_task_template.TaskTemplateCreate) ([]model.TaskTemplate, error)
-	Update([]*e_task_template.TaskTemplateUpdate) error
-	Delete([]int32) error
-	ReloadCache() error
+	List() ([]e_task.Task, error)
+	Find(taskIds []string) ([]e_task.Task, error)
+	Cancel(taskId string) error
 }
 
 type Handler struct {
@@ -37,13 +34,11 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Success     200 {array} e_task.Task
 // @Router      /api/task/ [get]
 func (h *Handler) GetTasks(c *fiber.Ctx) error {
-	ht, err := h.o.List()
+	tasks, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplates: ", err)
-		return util.Err(c, err, 0)
+		h.l.Error().Println("Error getting tasks")
 	}
-	h.l.Info().Println("GetTaskTemplates: success")
-	return c.Status(200).JSON(e_task_template.Format(ht))
+	return c.Status(200).JSON(tasks)
 }
 
 // GetTaskByTaskId swagger
@@ -51,22 +46,22 @@ func (h *Handler) GetTasks(c *fiber.Ctx) error {
 // @Description Get task by taskId
 // @Tags        task
 // @Produce     json
-// @Param       taskId  path     int true "taskId"
+// @Param       taskId  path     string true "taskId"
 // @Success     200 {object} e_task.Task
-// @Router      /task/{taskId} [get]
+// @Router      /api/task/{taskId} [get]
 func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	taskId := c.Params("taskId")
+	if taskId == "" {
+		e := errors.New("taskId is error")
+		h.l.Error().Println("GetTaskByTaskId: ", e)
+		return util.Err(c, e, 0)
+	}
+	ht, err := h.o.Find([]string{taskId})
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
+		h.l.Error().Println("GetTaskByTaskId: ", err)
 		return util.Err(c, err, 0)
 	}
-	ht, err := h.o.Find([]int32{int32(id)})
-	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
-		return util.Err(c, err, 0)
-	}
-	h.l.Info().Println("GetTaskTemplateById: success")
-	return c.Status(200).JSON(e_task_template.Format(ht)[0])
+	return c.Status(200).JSON(ht[0])
 }
 
 // CancelTask swagger
@@ -74,22 +69,21 @@ func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
 // @Description Cancel task by taskId
 // @Tags        task
 // @Produce     json
-// @Param       taskId  path     int true "taskId"
+// @Param       taskId  path     string true "taskId"
 // @Success     200 {string} cancel successfully
-// @Router      /task/{taskId} [Delete]
+// @Router      /api/task/{taskId} [Delete]
 func (h *Handler) CancelTask(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	taskId := c.Params("taskId")
+	if taskId == "" {
+		e := errors.New("taskId is error")
+		h.l.Error().Println("GetTaskByTaskId: ", e)
+		return util.Err(c, e, 0)
+	}
+	err := h.o.Cancel(taskId)
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
 		return util.Err(c, err, 0)
 	}
-	ht, err := h.o.Find([]int32{int32(id)})
-	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
-		return util.Err(c, err, 0)
-	}
-	h.l.Info().Println("GetTaskTemplateById: success")
-	return c.Status(200).JSON(e_task_template.Format(ht)[0])
+	return c.Status(200).JSON("cancel successful")
 }
 
 // GetHistory swagger
@@ -100,7 +94,7 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 // @Param       id  path     int true "time template id"
 // @Param       start  query     string true "start time"
 // @Param       stop  query     string false "stop time"
-// @Success 200 {array} e_task.task
+// @Success 200 {array} e_task.Task
 // @Router  /api/task/history/{id} [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	//id := c.Params("id")

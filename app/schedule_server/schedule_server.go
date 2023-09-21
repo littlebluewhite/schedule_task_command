@@ -6,6 +6,8 @@ import (
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_schedule"
+	"schedule_task_command/entry/e_task"
+	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util/logFile"
 	"sync"
 	"time"
@@ -79,10 +81,16 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				if isActive {
 					// Task execute
 					scheduleId := fmt.Sprintf("%d", schedule.ID)
-					triggerFrom := []string{"schedule", scheduleId}
+					s.l.Info().Printf("id: %d execute", scheduleId)
 					now := time.Now()
 					token := fmt.Sprintf("schedule-%s-%s-%s", scheduleId, schedule.Tags, now)
-					s.taskS.Execute(ctx, int(schedule.TaskID), triggerFrom, "", token)
+					st := e_task_template.SendTaskTemplate{
+						TemplateId:  int(schedule.TaskID),
+						TriggerFrom: []string{"schedule", scheduleId},
+						Token:       token,
+					}
+					task := s.generateTask(st)
+					_ = s.taskS.ExecuteWaitTask(ctx, task)
 				}
 			}(wg, sItem, t)
 		}
@@ -107,4 +115,28 @@ func (s *ScheduleServer[T, U]) GetTimeServer() U {
 
 func (s *ScheduleServer[T, U]) GetTaskServer() T {
 	return s.taskS.(T)
+}
+
+func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
+	var cacheMap map[int]model.TaskTemplate
+	if x, found := s.dbs.GetCache().Get("taskTemplates"); found {
+		cacheMap = x.(map[int]model.TaskTemplate)
+	}
+	tt, ok := cacheMap[st.TemplateId]
+	if !ok {
+		task = e_task.Task{Token: st.Token, Message: &CannotFindTaskTemplate,
+			Status: e_task.Status{TStatus: e_task.Failure}}
+		return
+	}
+	from := time.Now()
+	taskId := fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
+	task = e_task.Task{
+		TaskId:         taskId,
+		Token:          st.Token,
+		From:           from,
+		TriggerFrom:    st.TriggerFrom,
+		TriggerAccount: st.TriggerAccount,
+		TemplateID:     st.TemplateId,
+	}
+	return
 }

@@ -61,7 +61,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 			panic(err)
 		}
 		b := []byte(msg.Payload)
-		var s SendCommand
+		var s e_command.SendCommand
 		err = json.Unmarshal(b, &s)
 		if err != nil {
 			c.l.Error().Println(SendToRedisErr)
@@ -75,7 +75,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	}
 }
 
-func (c *CommandServer) execute(sc SendCommand) (commandId string, err error) {
+func (c *CommandServer) execute(sc e_command.SendCommand) (commandId string, err error) {
 	ctx := context.Background()
 	com := c.generateCommand(sc)
 	// publish to redis
@@ -91,14 +91,7 @@ func (c *CommandServer) execute(sc SendCommand) (commandId string, err error) {
 	return
 }
 
-func (c *CommandServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
-	triggerAccount string, token string) (com e_command.Command) {
-	sc := SendCommand{
-		TemplateId:     templateId,
-		TriggerFrom:    triggerFrom,
-		TriggerAccount: triggerAccount,
-		Token:          token,
-	}
+func (c *CommandServer) Execute(ctx context.Context, sc e_command.SendCommand) (com e_command.Command) {
 	com = c.generateCommand(sc)
 	// publish to redis
 	_ = c.rdbPub(com)
@@ -141,7 +134,7 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	return com
 }
 
-func (c *CommandServer) generateCommand(sc SendCommand) (com e_command.Command) {
+func (c *CommandServer) generateCommand(sc e_command.SendCommand) (com e_command.Command) {
 	cache := c.dbs.GetCache()
 	var cacheMap map[int]model.CommandTemplate
 	if x, found := cache.Get("commandTemplates"); found {

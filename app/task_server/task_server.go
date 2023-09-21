@@ -6,7 +6,6 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util/logFile"
@@ -16,8 +15,7 @@ import (
 
 type commandServer interface {
 	Start(ctx context.Context, removeTime time.Duration)
-	Execute(ctx context.Context, templateId int, triggerFrom []string,
-		triggerAccount string, token string) (com e_command.Command)
+	Execute(ctx context.Context, sc e_command.SendCommand) (com e_command.Command)
 }
 
 type TaskServer struct {
@@ -73,22 +71,39 @@ func (t *TaskServer) rdbSub(ctx context.Context) {
 			panic(err)
 		}
 		b := []byte(msg.Payload)
-		var s SendTask
+		var s e_task.Task
 		err = json.Unmarshal(b, &s)
+		if err != nil {
+			t.l.Error().Println("send data is not correctly")
+		}
 		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
-		_, err = t.execute(s)
+		_, err = t.ExecuteReturnId(ctx, s)
 		if err != nil {
 			t.l.Error().Println("Error executing Task")
 		}
 	}
 }
 
-func (t *TaskServer) execute(sc SendTask) (taskId string, err error) {
-	ctx := context.Background()
-	task := t.generateTask(sc)
+func (t *TaskServer) ReadMap() map[string]e_task.Task {
+	t.chs.mu.RLocker()
+	defer t.chs.mu.RUnlock()
+	return t.t
+}
+
+func (t *TaskServer) GetList() []e_task.Task {
+	tl := make([]e_task.Task, 0, len(t.t))
+	m := t.ReadMap()
+	for _, v := range m {
+		tl = append(tl, v)
+	}
+	return tl
+}
+
+func (t *TaskServer) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
+		err = task.Message
 		t.l.Error().Println(task.Message)
 		return
 	}
@@ -99,52 +114,19 @@ func (t *TaskServer) execute(sc SendTask) (taskId string, err error) {
 	return
 }
 
-func (t *TaskServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
-	triggerAccount string, token string) (taskId string) {
-	sc := SendTask{
-		TemplateId:     templateId,
-		TriggerFrom:    triggerFrom,
-		TriggerAccount: triggerAccount,
-		Token:          token,
-	}
-	task := t.generateTask(sc)
+func (t *TaskServer) ExecuteWaitTask(ctx context.Context, task e_task.Task) e_task.Task {
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
 		t.l.Error().Println(task.Message)
-		return
+		return task
 	}
 	ch := make(chan e_task.Task)
 	go func() {
 		t.doTask(ctx, task)
 	}()
 	task = <-ch
-	return
-}
-
-func (t *TaskServer) generateTask(sc SendTask) (task e_task.Task) {
-	cache := t.dbs.GetCache()
-	var cacheMap map[int]model.TaskTemplate
-	if x, found := cache.Get("taskTemplates"); found {
-		cacheMap = x.(map[int]model.TaskTemplate)
-	}
-	tt, ok := cacheMap[sc.TemplateId]
-	if !ok {
-		task = e_task.Task{Token: sc.Token, Message: &CannotFindTemplate,
-			Status: e_task.Status{TStatus: e_task.Failure}}
-		return
-	}
-	from := time.Now()
-	taskId := fmt.Sprintf("%v_%v_%v", sc.TemplateId, tt.Name, from.UnixMicro())
-	task = e_task.Task{
-		TaskId:         taskId,
-		Token:          sc.Token,
-		From:           from,
-		TriggerFrom:    sc.TriggerFrom,
-		TriggerAccount: sc.TriggerAccount,
-		TemplateID:     sc.TemplateId,
-	}
-	return
+	return task
 }
 
 func (t *TaskServer) removeFinishedTask(ctx context.Context, s time.Duration) {
@@ -172,8 +154,9 @@ func (t *TaskServer) writeToHistory(task e_task.Task) {
 	if err != nil {
 		panic(err)
 	}
+	templateId := fmt.Sprintf("%d", task.TemplateID)
 	p := influxdb2.NewPoint("task_history",
-		map[string]string{"task_id": task.TaskId, "status": task.Status.TStatus.String()},
+		map[string]string{"task_template_id": templateId, "status": task.Status.TStatus.String()},
 		map[string]interface{}{"data": jTask},
 		task.From,
 	)
@@ -182,7 +165,7 @@ func (t *TaskServer) writeToHistory(task e_task.Task) {
 	}
 }
 
-func (t *TaskServer) ReadFromHistory(taskId, start, stop, status string) (ht []e_task.Task) {
+func (t *TaskServer) ReadFromHistory(taskTemplateId, status, start, stop string) (ht []e_task.Task) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -192,13 +175,17 @@ func (t *TaskServer) ReadFromHistory(taskId, start, stop, status string) (ht []e
 	if status != "" {
 		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s")`, status)
 	}
+	taskTemplateValue := ""
+	if taskTemplateId != "" {
+		taskTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.task_template_id == "%s")`, taskTemplateId)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "task_history")
-|> filter(fn: (r) => r.task_id == "%s")
 |> filter(fn: (r) => r._field == "data")
 %s
-`, start, stopValue, taskId, statusValue)
+%s
+`, start, stopValue, taskTemplateValue, statusValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {

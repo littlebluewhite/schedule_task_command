@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	"schedule_task_command/app/dbs/influxdb"
-	"schedule_task_command/entry/e_time_data"
+	"schedule_task_command/entry/e_time"
 )
 
 func main() {
 	ctx := context.Background()
 	idb := influxdb.NewInfluxdb("influxdb")
 	defer idb.Close()
-	ht := make([]e_time_data.PublishTime, 0, 20)
+	ht := make([]e_time.PublishTime, 0, 20)
 	start := "-8d"
 	stopValue := ""
 	//if stop != "" {
@@ -30,7 +30,7 @@ func main() {
 	result, err := idb.Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {
-			var pt e_time_data.PublishTime
+			var pt e_time.PublishTime
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &pt); e != nil {
 				panic(e)
