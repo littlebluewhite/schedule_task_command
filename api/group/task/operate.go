@@ -46,3 +46,15 @@ func (o *Operate) Cancel(taskId string) error {
 	task.CancelFunc()
 	return nil
 }
+
+func (o *Operate) GetHistory(templateId, status, start, stop string) ([]e_task.Task, error) {
+	s := e_task.S2Status(&status)
+	if s != e_task.Success && s != e_task.Failure && s != e_task.Cancel {
+		return nil, HistoryStatusErr
+	}
+	ht, e := o.taskS.ReadFromHistory(templateId, status, start, stop)
+	if e != nil {
+		return nil, e
+	}
+	return ht, nil
+}

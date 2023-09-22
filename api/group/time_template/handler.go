@@ -18,7 +18,7 @@ type hOperate interface {
 	Delete([]int32) error
 	ReloadCache() error
 	CheckTime(id int, c CheckTime) (bool, error)
-	ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
+	GetHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
 }
 type Handler struct {
 	o hOperate
@@ -183,7 +183,7 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.ReadFromHistory(id, start, stop)
+	data, err := h.o.GetHistory(id, start, stop)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

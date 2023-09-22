@@ -1,6 +1,7 @@
 package command_template
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command_template"
@@ -14,6 +15,7 @@ type hOperate interface {
 	Create([]*e_command_template.CommandTemplateCreate) ([]model.CommandTemplate, error)
 	Delete([]int32) error
 	ReloadCache() error
+	Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (commandId string, err error)
 }
 
 type Handler struct {
@@ -110,4 +112,36 @@ func (h *Handler) DeleteCommandTemplate(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
+}
+
+// ExecuteCommand swagger
+// @Summary execute command templates
+// @Tags    command_template
+// @Produce json
+// @Param id path int true "command_template id"
+// @Param   sendCommand body  command_template.SendCommand true "send command body"
+// @Success 200 {string} string "command id"
+// @Router  /api/command_template/execute/{id} [post]
+func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		h.l.Error().Println("ExecuteCommand: ", err)
+		return util.Err(c, err, 0)
+	}
+	entry := SendCommand{}
+	if err = c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("ExecuteCommand: ", err)
+		return util.Err(c, err, 0)
+	}
+	st := e_command_template.SendCommandTemplate{
+		TemplateId:     id,
+		TriggerFrom:    entry.TriggerFrom,
+		TriggerAccount: entry.TriggerAccount,
+		Token:          entry.Token,
+	}
+	commandId, err := h.o.Execute(c.UserContext(), st)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(commandId)
 }

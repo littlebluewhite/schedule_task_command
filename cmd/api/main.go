@@ -60,7 +60,7 @@ func main() {
 	// create servers
 	commandServer := command_server.NewCommandServer(DBS)
 	// task server need commandServer
-	taskServer := task_server.NewTaskServer(DBS, commandServer)
+	taskServer := task_server.NewTaskServer[api.CommandServer](DBS, commandServer)
 	timeServer := time_server.NewTimeServer(DBS)
 	// schedule server need task server and time server
 	scheduleServer := schedule_server.NewScheduleServer[api.TaskServer, api.TimeServer](DBS, taskServer, timeServer)

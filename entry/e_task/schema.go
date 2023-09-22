@@ -16,7 +16,7 @@ type Task struct {
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
 	Message        *util.MyErr                  `json:"message"`
-	TemplateID     int                          `json:"template_id"`
+	TemplateId     int                          `json:"template_id"`
 	Template       e_task_template.TaskTemplate `json:"template"`
 	CancelFunc     func()
 }

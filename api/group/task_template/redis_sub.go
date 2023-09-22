@@ -8,7 +8,7 @@ import (
 )
 
 func rdbSub(o *Operate, l logFile.LogFile) {
-	l.Info().Println("----------------------------------- start timeTemplate rdbSub --------------------------------")
+	l.Info().Println("----------------------------------- start taskTemplate rdbSub --------------------------------")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	pubsub := o.rdb.Subscribe(ctx, "sendTaskTemplate")

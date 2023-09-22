@@ -25,6 +25,142 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/Command/": {
+            "get": {
+                "description": "Get all commands",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show all commands",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Command/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "get Command history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Command template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Command/{commandId}": {
+            "get": {
+                "description": "Get Command by commandId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "commandId",
+                        "name": "commandId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_command.Command"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel Command by commandId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "cancel Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "commandId",
+                        "name": "commandId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/command_template/": {
             "get": {
                 "description": "Get all command templates",
@@ -109,6 +245,43 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "execute command templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "command_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send command body",
+                        "name": "sendCommand",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command_template.SendCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "command id",
                         "schema": {
                             "type": "string"
                         }
@@ -519,7 +692,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/task/history/{id}": {
+        "/api/task/history": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -534,10 +707,20 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "time template id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "task template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -1056,6 +1239,74 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "command_template.SendCommand": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
+                }
+            }
+        },
+        "e_command.Command": {
+            "type": "object",
+            "properties": {
+                "command_id": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "resp_data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "template": {
+                    "$ref": "#/definitions/e_command_template.CommandTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "e_command_template.CommandTemplate": {
             "type": "object",
             "properties": {

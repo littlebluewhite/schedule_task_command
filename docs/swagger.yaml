@@ -1,4 +1,49 @@
 definitions:
+  command_template.SendCommand:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        example: Wilson
+        type: string
+      trigger_from:
+        example:
+        - '[task execute]'
+        items:
+          type: string
+        type: array
+    type: object
+  e_command.Command:
+    properties:
+      command_id:
+        type: string
+      from:
+        type: string
+      message:
+        type: string
+      resp_data:
+        items:
+          type: integer
+        type: array
+      status:
+        type: integer
+      status_code:
+        type: integer
+      template:
+        $ref: '#/definitions/e_command_template.CommandTemplate'
+      template_id:
+        type: integer
+      to:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
   e_command_template.CommandTemplate:
     properties:
       created_at:
@@ -616,6 +661,96 @@ info:
   title: Schedule-Task-Command swagger API
   version: "2.0"
 paths:
+  /api/Command/:
+    get:
+      description: Get all commands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: Show all commands
+      tags:
+      - Command
+  /api/Command/{commandId}:
+    delete:
+      description: Cancel Command by commandId
+      parameters:
+      - description: commandId
+        in: path
+        name: commandId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: cancel Command
+      tags:
+      - Command
+    get:
+      description: Get Command by commandId
+      parameters:
+      - description: commandId
+        in: path
+        name: commandId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command.Command'
+      summary: Show Command
+      tags:
+      - Command
+  /api/Command/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Command template id
+        in: query
+        name: template_id
+        type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: get Command history
+      tags:
+      - Command
   /api/command_template/:
     delete:
       parameters:
@@ -692,6 +827,30 @@ paths:
           schema:
             $ref: '#/definitions/e_command_template.CommandTemplate'
       summary: Show command templates
+      tags:
+      - command_template
+  /api/command_template/execute/{id}:
+    post:
+      parameters:
+      - description: command_template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: send command body
+        in: body
+        name: sendCommand
+        required: true
+        schema:
+          $ref: '#/definitions/command_template.SendCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: command id
+          schema:
+            type: string
+      summary: execute command templates
       tags:
       - command_template
   /api/header_template/:
@@ -974,16 +1133,23 @@ paths:
       summary: Show task
       tags:
       - task
-  /api/task/history/{id}:
+  /api/task/history:
     get:
       consumes:
       - application/json
       parameters:
-      - description: time template id
-        in: path
-        name: id
-        required: true
+      - description: task template id
+        in: query
+        name: template_id
         type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
       - description: start time
         in: query
         name: start

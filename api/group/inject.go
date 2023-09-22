@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"schedule_task_command/api"
+	"schedule_task_command/api/group/command"
 	"schedule_task_command/api/group/command_template"
 	"schedule_task_command/api/group/header_template"
 	"schedule_task_command/api/group/ping"
@@ -41,6 +42,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
 	// model registration
 	ping.RegisterRouter(g)
 	command_template.RegisterRouter(g)
+	command.RegisterRouter(g)
 	header_template.RegisterRouter(g)
 	schedule.RegisterRouter(g)
 	task_template.RegisterRouter(g)

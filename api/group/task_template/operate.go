@@ -263,7 +263,7 @@ func (o *Operate) Execute(ctx context.Context, st e_task_template.SendTaskTempla
 
 func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
 	task = e_task.Task{
-		TemplateID:     st.TemplateId,
+		TemplateId:     st.TemplateId,
 		TriggerFrom:    st.TriggerFrom,
 		TriggerAccount: st.TriggerAccount,
 		Token:          st.Token,
@@ -274,10 +274,10 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		task.Message = &CannotFindTemplate
 		return
 	}
-	n := time.Now()
+	from := time.Now()
 	tt := e_task_template.Format(ttList)[0]
-	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, n.UnixMicro())
-	task.From = n
+	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
+	task.From = from
 	task.Template = tt
 	return
 }

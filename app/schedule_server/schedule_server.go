@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
+	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_schedule"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
@@ -90,7 +91,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 						Token:       token,
 					}
 					task := s.generateTask(st)
-					_ = s.taskS.ExecuteWaitTask(ctx, task)
+					_ = s.taskS.ExecuteWait(ctx, task)
 				}
 			}(wg, sItem, t)
 		}
@@ -109,34 +110,35 @@ func (s *ScheduleServer[T, U]) getSchedule() map[int]e_schedule.Schedule {
 	return cacheMap
 }
 
+func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
+	task = e_task.Task{
+		TemplateId:     st.TemplateId,
+		TriggerFrom:    st.TriggerFrom,
+		TriggerAccount: st.TriggerAccount,
+		Token:          st.Token,
+	}
+	var cacheMap map[int]model.TaskTemplate
+	if x, found := s.dbs.GetCache().Get("taskTemplates"); found {
+		cacheMap = x.(map[int]model.TaskTemplate)
+	}
+	mt, ok := cacheMap[st.TemplateId]
+	if !ok {
+		task.Status = e_task.Status{TStatus: e_task.Failure}
+		task.Message = &e_command_template.CannotFindTemplate
+		return
+	}
+	from := time.Now()
+	tt := e_task_template.Format([]model.TaskTemplate{mt})[0]
+	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
+	task.From = from
+	task.Template = tt
+	return
+}
+
 func (s *ScheduleServer[T, U]) GetTimeServer() U {
 	return s.timeS.(U)
 }
 
 func (s *ScheduleServer[T, U]) GetTaskServer() T {
 	return s.taskS.(T)
-}
-
-func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
-	var cacheMap map[int]model.TaskTemplate
-	if x, found := s.dbs.GetCache().Get("taskTemplates"); found {
-		cacheMap = x.(map[int]model.TaskTemplate)
-	}
-	tt, ok := cacheMap[st.TemplateId]
-	if !ok {
-		task = e_task.Task{Token: st.Token, Message: &CannotFindTaskTemplate,
-			Status: e_task.Status{TStatus: e_task.Failure}}
-		return
-	}
-	from := time.Now()
-	taskId := fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
-	task = e_task.Task{
-		TaskId:         taskId,
-		Token:          st.Token,
-		From:           from,
-		TriggerFrom:    st.TriggerFrom,
-		TriggerAccount: st.TriggerAccount,
-		TemplateID:     st.TemplateId,
-	}
-	return
 }

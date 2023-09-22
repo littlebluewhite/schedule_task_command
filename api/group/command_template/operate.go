@@ -5,23 +5,31 @@ import (
 	"errors"
 	"fmt"
 	"github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
+	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
+	"time"
 )
 
 type Operate struct {
-	db    *gorm.DB
-	cache *cache.Cache
+	db       *gorm.DB
+	cache    *cache.Cache
+	rdb      *redis.Client
+	commandS api.CommandServer
 }
 
-func NewOperate(dbs dbs.Dbs) *Operate {
+func NewOperate(dbs dbs.Dbs, commandS api.CommandServer) *Operate {
 	o := &Operate{
-		db:    dbs.GetSql(),
-		cache: dbs.GetCache(),
+		db:       dbs.GetSql(),
+		cache:    dbs.GetCache(),
+		rdb:      dbs.GetRdb(),
+		commandS: commandS,
 	}
 	err := o.ReloadCache()
 	if err != nil {
@@ -155,4 +163,32 @@ func (o *Operate) Delete(ids []int32) error {
 		return err
 	}
 	return nil
+}
+
+func (o *Operate) Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (commandId string, err error) {
+	c := o.generateCommand(sc)
+	commandId, err = o.commandS.ExecuteReturnId(ctx, c)
+	return
+}
+
+func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c e_command.Command) {
+	c = e_command.Command{
+		TemplateId:     sc.TemplateId,
+		TriggerFrom:    sc.TriggerFrom,
+		TriggerAccount: sc.TriggerAccount,
+		Token:          sc.Token,
+	}
+	cList, err := o.findCache([]int32{int32(sc.TemplateId)})
+	if err != nil {
+		c.Status = e_command.Failure
+		c.Message = &e_command_template.CannotFindTemplate
+		return
+	}
+	from := time.Now()
+	ct := e_command_template.Format(cList)[0]
+	c.CommandId = fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
+	c.From = from
+	c.Template = ct
+
+	return
 }

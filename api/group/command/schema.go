@@ -1,4 +1,4 @@
-package task
+package command
 
 import "schedule_task_command/util"
 

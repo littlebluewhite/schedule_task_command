@@ -12,6 +12,7 @@ type hOperate interface {
 	List() ([]e_task.Task, error)
 	Find(taskIds []string) ([]e_task.Task, error)
 	Cancel(taskId string) error
+	GetHistory(templateId, status, start, stop string) ([]e_task.Task, error)
 }
 
 type Handler struct {
@@ -91,22 +92,23 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 // @Tags    task
 // @Accept  json
 // @Produce json
-// @Param       id  path     int true "time template id"
+// @Param       template_id  query     int false "task template id"
+// @Param       status  query     string false "status" Enums(Success, Failure, Cancel)
 // @Param       start  query     string true "start time"
 // @Param       stop  query     string false "stop time"
 // @Success 200 {array} e_task.Task
-// @Router  /api/task/history/{id} [get]
+// @Router  /api/task/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	//id := c.Params("id")
-	//start := c.Query("start")
-	//if start == "" {
-	//	return util.Err(c, NoStartTime, 0)
-	//}
-	//stop := c.Query("stop")
-	//data, err := h.o.ReadFromHistory(id, start, stop)
-	//if err != nil {
-	//	return util.Err(c, err, 0)
-	//}
-	//return c.Status(200).JSON(data)
-	return nil
+	templateId := c.Params("template_id")
+	status := c.Params("status")
+	start := c.Query("start")
+	if start == "" {
+		return util.Err(c, NoStartTime, 0)
+	}
+	stop := c.Query("stop")
+	data, err := h.o.GetHistory(templateId, status, start, stop)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(data)
 }

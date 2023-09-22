@@ -25,6 +25,16 @@ func (s Status) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }
 
+func (s *Status) UnmarshalJSON(data []byte) error {
+	var tStatus string
+	err := json.Unmarshal(data, &tStatus)
+	if err != nil {
+		return err
+	}
+	*s = S2Status(&tStatus)
+	return nil
+}
+
 type Command struct {
 	CommandId      string                             `json:"command_id"`
 	Token          string                             `json:"token"`
@@ -54,11 +64,4 @@ type CommandPub struct {
 	Message        string                             `json:"message"`
 	TemplateID     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
-}
-
-type SendCommand struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
 }

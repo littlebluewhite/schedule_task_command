@@ -15,10 +15,10 @@ import (
 
 type commandServer interface {
 	Start(ctx context.Context, removeTime time.Duration)
-	Execute(ctx context.Context, sc e_command.SendCommand) (com e_command.Command)
+	ExecuteWait(ctx context.Context, com e_command.Command) e_command.Command
 }
 
-type TaskServer struct {
+type TaskServer[T any] struct {
 	dbs dbs.Dbs
 	l   logFile.LogFile
 	t   map[string]e_task.Task
@@ -26,12 +26,12 @@ type TaskServer struct {
 	chs chs
 }
 
-func NewTaskServer(dbs dbs.Dbs, cs commandServer) *TaskServer {
+func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
 	l := logFile.NewLogFile("app", "task_server")
 	t := make(map[string]e_task.Task)
 	rec := make(chan e_task.Task)
 	mu := new(sync.RWMutex)
-	return &TaskServer{
+	return &TaskServer[T]{
 		dbs: dbs,
 		l:   l,
 		t:   t,
@@ -43,7 +43,7 @@ func NewTaskServer(dbs dbs.Dbs, cs commandServer) *TaskServer {
 	}
 }
 
-func (t *TaskServer) Start(ctx context.Context, removeTime time.Duration) {
+func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	t.l.Info().Println("Task server started")
 	defer t.l.Error().Println("Task server stopped")
 	wg := &sync.WaitGroup{}
@@ -63,7 +63,7 @@ func (t *TaskServer) Start(ctx context.Context, removeTime time.Duration) {
 	wg.Wait()
 }
 
-func (t *TaskServer) rdbSub(ctx context.Context) {
+func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	pubsub := t.dbs.GetRdb().Subscribe(ctx, "sendTask")
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
@@ -74,7 +74,7 @@ func (t *TaskServer) rdbSub(ctx context.Context) {
 		var s e_task.Task
 		err = json.Unmarshal(b, &s)
 		if err != nil {
-			t.l.Error().Println("send data is not correctly")
+			t.l.Error().Println(SendToRedisErr)
 		}
 		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
 		_, err = t.ExecuteReturnId(ctx, s)
@@ -84,13 +84,13 @@ func (t *TaskServer) rdbSub(ctx context.Context) {
 	}
 }
 
-func (t *TaskServer) ReadMap() map[string]e_task.Task {
+func (t *TaskServer[T]) ReadMap() map[string]e_task.Task {
 	t.chs.mu.RLocker()
 	defer t.chs.mu.RUnlock()
 	return t.t
 }
 
-func (t *TaskServer) GetList() []e_task.Task {
+func (t *TaskServer[T]) GetList() []e_task.Task {
 	tl := make([]e_task.Task, 0, len(t.t))
 	m := t.ReadMap()
 	for _, v := range m {
@@ -99,7 +99,7 @@ func (t *TaskServer) GetList() []e_task.Task {
 	return tl
 }
 
-func (t *TaskServer) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
+func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
@@ -114,7 +114,7 @@ func (t *TaskServer) ExecuteReturnId(ctx context.Context, task e_task.Task) (tas
 	return
 }
 
-func (t *TaskServer) ExecuteWaitTask(ctx context.Context, task e_task.Task) e_task.Task {
+func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task {
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
@@ -129,7 +129,7 @@ func (t *TaskServer) ExecuteWaitTask(ctx context.Context, task e_task.Task) e_ta
 	return task
 }
 
-func (t *TaskServer) removeFinishedTask(ctx context.Context, s time.Duration) {
+func (t *TaskServer[T]) removeFinishedTask(ctx context.Context, s time.Duration) {
 Loop1:
 	for {
 		select {
@@ -148,13 +148,13 @@ Loop1:
 	}
 }
 
-func (t *TaskServer) writeToHistory(task e_task.Task) {
+func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	ctx := context.Background()
 	jTask, err := json.Marshal(task)
 	if err != nil {
 		panic(err)
 	}
-	templateId := fmt.Sprintf("%d", task.TemplateID)
+	templateId := fmt.Sprintf("%d", task.TemplateId)
 	p := influxdb2.NewPoint("task_history",
 		map[string]string{"task_template_id": templateId, "status": task.Status.TStatus.String()},
 		map[string]interface{}{"data": jTask},
@@ -165,7 +165,7 @@ func (t *TaskServer) writeToHistory(task e_task.Task) {
 	}
 }
 
-func (t *TaskServer) ReadFromHistory(taskTemplateId, status, start, stop string) (ht []e_task.Task) {
+func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, status, start, stop string) (ht []e_task.Task, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -197,18 +197,18 @@ func (t *TaskServer) ReadFromHistory(taskTemplateId, status, start, stop string)
 			ht = append(ht, task)
 		}
 	} else {
-		panic(err)
+		return
 	}
 	return
 }
 
-func (t *TaskServer) writeTask(task e_task.Task) {
+func (t *TaskServer[T]) writeTask(task e_task.Task) {
 	t.chs.mu.Lock()
 	defer t.chs.mu.Unlock()
 	t.t[task.TaskId] = task
 }
 
-func (t *TaskServer) rdbPub(task e_task.Task) (e error) {
+func (t *TaskServer[T]) rdbPub(task e_task.Task) (e error) {
 	ctx := context.Background()
 	trb, _ := json.Marshal(e_task.ToPub(task))
 	e = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
@@ -217,4 +217,8 @@ func (t *TaskServer) rdbPub(task e_task.Task) (e error) {
 		return
 	}
 	return
+}
+
+func (t *TaskServer[T]) GetCommandServer() T {
+	return t.cs.(T)
 }

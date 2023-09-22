@@ -2,6 +2,7 @@ package e_command_template
 
 import (
 	"github.com/goccy/go-json"
+	"schedule_task_command/util"
 	"time"
 )
 
@@ -82,3 +83,12 @@ type CommandTemplateCreate struct {
 	Monitor     *Monitor          `json:"monitor"`
 	Tags        json.RawMessage   `json:"tags"`
 }
+
+type SendCommandTemplate struct {
+	TemplateId     int      `json:"template_id"`
+	TriggerFrom    []string `json:"trigger_from"`
+	TriggerAccount string   `json:"trigger_account"`
+	Token          string   `json:"token"`
+}
+
+var CannotFindTemplate = util.MyErr("can not find Command template")

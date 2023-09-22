@@ -23,3 +23,4 @@ type stageMapValue struct {
 }
 
 var TaskCanceled = util.MyErr("Task has been canceled")
+var SendToRedisErr = util.MyErr("send task to redis cannot format")

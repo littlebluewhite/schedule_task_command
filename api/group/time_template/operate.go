@@ -234,7 +234,7 @@ func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool, err error) {
 	return
 }
 
-func (o *Operate) ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error) {
+func (o *Operate) GetHistory(templateId, start, stop string) ([]e_time.PublishTime, error) {
 	data, err := o.timeS.ReadFromHistory(templateId, start, stop)
 	return data, err
 }
