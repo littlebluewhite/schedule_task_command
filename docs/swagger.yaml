@@ -647,7 +647,7 @@ definitions:
           type: string
         type: array
     type: object
-host: 127.0.0.1:5487
+host: 192.168.1.10:5487
 info:
   contact:
     email: wwilson008@gmail.com
