@@ -10,8 +10,26 @@ func ToPub(c Command) (cp CommandPub) {
 	cp.StatusCode = c.StatusCode
 	cp.RespData = c.RespData
 	cp.Status = c.Status
-	cp.Message = c.Message
+	cp.Message = c.Message.Error()
 	cp.TemplateID = c.TemplateId
 	cp.Template = c.Template
 	return
+}
+
+func S2Status(s *string) Status {
+	if s == nil {
+		return Prepared
+	}
+	switch *s {
+	case "Process":
+		return Process
+	case "Success":
+		return Success
+	case "Failure":
+		return Failure
+	case "Cancel":
+		return Cancel
+	default:
+		return Prepared
+	}
 }

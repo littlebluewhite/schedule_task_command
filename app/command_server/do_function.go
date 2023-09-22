@@ -24,10 +24,10 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 		case <-ctx.Done():
 			if errors.Is(ctx.Err(), context.Canceled) {
 				com.Status = e_command.Cancel
-				com.Message = CommandCanceled
+				com.Message = &CommandCanceled
 			} else if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 				com.Status = e_command.Failure
-				com.Message = CommandTimeout
+				com.Message = &CommandTimeout
 			}
 			return com
 		default:
@@ -76,7 +76,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	req, e := http.NewRequestWithContext(ctx, h.Method, h.URL, body)
 	if e != nil {
 		com.Status = e_command.Failure
-		com.Message = HttpTimeout
+		com.Message = &HttpTimeout
 		return com
 	}
 	if h.Header != nil {
@@ -117,7 +117,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 
 func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.Command {
 	if com.StatusCode != int(m.StatusCode) {
-		com.Message = HttpCodeErr
+		com.Message = &HttpCodeErr
 		return com
 	}
 	asserts := make([]assertResult, 0, len(m.MConditions))
@@ -130,7 +130,7 @@ func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.
 	if logicResult {
 		com.Status = e_command.Success
 	} else {
-		com.Message = ConditionFailed
+		com.Message = &ConditionFailed
 	}
 	return com
 }

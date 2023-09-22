@@ -1,4 +1,4 @@
-package api
+package group
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -8,19 +8,20 @@ import (
 	"github.com/gofiber/swagger"
 	"io"
 	"os"
-	"schedule_task_command/api/group"
+	"schedule_task_command/api"
+	"schedule_task_command/api/group/command"
 	"schedule_task_command/api/group/command_template"
 	"schedule_task_command/api/group/header_template"
 	"schedule_task_command/api/group/ping"
 	"schedule_task_command/api/group/schedule"
+	"schedule_task_command/api/group/task"
 	"schedule_task_command/api/group/task_template"
 	"schedule_task_command/api/group/time_template"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/time_server"
 	"schedule_task_command/util/logFile"
 )
 
-func Inject(app *fiber.App, dbs dbs.Dbs, ts time_server.TimeServer) {
+func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
 	// Middleware
 	log := logFile.NewLogFile("api", "inject.log")
 	fiberLog := getFiberLogFile(log)
@@ -33,17 +34,19 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ts time_server.TimeServer) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// api group add cors middleware
-	api := app.Group("/api", cors.New())
+	Api := app.Group("/api", cors.New())
 
 	// create new group
-	g := group.NewAPIGroup(api, dbs, ts)
+	g := NewAPIGroup(Api, dbs, ss)
 
 	// model registration
 	ping.RegisterRouter(g)
 	command_template.RegisterRouter(g)
+	command.RegisterRouter(g)
 	header_template.RegisterRouter(g)
 	schedule.RegisterRouter(g)
 	task_template.RegisterRouter(g)
+	task.RegisterRouter(g)
 	time_template.RegisterRouter(g)
 }
 

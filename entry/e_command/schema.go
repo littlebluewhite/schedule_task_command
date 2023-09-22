@@ -25,6 +25,16 @@ func (s Status) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }
 
+func (s *Status) UnmarshalJSON(data []byte) error {
+	var tStatus string
+	err := json.Unmarshal(data, &tStatus)
+	if err != nil {
+		return err
+	}
+	*s = S2Status(&tStatus)
+	return nil
+}
+
 type Command struct {
 	CommandId      string                             `json:"command_id"`
 	Token          string                             `json:"token"`
@@ -35,7 +45,7 @@ type Command struct {
 	StatusCode     int                                `json:"status_code"`
 	RespData       json.RawMessage                    `json:"resp_data"`
 	Status         Status                             `json:"status"`
-	Message        util.JsonErr                       `json:"message"`
+	Message        *util.MyErr                        `json:"message"`
 	TemplateId     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
 	CancelFunc     func()

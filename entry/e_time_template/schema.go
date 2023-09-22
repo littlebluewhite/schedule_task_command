@@ -2,67 +2,38 @@ package e_time_template
 
 import (
 	"fmt"
-	"github.com/goccy/go-json"
-	"gorm.io/datatypes"
+	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/util"
 	"time"
 )
 
-type TimeTemplates []TimeTemplate
-
 type TimeTemplate struct {
-	ID        int32      `json:"id"`
-	Name      string     `json:"name"`
-	UpdatedAt *time.Time `json:"updated_at"`
-	CreatedAt *time.Time `json:"created_at"`
-	TimeData  TimeDatum  `json:"time_data"`
-}
-
-type TimeDatum struct {
-	RepeatType      *string         `json:"repeat_type"`
-	StartDate       time.Time       `json:"start_date"`
-	EndDate         *time.Time      `json:"end_date"`
-	StartTime       string          `json:"start_time"`
-	EndTime         string          `json:"end_time"`
-	IntervalSeconds *int32          `json:"interval_seconds"`
-	ConditionType   *string         `json:"condition_type"`
-	TCondition      json.RawMessage `json:"t_condition"`
+	ID        int32                 `json:"id"`
+	Name      string                `json:"name"`
+	UpdatedAt *time.Time            `json:"updated_at"`
+	CreatedAt *time.Time            `json:"created_at"`
+	TimeData  e_time_data.TimeDatum `json:"time_data"`
 }
 
 type TimeTemplateCreate struct {
-	Name     string          `json:"name" binding:"required"`
-	TimeData TimeDatumCreate `json:"time_data" binding:"required"`
-}
-
-type TimeDatumCreate struct {
-	RepeatType      *string         `json:"repeat_type"`
-	StartDate       time.Time       `json:"start_date" binding:"required"`
-	EndDate         *time.Time      `json:"end_date"`
-	StartTime       *datatypes.Time `json:"start_time" binding:"required"`
-	EndTime         datatypes.Time  `json:"end_time" binding:"required"`
-	IntervalSeconds *int32          `json:"interval_seconds"`
-	ConditionType   *string         `json:"condition_type"`
-	TCondition      json.RawMessage `json:"t_condition" binding:"required"`
+	Name     string                      `json:"name" binding:"required"`
+	TimeData e_time_data.TimeDatumCreate `json:"time_data" binding:"required"`
 }
 
 type TimeTemplateUpdate struct {
-	ID       int32            `json:"id" binding:"required"`
-	Name     *string          `json:"name"`
-	TimeData *TimeDatumUpdate `json:"time_data"`
-}
-
-type TimeDatumUpdate struct {
-	RepeatType      *string         `json:"repeat_type" binding:"required"`
-	StartDate       time.Time       `json:"start_date" binding:"required"`
-	EndDate         *time.Time      `json:"end_date"`
-	StartTime       *datatypes.Time `json:"start_time" binding:"required"`
-	EndTime         datatypes.Time  `json:"end_time" binding:"required"`
-	IntervalSeconds *int32          `json:"interval_seconds"`
-	ConditionType   *string         `json:"condition_type"`
-	TCondition      json.RawMessage `json:"t_condition" binding:"required"`
+	ID       int32                        `json:"id" binding:"required"`
+	Name     *string                      `json:"name"`
+	TimeData *e_time_data.TimeDatumUpdate `json:"time_data"`
 }
 
 func TimeTemplateNotFound(id int) util.MyErr {
 	e := fmt.Sprintf("time template id: %d not found", id)
 	return util.MyErr(e)
+}
+
+type SendTimeTemplate struct {
+	TemplateId     int      `json:"template_id"`
+	TriggerFrom    []string `json:"trigger_from"`
+	TriggerAccount string   `json:"trigger_account"`
+	Token          string   `json:"token"`
 }

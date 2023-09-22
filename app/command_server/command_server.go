@@ -6,9 +6,7 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/util/logFile"
 	"sync"
 	"time"
@@ -37,10 +35,10 @@ func NewCommandServer(dbs dbs.Dbs) *CommandServer {
 	}
 }
 
-func (c *CommandServer) Start(removeTime time.Duration) {
+func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
+	c.l.Info().Println("Command server started")
+	defer c.l.Info().Println("Command server stopped")
 	wg := &sync.WaitGroup{}
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	wg.Add(2)
 	go func(wg *sync.WaitGroup) {
 		c.removeFinishedCommand(ctx, removeTime)
@@ -61,23 +59,36 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 			panic(err)
 		}
 		b := []byte(msg.Payload)
-		var s SendCommand
-		err = json.Unmarshal(b, &s)
+		var com e_command.Command
+		err = json.Unmarshal(b, &com)
 		if err != nil {
 			c.l.Error().Println(SendToRedisErr)
 			continue
 		}
-		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
-		_, err = c.execute(s)
+		com.TriggerFrom = append(com.TriggerFrom, "redis channel")
+		_, err = c.ExecuteReturnId(ctx, com)
 		if err != nil {
 			c.l.Error().Println("Error executing Command")
 		}
 	}
 }
 
-func (c *CommandServer) execute(sc SendCommand) (commandId string, err error) {
-	ctx := context.Background()
-	com := c.generateCommand(sc)
+func (c *CommandServer) ReadMap() map[string]e_command.Command {
+	c.chs.mu.RLocker()
+	defer c.chs.mu.RUnlock()
+	return c.c
+}
+
+func (c *CommandServer) GetList() []e_command.Command {
+	cl := make([]e_command.Command, 0, len(c.c))
+	m := c.ReadMap()
+	for _, v := range m {
+		cl = append(cl, v)
+	}
+	return cl
+}
+
+func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (commandId string, err error) {
 	// publish to redis
 	_ = c.rdbPub(com)
 	if err = com.Message; err != nil {
@@ -91,27 +102,19 @@ func (c *CommandServer) execute(sc SendCommand) (commandId string, err error) {
 	return
 }
 
-func (c *CommandServer) Execute(ctx context.Context, templateId int, triggerFrom []string,
-	triggerAccount string, token string) (com e_command.Command) {
-	sc := SendCommand{
-		TemplateId:     templateId,
-		TriggerFrom:    triggerFrom,
-		TriggerAccount: triggerAccount,
-		Token:          token,
-	}
-	com = c.generateCommand(sc)
+func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) e_command.Command {
 	// publish to redis
 	_ = c.rdbPub(com)
 	if com.Message != nil {
 		c.l.Error().Println(com.Message)
-		return
+		return com
 	}
 	ch := make(chan e_command.Command)
 	go func() {
 		ch <- c.doCommand(ctx, com)
 	}()
 	com = <-ch
-	return
+	return com
 }
 
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
@@ -139,31 +142,6 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 		panic(e)
 	}
 	return com
-}
-
-func (c *CommandServer) generateCommand(sc SendCommand) (com e_command.Command) {
-	cache := c.dbs.GetCache()
-	var cacheMap map[int]model.CommandTemplate
-	if x, found := cache.Get("commandTemplates"); found {
-		cacheMap = x.(map[int]model.CommandTemplate)
-	}
-	ct, ok := cacheMap[sc.TemplateId]
-	if !ok {
-		com = e_command.Command{Token: sc.Token, Message: CannotFindTemplate, Status: e_command.Failure}
-		return
-	}
-	from := time.Now()
-	commandId := fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
-	com = e_command.Command{
-		CommandId:      commandId,
-		Token:          sc.Token,
-		From:           from,
-		TriggerFrom:    sc.TriggerFrom,
-		TriggerAccount: sc.TriggerAccount,
-		TemplateId:     sc.TemplateId,
-		Template:       e_command_template.Format([]model.CommandTemplate{ct})[0],
-	}
-	return
 }
 
 func (c *CommandServer) CancelCommand(commandId string) error {
@@ -221,7 +199,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	}
 }
 
-func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (hc []e_command.Command) {
+func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (hc []e_command.Command, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -229,13 +207,13 @@ func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (
 	}
 	statusValue := ""
 	if status != "" {
-		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s"`, status)
+		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s")`, status)
 	}
-	stmt := fmt.Sprintf(`from(bucket:"schedule"
+	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
-|> filter(fn: (r) => r._measurement == "command_history"
+|> filter(fn: (r) => r._measurement == "command_history")
 |> filter(fn: (r) => r.command_id == "%s")
-|> filter(fn: (r) => r."_field" == "data")
+|> filter(fn: (r) => r._field == "data")
 %s
 `, start, stopValue, commandId, statusValue)
 	result, err := c.dbs.GetIdb().Querier().Query(ctx, stmt)
@@ -249,7 +227,7 @@ func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (
 			hc = append(hc, com)
 		}
 	} else {
-		panic(err)
+		return
 	}
 	return
 }

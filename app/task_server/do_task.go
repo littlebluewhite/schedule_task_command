@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -12,7 +14,7 @@ import (
 	"time"
 )
 
-func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
+func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -32,8 +34,8 @@ func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 		s := gsr.stageMap[sn]
 		task = t.doStages(ctx, s, task)
 		if task.Status.FailedCommandId != "" {
-			e := fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn)
-			task.Message = util.MyErr(e)
+			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn))
+			task.Message = &e
 			break
 		}
 	}
@@ -58,7 +60,7 @@ func (t *TaskServer) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 	return task
 }
 
-// getStages return stage number array without duplicates and return the map (monitor and execute commands slice)
+// getStages return stage number array without duplicates and return the map (monitor and ExecuteReturnId commands slice)
 func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 	snSet := make(map[int32]struct{})
 	gsr.stageMap = make(map[int32]stageMapValue)
@@ -85,12 +87,12 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 	return
 }
 
-func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
+func (t *TaskServer[T]) doStages(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
 	select {
 	case <-ctx.Done():
 		if errors.Is(ctx.Err(), context.Canceled) {
 			task.Status.TStatus = e_task.Cancel
-			task.Message = TaskCanceled
+			task.Message = &TaskCanceled
 		}
 		return task
 	default:
@@ -101,17 +103,29 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 		triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
 		for _, stage := range sv.monitor {
 			go func(stage e_task_template.TaskStage) {
-				com := t.cs.Execute(
-					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				sc := e_command_template.SendCommandTemplate{
+					TemplateId:     int(stage.CommandTemplateID),
+					TriggerFrom:    triggerFrom,
+					TriggerAccount: task.TriggerAccount,
+					Token:          task.Token,
+				}
+				com := t.generateCommand(sc)
+				com = t.cs.ExecuteWait(ctx, com)
 				ch <- com
 			}(stage)
 		}
-		// wait 500 milliseconds to execute "execute command"
+		// wait 500 milliseconds to ExecuteReturnId "ExecuteReturnId command"
 		time.Sleep(500 * time.Millisecond)
 		for _, stage := range sv.execute {
 			go func(stage e_task_template.TaskStage) {
-				com := t.cs.Execute(
-					ctx, int(stage.CommandTemplateID), triggerFrom, task.TriggerAccount, task.Token)
+				sc := e_command_template.SendCommandTemplate{
+					TemplateId:     int(stage.CommandTemplateID),
+					TriggerFrom:    triggerFrom,
+					TriggerAccount: task.TriggerAccount,
+					Token:          task.Token,
+				}
+				com := t.generateCommand(sc)
+				com = t.cs.ExecuteWait(ctx, com)
 				ch <- com
 			}(stage)
 		}
@@ -129,4 +143,29 @@ func (t *TaskServer) doStages(ctx context.Context, sv stageMapValue, task e_task
 		}
 		return task
 	}
+}
+
+func (t *TaskServer[T]) generateCommand(sc e_command_template.SendCommandTemplate) (c e_command.Command) {
+	c = e_command.Command{
+		TemplateId:     sc.TemplateId,
+		TriggerFrom:    sc.TriggerFrom,
+		TriggerAccount: sc.TriggerAccount,
+		Token:          sc.Token,
+	}
+	var cacheMap map[int]model.CommandTemplate
+	if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
+		cacheMap = x.(map[int]model.CommandTemplate)
+	}
+	mt, ok := cacheMap[sc.TemplateId]
+	if !ok {
+		c.Status = e_command.Failure
+		c.Message = &e_command_template.CannotFindTemplate
+		return
+	}
+	from := time.Now()
+	ct := e_command_template.Format([]model.CommandTemplate{mt})[0]
+	c.CommandId = fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
+	c.From = from
+	c.Template = ct
+	return
 }

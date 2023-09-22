@@ -25,8 +25,8 @@ const (
 	Cancel
 )
 
-func (s Status) String() string {
-	return [...]string{"Prepared", "Process", "Success", "Failure", "Cancel"}[s]
+func (s *Status) String() string {
+	return [...]string{"Prepared", "Process", "Success", "Failure", "Cancel"}[*s]
 }
 
 func (s Status) MarshalJSON() ([]byte, error) {
@@ -53,6 +53,6 @@ func (m MyError) Error() string {
 	return string(m)
 }
 
-func (m MyError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(string(m))
-}
+//func (m MyError) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(string(m))
+//}

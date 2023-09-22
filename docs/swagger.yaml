@@ -1,4 +1,49 @@
 definitions:
+  command_template.SendCommand:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        example: Wilson
+        type: string
+      trigger_from:
+        example:
+        - '[task execute]'
+        items:
+          type: string
+        type: array
+    type: object
+  e_command.Command:
+    properties:
+      command_id:
+        type: string
+      from:
+        type: string
+      message:
+        type: string
+      resp_data:
+        items:
+          type: integer
+        type: array
+      status:
+        type: integer
+      status_code:
+        type: integer
+      template:
+        $ref: '#/definitions/e_command_template.CommandTemplate'
+      template_id:
+        type: integer
+      to:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
   e_command_template.CommandTemplate:
     properties:
       created_at:
@@ -222,7 +267,7 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatum'
+        $ref: '#/definitions/e_time_data.TimeDatum'
       time_data_id:
         type: integer
       updated_at:
@@ -243,7 +288,7 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatumCreate'
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
     required:
     - name
     - time_data
@@ -265,82 +310,47 @@ definitions:
       task_id:
         type: integer
       time_data:
-        $ref: '#/definitions/e_schedule.TimeDatumUpdate'
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
     required:
     - id
     type: object
-  e_schedule.TimeDatum:
+  e_task.Status:
     properties:
-      condition_type:
+      failed_command_id:
         type: string
-      end_date:
-        type: string
-      end_time:
-        type: string
-      interval_seconds:
+      failed_command_template_id:
         type: integer
-      repeat_type:
+      failed_message:
         type: string
-      start_date:
-        type: string
-      start_time:
-        type: string
-      t_condition:
-        items:
-          type: integer
-        type: array
+      stages:
+        type: integer
+      task_status:
+        type: integer
     type: object
-  e_schedule.TimeDatumCreate:
+  e_task.Task:
     properties:
-      condition_type:
+      from:
         type: string
-      end_date:
+      message:
         type: string
-      end_time:
+      status:
+        $ref: '#/definitions/e_task.Status'
+      task_id:
         type: string
-      interval_seconds:
+      template:
+        $ref: '#/definitions/e_task_template.TaskTemplate'
+      template_id:
         type: integer
-      repeat_type:
+      to:
         type: string
-      start_date:
+      token:
         type: string
-      start_time:
+      trigger_account:
         type: string
-      t_condition:
+      trigger_from:
         items:
-          type: integer
+          type: string
         type: array
-    required:
-    - end_time
-    - start_date
-    - start_time
-    type: object
-  e_schedule.TimeDatumUpdate:
-    properties:
-      condition_type:
-        type: string
-      end_date:
-        type: string
-      end_time:
-        type: string
-      interval_seconds:
-        type: integer
-      repeat_type:
-        type: string
-      start_date:
-        type: string
-      start_time:
-        type: string
-      t_condition:
-        items:
-          type: integer
-        type: array
-    required:
-    - end_time
-    - repeat_type
-    - start_date
-    - start_time
-    - t_condition
     type: object
   e_task_template.TaskStage:
     properties:
@@ -464,10 +474,33 @@ definitions:
     required:
     - id
     type: object
-  e_time_template.TimeDatum:
+  e_time.PublishTime:
+    properties:
+      is_time:
+        type: boolean
+      message:
+        type: string
+      status:
+        type: integer
+      template:
+        $ref: '#/definitions/e_time_template.TimeTemplate'
+      template_id:
+        type: integer
+      time:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
+  e_time_data.TimeDatum:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -475,7 +508,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -485,10 +518,10 @@ definitions:
           type: integer
         type: array
     type: object
-  e_time_template.TimeDatumCreate:
+  e_time_data.TimeDatumCreate:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -496,7 +529,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -509,12 +542,11 @@ definitions:
     - end_time
     - start_date
     - start_time
-    - t_condition
     type: object
-  e_time_template.TimeDatumUpdate:
+  e_time_data.TimeDatumUpdate:
     properties:
       condition_type:
-        type: string
+        type: integer
       end_date:
         type: string
       end_time:
@@ -522,7 +554,7 @@ definitions:
       interval_seconds:
         type: integer
       repeat_type:
-        type: string
+        type: integer
       start_date:
         type: string
       start_time:
@@ -547,7 +579,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatum'
+        $ref: '#/definitions/e_time_data.TimeDatum'
       updated_at:
         type: string
     type: object
@@ -556,7 +588,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatumCreate'
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
     required:
     - name
     - time_data
@@ -568,7 +600,7 @@ definitions:
       name:
         type: string
       time_data:
-        $ref: '#/definitions/e_time_template.TimeDatumUpdate'
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
     required:
     - id
     type: object
@@ -590,7 +622,32 @@ definitions:
         example: asdfasdf
         type: string
     type: object
-host: 192.168.1.10:5487
+  task_template.SendTask:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        example: Wilson
+        type: string
+      trigger_from:
+        example:
+        - '[task execute]'
+        items:
+          type: string
+        type: array
+    type: object
+  time_template.CheckTime:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
+host: 127.0.0.1:5487
 info:
   contact:
     email: wwilson008@gmail.com
@@ -604,6 +661,96 @@ info:
   title: Schedule-Task-Command swagger API
   version: "2.0"
 paths:
+  /api/Command/:
+    get:
+      description: Get all commands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: Show all commands
+      tags:
+      - Command
+  /api/Command/{commandId}:
+    delete:
+      description: Cancel Command by commandId
+      parameters:
+      - description: commandId
+        in: path
+        name: commandId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: cancel Command
+      tags:
+      - Command
+    get:
+      description: Get Command by commandId
+      parameters:
+      - description: commandId
+        in: path
+        name: commandId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command.Command'
+      summary: Show Command
+      tags:
+      - Command
+  /api/Command/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Command template id
+        in: query
+        name: template_id
+        type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: get Command history
+      tags:
+      - Command
   /api/command_template/:
     delete:
       parameters:
@@ -680,6 +827,30 @@ paths:
           schema:
             $ref: '#/definitions/e_command_template.CommandTemplate'
       summary: Show command templates
+      tags:
+      - command_template
+  /api/command_template/execute/{id}:
+    post:
+      parameters:
+      - description: command_template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: send command body
+        in: body
+        name: sendCommand
+        required: true
+        schema:
+          $ref: '#/definitions/command_template.SendCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: command id
+          schema:
+            type: string
+      summary: execute command templates
       tags:
       - command_template
   /api/header_template/:
@@ -910,6 +1081,96 @@ paths:
       summary: Show schedules
       tags:
       - schedule
+  /api/task/:
+    get:
+      description: Get all tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task.Task'
+            type: array
+      summary: Show all tasks
+      tags:
+      - task
+  /api/task/{taskId}:
+    delete:
+      description: Cancel task by taskId
+      parameters:
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: cancel task
+      tags:
+      - task
+    get:
+      description: Get task by taskId
+      parameters:
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task.Task'
+      summary: Show task
+      tags:
+      - task
+  /api/task/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: task template id
+        in: query
+        name: template_id
+        type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task.Task'
+            type: array
+      summary: get task history
+      tags:
+      - task
   /api/task_template/:
     delete:
       parameters:
@@ -989,6 +1250,30 @@ paths:
               $ref: '#/definitions/e_task_template.TaskTemplate'
             type: array
       summary: Create task templates
+      tags:
+      - task_template
+  /api/task_template/execute/{id}:
+    post:
+      parameters:
+      - description: task_template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: send task body
+        in: body
+        name: sendTask
+        required: true
+        schema:
+          $ref: '#/definitions/task_template.SendTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: task id
+          schema:
+            type: string
+      summary: execute task templates
       tags:
       - task_template
   /api/time_template/:
@@ -1089,6 +1374,63 @@ paths:
           schema:
             $ref: '#/definitions/e_time_template.TimeTemplate'
       summary: Show time templates
+      tags:
+      - time_template
+  /api/time_template/checkTime/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: check time body
+        in: body
+        name: checkTime
+        required: true
+        schema:
+          $ref: '#/definitions/time_template.CheckTime'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      summary: Check time templates
+      tags:
+      - time_template
+  /api/time_template/history/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_time.PublishTime'
+            type: array
+      summary: get time history
       tags:
       - time_template
   /task_template/{id}:

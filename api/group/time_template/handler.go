@@ -1,8 +1,10 @@
 package time_template
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
+	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
 	"schedule_task_command/util/logFile"
@@ -15,6 +17,8 @@ type hOperate interface {
 	Update([]*e_time_template.TimeTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
+	CheckTime(id int, c CheckTime) (bool, error)
+	GetHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
 }
 type Handler struct {
 	o hOperate
@@ -132,4 +136,56 @@ func (h *Handler) DeleteTimeTemplate(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
+}
+
+// CheckTime swagger
+// @Summary Check time templates
+// @Tags    time_template
+// @Accept  json
+// @Produce json
+// @Param       id  path     int true "time template id"
+// @Param   checkTime body     time_template.CheckTime true "check time body"
+// @Success 200           {boolean} boolean
+// @Router  /api/time_template/checkTime/{id} [post]
+func (h *Handler) CheckTime(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		h.l.Error().Println("CheckTime: ", err)
+		return util.Err(c, err, 0)
+	}
+	entry := CheckTime{}
+	if err = c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("CheckTime: ", err)
+		return util.Err(c, err, 0)
+	}
+	isTime, err := h.o.CheckTime(id, entry)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	fmt.Println(isTime)
+	return c.Status(200).JSON(isTime)
+}
+
+// GetHistory swagger
+// @Summary get time history
+// @Tags    time_template
+// @Accept  json
+// @Produce json
+// @Param       id  path     int true "time template id"
+// @Param       start  query     string true "start time"
+// @Param       stop  query     string false "stop time"
+// @Success 200 {array} e_time.PublishTime
+// @Router  /api/time_template/history/{id} [get]
+func (h *Handler) GetHistory(c *fiber.Ctx) error {
+	id := c.Params("id")
+	start := c.Query("start")
+	if start == "" {
+		return util.Err(c, NoStartTime, 0)
+	}
+	stop := c.Query("stop")
+	data, err := h.o.GetHistory(id, start, stop)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(data)
 }

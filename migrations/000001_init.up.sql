@@ -26,7 +26,7 @@ CREATE TABLE `schedule`
     `name`         varchar(255) UNIQUE   NOT NULL,
     `description`  varchar(255),
     `time_data_id` int UNIQUE            NOT NULL,
-    `task_id`      int,
+    `task_id`      int                   NOT NULL,
     `enabled`      boolean DEFAULT false NOT NULL,
     `updated_at`   datetime,
     `created_at`   datetime,
@@ -139,7 +139,7 @@ CREATE TABLE `task_stage`
     `name`                varchar(255)                NOT NULL,
     `stage_number`        int                         NOT NULL,
     `mode`                ENUM ('monitor', 'execute') NOT NULL,
-    `command_template_id` int NOT NULL,
+    `command_template_id` int                         NOT NULL,
     `tags`                json DEFAULT (JSON_ARRAY())
 );
 

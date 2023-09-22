@@ -25,6 +25,142 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/Command/": {
+            "get": {
+                "description": "Get all commands",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show all commands",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Command/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "get Command history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Command template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Command/{commandId}": {
+            "get": {
+                "description": "Get Command by commandId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "commandId",
+                        "name": "commandId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_command.Command"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel Command by commandId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "cancel Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "commandId",
+                        "name": "commandId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/command_template/": {
             "get": {
                 "description": "Get all command templates",
@@ -109,6 +245,43 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "execute command templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "command_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send command body",
+                        "name": "sendCommand",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command_template.SendCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "command id",
                         "schema": {
                             "type": "string"
                         }
@@ -496,6 +669,142 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/task/": {
+            "get": {
+                "description": "Get all tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show all tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.Task"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "get task history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.Task"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/{taskId}": {
+            "get": {
+                "description": "Get task by taskId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "taskId",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task.Task"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel task by taskId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "cancel task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "taskId",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/task_template/": {
             "get": {
                 "description": "Get all task templates",
@@ -614,6 +923,43 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "execute task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send task body",
+                        "name": "sendTask",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task_template.SendTask"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "task id",
                         "schema": {
                             "type": "string"
                         }
@@ -746,6 +1092,93 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/time_template/checkTime/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Check time templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "check time body",
+                        "name": "checkTime",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/time_template.CheckTime"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/time_template/history/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "get time history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time.PublishTime"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/time_template/{id}": {
             "get": {
                 "description": "Get time templates by id",
@@ -806,6 +1239,74 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "command_template.SendCommand": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
+                }
+            }
+        },
+        "e_command.Command": {
+            "type": "object",
+            "properties": {
+                "command_id": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "resp_data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "template": {
+                    "$ref": "#/definitions/e_command_template.CommandTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "e_command_template.CommandTemplate": {
             "type": "object",
             "properties": {
@@ -1142,7 +1643,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatum"
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
                 "time_data_id": {
                     "type": "integer"
@@ -1178,7 +1679,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatumCreate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
                 }
             }
         },
@@ -1210,114 +1711,64 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_schedule.TimeDatumUpdate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
                 }
             }
         },
-        "e_schedule.TimeDatum": {
+        "e_task.Status": {
             "type": "object",
             "properties": {
-                "condition_type": {
+                "failed_command_id": {
                     "type": "string"
                 },
-                "end_date": {
-                    "type": "string"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "interval_seconds": {
+                "failed_command_template_id": {
                     "type": "integer"
                 },
-                "repeat_type": {
+                "failed_message": {
                     "type": "string"
                 },
-                "start_date": {
-                    "type": "string"
+                "stages": {
+                    "type": "integer"
                 },
-                "start_time": {
-                    "type": "string"
-                },
-                "t_condition": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                "task_status": {
+                    "type": "integer"
                 }
             }
         },
-        "e_schedule.TimeDatumCreate": {
+        "e_task.Task": {
             "type": "object",
-            "required": [
-                "end_time",
-                "start_date",
-                "start_time"
-            ],
             "properties": {
-                "condition_type": {
+                "from": {
                     "type": "string"
                 },
-                "end_date": {
+                "message": {
                     "type": "string"
                 },
-                "end_time": {
+                "status": {
+                    "$ref": "#/definitions/e_task.Status"
+                },
+                "task_id": {
                     "type": "string"
                 },
-                "interval_seconds": {
+                "template": {
+                    "$ref": "#/definitions/e_task_template.TaskTemplate"
+                },
+                "template_id": {
                     "type": "integer"
                 },
-                "repeat_type": {
+                "to": {
                     "type": "string"
                 },
-                "start_date": {
+                "token": {
                     "type": "string"
                 },
-                "start_time": {
+                "trigger_account": {
                     "type": "string"
                 },
-                "t_condition": {
+                "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "e_schedule.TimeDatumUpdate": {
-            "type": "object",
-            "required": [
-                "end_time",
-                "repeat_type",
-                "start_date",
-                "start_time",
-                "t_condition"
-            ],
-            "properties": {
-                "condition_type": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "interval_seconds": {
-                    "type": "integer"
-                },
-                "repeat_type": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "t_condition": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 }
             }
@@ -1506,11 +1957,46 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatum": {
+        "e_time.PublishTime": {
+            "type": "object",
+            "properties": {
+                "is_time": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "template": {
+                    "$ref": "#/definitions/e_time_template.TimeTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "e_time_data.TimeDatum": {
             "type": "object",
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1522,7 +2008,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1538,17 +2024,16 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatumCreate": {
+        "e_time_data.TimeDatumCreate": {
             "type": "object",
             "required": [
                 "end_time",
                 "start_date",
-                "start_time",
-                "t_condition"
+                "start_time"
             ],
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1560,7 +2045,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1576,7 +2061,7 @@ const docTemplate = `{
                 }
             }
         },
-        "e_time_template.TimeDatumUpdate": {
+        "e_time_data.TimeDatumUpdate": {
             "type": "object",
             "required": [
                 "end_time",
@@ -1587,7 +2072,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "condition_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "end_date": {
                     "type": "string"
@@ -1599,7 +2084,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "repeat_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "start_date": {
                     "type": "string"
@@ -1628,7 +2113,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatum"
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1646,7 +2131,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatumCreate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
                 }
             }
         },
@@ -1663,7 +2148,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time_data": {
-                    "$ref": "#/definitions/e_time_template.TimeDatumUpdate"
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
                 }
             }
         },
@@ -1690,6 +2175,44 @@ const docTemplate = `{
                 "example": {
                     "type": "string",
                     "example": "asdfasdf"
+                }
+            }
+        },
+        "task_template.SendTask": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
+                }
+            }
+        },
+        "time_template.CheckTime": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

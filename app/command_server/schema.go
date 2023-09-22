@@ -48,19 +48,11 @@ var (
 	sliceCalculate = []string{"include", "exclude"}
 )
 
-type SendCommand struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
-}
-
-var CannotFindTemplate = util.MyErr("can not find Command template")
 var CommandCanceled = util.MyErr("Command has been canceled")
 var CommandTimeout = util.MyErr("Command not match monitor and timeout")
 var HttpTimeout = util.MyErr("http request timeout")
 var HttpCodeErr = util.MyErr("http request status code error")
 var ConditionFailed = util.MyErr("monitor condition is not suitable now")
-var SendToRedisErr = util.MyErr("send task to redis cannot format")
+var SendToRedisErr = util.MyErr("send command to redis cannot format")
 var CommandNotFind = util.MyErr("can not find command")
 var CommandCannotCancel = util.MyErr("command cannot be canceled")
