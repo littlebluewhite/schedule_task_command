@@ -15,7 +15,6 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
-	"time"
 )
 
 type Operate struct {
@@ -274,10 +273,7 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		task.Message = &CannotFindTemplate
 		return
 	}
-	from := time.Now()
 	tt := e_task_template.Format(ttList)[0]
-	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
-	task.From = from
 	task.Template = tt
 	return
 }

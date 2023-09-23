@@ -127,10 +127,7 @@ func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate)
 		task.Message = &e_command_template.CannotFindTemplate
 		return
 	}
-	from := time.Now()
 	tt := e_task_template.Format([]model.TaskTemplate{mt})[0]
-	task.TaskId = fmt.Sprintf("%v_%v_%v", st.TemplateId, tt.Name, from.UnixMicro())
-	task.From = from
 	task.Template = tt
 	return
 }

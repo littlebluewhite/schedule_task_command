@@ -91,14 +91,19 @@ func (c *CommandServer) GetList() []e_command.Command {
 func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (commandId string, err error) {
 	// publish to redis
 	_ = c.rdbPub(com)
-	if err = com.Message; err != nil {
+	if com.Message != nil {
+		err = com.Message
 		c.l.Error().Println(err)
 		return
 	}
+	from := time.Now()
+	com.From = from
+	commandId = fmt.Sprintf("%v_%v_%v_%v",
+		com.TemplateId, com.Template.Name, com.Template.Protocol, from.UnixMicro())
+	com.CommandId = commandId
 	go func() {
 		c.doCommand(ctx, com)
 	}()
-	commandId = com.CommandId
 	return
 }
 
@@ -109,6 +114,10 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 		c.l.Error().Println(com.Message)
 		return com
 	}
+	from := time.Now()
+	com.From = from
+	com.CommandId = fmt.Sprintf("%v_%v_%v_%v",
+		com.TemplateId, com.Template.Name, com.Template.Protocol, from.UnixMicro())
 	ch := make(chan e_command.Command)
 	go func() {
 		ch <- c.doCommand(ctx, com)
