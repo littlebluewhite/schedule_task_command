@@ -85,7 +85,7 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 }
 
 func (t *TaskServer[T]) ReadMap() map[string]e_task.Task {
-	t.chs.mu.RLocker()
+	t.chs.mu.RLock()
 	defer t.chs.mu.RUnlock()
 	return t.t
 }
