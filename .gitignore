@@ -2,3 +2,4 @@
 /.idea/
 /gin/group/time_template/log/
 /docker/
+/app/command_server/log/

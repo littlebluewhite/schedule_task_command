@@ -74,7 +74,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 }
 
 func (c *CommandServer) ReadMap() map[string]e_command.Command {
-	c.chs.mu.RLocker()
+	c.chs.mu.RLock()
 	defer c.chs.mu.RUnlock()
 	return c.c
 }
@@ -154,9 +154,8 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 }
 
 func (c *CommandServer) CancelCommand(commandId string) error {
-	c.chs.mu.RLock()
-	com, ok := c.c[commandId]
-	c.chs.mu.RUnlock()
+	m := c.ReadMap()
+	com, ok := m[commandId]
 	if !ok {
 		return CommandNotFind
 	}
@@ -166,15 +165,6 @@ func (c *CommandServer) CancelCommand(commandId string) error {
 		com.CancelFunc()
 	}
 	return nil
-}
-
-func (c *CommandServer) ShowCommandList() (cs []e_command.Command) {
-	c.chs.mu.RLock()
-	defer c.chs.mu.RUnlock()
-	for _, item := range c.c {
-		cs = append(cs, item)
-	}
-	return
 }
 
 func (c *CommandServer) removeFinishedCommand(ctx context.Context, s time.Duration) {
