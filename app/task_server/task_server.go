@@ -104,13 +104,16 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	_ = t.rdbPub(task)
 	if task.Message != nil {
 		err = task.Message
-		t.l.Error().Println(task.Message)
+		t.l.Error().Println(err)
 		return
 	}
+	from := time.Now()
+	task.From = from
+	taskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
+	taskId = task.TaskId
 	go func() {
 		t.doTask(ctx, task)
 	}()
-	taskId = task.TaskId
 	return
 }
 
@@ -121,6 +124,9 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 		t.l.Error().Println(task.Message)
 		return task
 	}
+	from := time.Now()
+	task.From = from
+	task.TaskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
 	ch := make(chan e_task.Task)
 	go func() {
 		t.doTask(ctx, task)

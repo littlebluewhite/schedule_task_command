@@ -162,10 +162,7 @@ func (t *TaskServer[T]) generateCommand(sc e_command_template.SendCommandTemplat
 		c.Message = &e_command_template.CannotFindTemplate
 		return
 	}
-	from := time.Now()
 	ct := e_command_template.Format([]model.CommandTemplate{mt})[0]
-	c.CommandId = fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
-	c.From = from
 	c.Template = ct
 	return
 }

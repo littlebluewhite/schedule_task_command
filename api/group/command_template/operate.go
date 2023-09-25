@@ -14,7 +14,6 @@ import (
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
-	"time"
 )
 
 type Operate struct {
@@ -184,10 +183,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		c.Message = &e_command_template.CannotFindTemplate
 		return
 	}
-	from := time.Now()
 	ct := e_command_template.Format(cList)[0]
-	c.CommandId = fmt.Sprintf("%v_%v_%v_%v", sc.TemplateId, ct.Name, ct.Protocol, from.UnixMicro())
-	c.From = from
 	c.Template = ct
 
 	return
