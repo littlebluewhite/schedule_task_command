@@ -38,7 +38,6 @@ func TestCommandServer(t *testing.T) {
 			Token:   "test2",
 			Message: &e,
 		}
-		ctx := context.Background()
 		commandId, err := cs.ExecuteReturnId(ctx, com)
 		require.Error(t, err)
 		require.Equal(t, commandId, "")
