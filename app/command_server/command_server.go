@@ -181,6 +181,7 @@ Loop1:
 					delete(c.c, cId)
 				}
 			}
+			c.chs.mu.Unlock()
 			time.Sleep(s)
 		}
 	}

@@ -661,7 +661,7 @@ info:
   title: Schedule-Task-Command swagger API
   version: "2.0"
 paths:
-  /api/Command/:
+  /api/command/:
     get:
       description: Get all commands
       produces:
@@ -676,7 +676,7 @@ paths:
       summary: Show all commands
       tags:
       - Command
-  /api/Command/{commandId}:
+  /api/command/{commandId}:
     delete:
       description: Cancel Command by commandId
       parameters:
@@ -713,7 +713,7 @@ paths:
       summary: Show Command
       tags:
       - Command
-  /api/Command/history:
+  /api/command/history:
     get:
       consumes:
       - application/json

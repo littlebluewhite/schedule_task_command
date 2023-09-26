@@ -20,6 +20,14 @@ func ToPub(c Command) (cp CommandPub) {
 	return
 }
 
+func ToPubSlice(cs []Command) []CommandPub {
+	cps := make([]CommandPub, 0, len(cs))
+	for _, c := range cs {
+		cps = append(cps, ToPub(c))
+	}
+	return cps
+}
+
 func S2Status(s *string) Status {
 	if s == nil {
 		return Prepared

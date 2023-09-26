@@ -14,6 +14,14 @@ func ToPub(t Task) (tp TaskPub) {
 	return
 }
 
+func ToPubSlice(ts []Task) []TaskPub {
+	tps := make([]TaskPub, 0, len(ts))
+	for _, t := range ts {
+		tps = append(tps, ToPub(t))
+	}
+	return tps
+}
+
 func S2Status(s *string) TStatus {
 	if s == nil {
 		return Prepared
