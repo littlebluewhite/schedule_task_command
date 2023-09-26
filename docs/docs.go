@@ -25,7 +25,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/Command/": {
+        "/api/command/": {
             "get": {
                 "description": "Get all commands",
                 "produces": [
@@ -48,7 +48,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/Command/history": {
+        "/api/command/history": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -105,7 +105,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/Command/{commandId}": {
+        "/api/command/{commandId}": {
             "get": {
                 "description": "Get Command by commandId",
                 "produces": [

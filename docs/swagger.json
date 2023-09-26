@@ -17,7 +17,7 @@
     },
     "host": "192.168.1.10:5487",
     "paths": {
-        "/api/Command/": {
+        "/api/command/": {
             "get": {
                 "description": "Get all commands",
                 "produces": [
@@ -40,7 +40,7 @@
                 }
             }
         },
-        "/api/Command/history": {
+        "/api/command/history": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -97,7 +97,7 @@
                 }
             }
         },
-        "/api/Command/{commandId}": {
+        "/api/command/{commandId}": {
             "get": {
                 "description": "Get Command by commandId",
                 "produces": [

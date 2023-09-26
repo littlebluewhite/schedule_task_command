@@ -33,13 +33,13 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Tags        Command
 // @Produce     json
 // @Success     200 {array} e_command.Command
-// @Router      /api/Command/ [get]
+// @Router      /api/command/ [get]
 func (h *Handler) GetCommands(c *fiber.Ctx) error {
 	commands, err := h.o.List()
 	if err != nil {
 		h.l.Error().Println("Error getting commands")
 	}
-	return c.Status(200).JSON(commands)
+	return c.Status(200).JSON(e_command.ToPubSlice(commands))
 }
 
 // GetCommandByCommandId swagger
@@ -49,7 +49,7 @@ func (h *Handler) GetCommands(c *fiber.Ctx) error {
 // @Produce     json
 // @Param       commandId  path     string true "commandId"
 // @Success     200 {object} e_command.Command
-// @Router      /api/Command/{commandId} [get]
+// @Router      /api/command/{commandId} [get]
 func (h *Handler) GetCommandByCommandId(c *fiber.Ctx) error {
 	commandId := c.Params("commandId")
 	if commandId == "" {
@@ -62,7 +62,7 @@ func (h *Handler) GetCommandByCommandId(c *fiber.Ctx) error {
 		h.l.Error().Println("GetCommandByCommandId: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(ht[0])
+	return c.Status(200).JSON(e_command.ToPub(ht[0]))
 }
 
 // CancelCommand swagger
@@ -72,7 +72,7 @@ func (h *Handler) GetCommandByCommandId(c *fiber.Ctx) error {
 // @Produce     json
 // @Param       commandId  path     string true "commandId"
 // @Success     200 {string} cancel successfully
-// @Router      /api/Command/{commandId} [Delete]
+// @Router      /api/command/{commandId} [Delete]
 func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 	commandId := c.Params("commandId")
 	if commandId == "" {
@@ -97,7 +97,7 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 // @Param       start  query     string true "start time"
 // @Param       stop  query     string false "stop time"
 // @Success 200 {array} e_command.Command
-// @Router  /api/Command/history [get]
+// @Router  /api/command/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	templateId := c.Params("template_id")
 	status := c.Params("status")

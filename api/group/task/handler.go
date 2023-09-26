@@ -39,7 +39,7 @@ func (h *Handler) GetTasks(c *fiber.Ctx) error {
 	if err != nil {
 		h.l.Error().Println("Error getting tasks")
 	}
-	return c.Status(200).JSON(tasks)
+	return c.Status(200).JSON(e_task.ToPubSlice(tasks))
 }
 
 // GetTaskByTaskId swagger
@@ -62,7 +62,7 @@ func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
 		h.l.Error().Println("GetTaskByTaskId: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(ht[0])
+	return c.Status(200).JSON(e_task.ToPub(ht[0]))
 }
 
 // CancelTask swagger
@@ -110,5 +110,5 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	if err != nil {
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(data)
+	return c.Status(200).JSON(e_task.ToPubSlice(data))
 }
