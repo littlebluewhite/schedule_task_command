@@ -12,7 +12,7 @@ type hOperate interface {
 	List() ([]e_task.Task, error)
 	Find(taskIds []string) ([]e_task.Task, error)
 	Cancel(taskId string) error
-	GetHistory(templateId, status, start, stop string) ([]e_task.Task, error)
+	GetHistory(templateId, start, stop, status string) ([]e_task.TaskPub, error)
 }
 
 type Handler struct {
@@ -99,16 +99,16 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 // @Success 200 {array} e_task.Task
 // @Router  /api/task/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	templateId := c.Params("template_id")
-	status := c.Params("status")
+	templateId := c.Query("template_id")
+	status := c.Query("status")
 	start := c.Query("start")
 	if start == "" {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.GetHistory(templateId, status, start, stop)
+	data, err := h.o.GetHistory(templateId, start, stop, status)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(e_task.ToPubSlice(data))
+	return c.Status(200).JSON(data)
 }

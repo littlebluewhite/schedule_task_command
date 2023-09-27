@@ -157,7 +157,7 @@ Loop1:
 
 func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	ctx := context.Background()
-	jTask, err := json.Marshal(task)
+	jTask, err := json.Marshal(e_task.ToPub(task))
 	if err != nil {
 		panic(err)
 	}
@@ -172,7 +172,7 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	}
 }
 
-func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, status, start, stop string) (ht []e_task.Task, err error) {
+func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status string) (ht []e_task.TaskPub, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -196,7 +196,7 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, status, start, stop stri
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {
-			var task e_task.Task
+			var task e_task.TaskPub
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &task); e != nil {
 				panic(e)

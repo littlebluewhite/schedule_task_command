@@ -12,13 +12,13 @@ func RegisterRouter(g group) {
 	log := logFile.NewLogFile("router", "command.log")
 	app := g.GetApp()
 
-	tt := app.Group("/command")
+	c := app.Group("/command")
 
 	h := NewHandler(o, log)
-	tt.Get("/", h.GetCommands)
-	tt.Get("/:commandId", h.GetCommandByCommandId)
-	tt.Delete("/:commandId", h.CancelCommand)
-	tt.Patch("/history", h.GetHistory)
+	c.Get("/", h.GetCommands)
+	c.Get("/history", h.GetHistory)
+	c.Get("/:commandId", h.GetCommandByCommandId)
+	c.Delete("/:commandId", h.CancelCommand)
 }
 
 type group interface {

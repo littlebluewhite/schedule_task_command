@@ -37,14 +37,14 @@ func main() {
 	httpsCommand := g.GenerateModel("https_command",
 		gen.FieldType("header", "json.RawMessage"),
 		gen.FieldType("params", "json.RawMessage"),
-		gen.FieldType("body", "*json.RawMessage"))
+		gen.FieldType("body", "json.RawMessage"))
 	websocketCommand := g.GenerateModel("websocket_command",
 		gen.FieldType("header", "json.RawMessage"))
 	mqttCommand := g.GenerateModel("mqtt_command",
 		gen.FieldType("header", "json.RawMessage"),
-		gen.FieldType("message", "*json.RawMessage"))
+		gen.FieldType("message", "json.RawMessage"))
 	redisCommand := g.GenerateModel("redis_command",
-		gen.FieldType("message", "*json.RawMessage"))
+		gen.FieldType("message", "json.RawMessage"))
 	mCondition := g.GenerateModel("m_condition")
 	monitor := g.GenerateModel("monitor", gen.FieldRelate(field.HasMany, "MConditions",
 		mCondition, &field.RelateConfig{
