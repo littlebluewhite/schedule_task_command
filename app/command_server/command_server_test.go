@@ -192,8 +192,10 @@ func TestReadHistory(t *testing.T) {
 	ctx := context.Background()
 	go func() { cs.Start(ctx, 2*time.Minute) }()
 	t.Run("test1", func(t *testing.T) {
-		hc, err := cs.ReadFromHistory("", "-50d", "", "")
+		hc, err := cs.ReadFromHistory("", "-50d", "", "Success")
 		require.NoError(t, err)
-		fmt.Println(hc)
+		for _, com := range hc {
+			require.Equal(t, e_command.Success, com.Status)
+		}
 	})
 }
