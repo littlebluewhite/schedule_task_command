@@ -80,17 +80,6 @@ func Format(ct []model.CommandTemplate) []CommandTemplate {
 func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 	result := make([]*model.CommandTemplate, 0, len(c))
 	for _, item := range c {
-		mResult := make([]model.MCondition, 0, len(item.Monitor.MConditions))
-		for _, m := range item.Monitor.MConditions {
-			i := model.MCondition{
-				Order:         m.Order,
-				CalculateType: m.CalculateType,
-				PreLogicType:  m.PreLogicType,
-				Value:         m.Value,
-				SearchRule:    m.SearchRule,
-			}
-			mResult = append(mResult, i)
-		}
 		i := model.CommandTemplate{
 			Name:        item.Name,
 			Protocol:    item.Protocol,
@@ -136,6 +125,17 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 			}
 		}
 		if item.Monitor != nil {
+			mResult := make([]model.MCondition, 0, len(item.Monitor.MConditions))
+			for _, m := range item.Monitor.MConditions {
+				i := model.MCondition{
+					Order:         m.Order,
+					CalculateType: m.CalculateType,
+					PreLogicType:  m.PreLogicType,
+					Value:         m.Value,
+					SearchRule:    m.SearchRule,
+				}
+				mResult = append(mResult, i)
+			}
 			i.Monitor = &model.Monitor{
 				StatusCode:  item.Monitor.StatusCode,
 				Interval:    item.Monitor.Interval,

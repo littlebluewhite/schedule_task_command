@@ -133,7 +133,6 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 
 	com.Status = e_command.Process
 	com.CancelFunc = cancel
-
 	// write command
 	c.writeCommand(com)
 
@@ -189,9 +188,14 @@ Loop1:
 
 func (c *CommandServer) writeToHistory(com e_command.Command) {
 	ctx := context.Background()
+	jCom, err := json.Marshal(e_command.ToPub(com))
+	if err != nil {
+		panic(err)
+	}
+	templateId := fmt.Sprintf("%d", com.TemplateId)
 	p := influxdb2.NewPoint("command_history",
-		map[string]string{"command_id": com.CommandId, "status": com.Status.String()},
-		map[string]interface{}{"data": com},
+		map[string]string{"command_template_id": templateId, "status": com.Status.String()},
+		map[string]interface{}{"data": jCom},
 		com.From,
 	)
 	if err := c.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
@@ -199,7 +203,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	}
 }
 
-func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (hc []e_command.Command, err error) {
+func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status string) (hc []e_command.CommandPub, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -209,17 +213,21 @@ func (c *CommandServer) ReadFromHistory(commandId, start, stop, status string) (
 	if status != "" {
 		statusValue = fmt.Sprintf(`|> filter(fn: (r) => r.status == "%s")`, status)
 	}
+	comTemplateValue := ""
+	if comTemplateId != "" {
+		comTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.task_template_id == "%s")`, comTemplateId)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "command_history")
-|> filter(fn: (r) => r.command_id == "%s")
 |> filter(fn: (r) => r._field == "data")
 %s
-`, start, stopValue, commandId, statusValue)
+%s
+`, start, stopValue, comTemplateValue, statusValue)
 	result, err := c.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {
-			var com e_command.Command
+			var com e_command.CommandPub
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &com); e != nil {
 				panic(e)

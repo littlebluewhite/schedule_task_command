@@ -13,7 +13,7 @@ type taskServer interface {
 	GetList() []e_task.Task
 	ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task
 	ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error)
-	ReadFromHistory(taskTemplateId, status, start, stop string) ([]e_task.Task, error)
+	ReadFromHistory(taskTemplateId, status, start, stop string) ([]e_task.TaskPub, error)
 }
 
 type timeServer interface {

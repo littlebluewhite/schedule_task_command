@@ -12,12 +12,12 @@ const TableNameMqttCommand = "mqtt_command"
 
 // MqttCommand mapped from table <mqtt_command>
 type MqttCommand struct {
-	ID                int32            `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	CommandTemplateID *int32           `gorm:"column:command_template_id" json:"command_template_id"`
-	Topic             string           `gorm:"column:topic;not null" json:"topic"`
-	Header            json.RawMessage  `gorm:"column:header;default:json_array()" json:"header"`
-	Message           *json.RawMessage `gorm:"column:message" json:"message"`
-	Type              string           `gorm:"column:type;not null" json:"type"`
+	ID                int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	CommandTemplateID *int32          `gorm:"column:command_template_id" json:"command_template_id"`
+	Topic             string          `gorm:"column:topic;not null" json:"topic"`
+	Header            json.RawMessage `gorm:"column:header;default:json_array()" json:"header"`
+	Message           json.RawMessage `gorm:"column:message" json:"message"`
+	Type              string          `gorm:"column:type;not null" json:"type"`
 }
 
 // TableName MqttCommand's table name

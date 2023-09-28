@@ -12,13 +12,13 @@ const TableNameRedisCommand = "redis_command"
 
 // RedisCommand mapped from table <redis_command>
 type RedisCommand struct {
-	ID                int32            `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	CommandTemplateID *int32           `gorm:"column:command_template_id" json:"command_template_id"`
-	Password          *string          `gorm:"column:password" json:"password"`
-	Db                *int32           `gorm:"column:db" json:"db"`
-	Topic             *string          `gorm:"column:topic" json:"topic"`
-	Message           *json.RawMessage `gorm:"column:message" json:"message"`
-	Type              string           `gorm:"column:type;not null" json:"type"`
+	ID                int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	CommandTemplateID *int32          `gorm:"column:command_template_id" json:"command_template_id"`
+	Password          *string         `gorm:"column:password" json:"password"`
+	Db                *int32          `gorm:"column:db" json:"db"`
+	Topic             *string         `gorm:"column:topic" json:"topic"`
+	Message           json.RawMessage `gorm:"column:message" json:"message"`
+	Type              string          `gorm:"column:type;not null" json:"type"`
 }
 
 // TableName RedisCommand's table name

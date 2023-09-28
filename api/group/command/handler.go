@@ -12,7 +12,7 @@ type hOperate interface {
 	List() ([]e_command.Command, error)
 	Find(commandIds []string) ([]e_command.Command, error)
 	Cancel(commandId string) error
-	GetHistory(templateId, status, start, stop string) ([]e_command.Command, error)
+	GetHistory(templateId, status, start, stop string) ([]e_command.CommandPub, error)
 }
 
 type Handler struct {
@@ -99,14 +99,14 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 // @Success 200 {array} e_command.Command
 // @Router  /api/command/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	templateId := c.Params("template_id")
-	status := c.Params("status")
+	templateId := c.Query("template_id")
+	status := c.Query("status")
 	start := c.Query("start")
 	if start == "" {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.GetHistory(templateId, status, start, stop)
+	data, err := h.o.GetHistory(templateId, start, stop, status)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

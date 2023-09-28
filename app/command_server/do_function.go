@@ -61,7 +61,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	if h.Body != nil {
 		switch *h.BodyType {
 		case "json":
-			body = bytes.NewBuffer(*h.Body)
+			body = bytes.NewBuffer(h.Body)
 			contentType = "application/json"
 		case "form_data":
 			//TODO form data body

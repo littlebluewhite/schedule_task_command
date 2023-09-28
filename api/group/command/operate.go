@@ -47,12 +47,12 @@ func (o *Operate) Cancel(commandId string) error {
 	return nil
 }
 
-func (o *Operate) GetHistory(templateId, status, start, stop string) ([]e_command.Command, error) {
+func (o *Operate) GetHistory(templateId, start, stop, status string) ([]e_command.CommandPub, error) {
 	s := e_command.S2Status(&status)
 	if s != e_command.Success && s != e_command.Failure && s != e_command.Cancel {
 		return nil, HistoryStatusErr
 	}
-	ht, e := o.commandS.ReadFromHistory(templateId, status, start, stop)
+	ht, e := o.commandS.ReadFromHistory(templateId, start, stop, status)
 	if e != nil {
 		return nil, e
 	}
