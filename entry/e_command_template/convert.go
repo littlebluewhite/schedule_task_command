@@ -7,10 +7,11 @@ import (
 func Format(ct []model.CommandTemplate) []CommandTemplate {
 	result := make([]CommandTemplate, 0, len(ct))
 	for _, item := range ct {
+		p := item.Protocol
 		i := CommandTemplate{
 			ID:          item.ID,
 			Name:        item.Name,
-			Protocol:    item.Protocol,
+			Protocol:    S2Protocol(&p),
 			Timeout:     item.Timeout,
 			Description: item.Description,
 			Host:        item.Host,
@@ -20,13 +21,14 @@ func Format(ct []model.CommandTemplate) []CommandTemplate {
 			Tags:        item.Tags,
 		}
 		if item.Http != nil {
+			method := item.Http.Method
 			i.Http = &HTTPSCommand{
-				Method:            item.Http.Method,
+				Method:            S2HTTPMethod(&method),
 				URL:               item.Http.URL,
 				AuthorizationType: item.Http.AuthorizationType,
 				Params:            item.Http.Params,
 				Header:            item.Http.Header,
-				BodyType:          item.Http.BodyType,
+				BodyType:          S2BodyType(item.Http.BodyType),
 				Body:              item.Http.Body,
 			}
 		}
@@ -82,7 +84,7 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 	for _, item := range c {
 		i := model.CommandTemplate{
 			Name:        item.Name,
-			Protocol:    item.Protocol,
+			Protocol:    item.Protocol.String(),
 			Timeout:     item.Timeout,
 			Description: item.Description,
 			Host:        item.Host,
@@ -90,13 +92,19 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 			Tags:        item.Tags,
 		}
 		if item.Http != nil {
+			var bodyType *string
+			if *bodyType == "" {
+				bodyType = nil
+			} else {
+				*bodyType = item.Http.BodyType.String()
+			}
 			i.Http = &model.HTTPSCommand{
-				Method:            item.Http.Method,
+				Method:            item.Http.Method.String(),
 				URL:               item.Http.URL,
 				AuthorizationType: item.Http.AuthorizationType,
 				Params:            item.Http.Params,
 				Header:            item.Http.Header,
-				BodyType:          item.Http.BodyType,
+				BodyType:          bodyType,
 				Body:              item.Http.Body,
 			}
 		}
@@ -145,4 +153,64 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 		result = append(result, &i)
 	}
 	return result
+}
+
+func S2Protocol(s *string) Protocol {
+	if s == nil {
+		return Http
+	}
+	switch *s {
+	case "http":
+		return Http
+	case "websocket":
+		return Websocket
+	case "mqtt":
+		return Mqtt
+	case "redis_topic":
+		return RedisTopic
+	default:
+		return Http
+	}
+}
+
+func S2HTTPMethod(s *string) HTTPMethod {
+	if s == nil {
+		return GET
+	}
+	switch *s {
+	case "GET":
+		return GET
+	case "POST":
+		return POST
+	case "PATCH":
+		return PATCH
+	case "PUT":
+		return PUT
+	case "DELETE":
+		return DELETE
+	default:
+		return GET
+	}
+}
+
+func S2BodyType(s *string) BodyType {
+	if s == nil {
+		return BodyTypeNone
+	}
+	switch *s {
+	case "text":
+		return Text
+	case "html":
+		return HTML
+	case "xml":
+		return XML
+	case "form_data":
+		return FormData
+	case "x_www_form_urlencoded":
+		return XWWWFormUrlencoded
+	case "json":
+		return Json
+	default:
+		return BodyTypeNone
+	}
 }

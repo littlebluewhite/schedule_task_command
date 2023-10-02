@@ -1,6 +1,10 @@
 package e_task
 
 func ToPub(t Task) (tp TaskPub) {
+	m := ""
+	if t.Message != nil {
+		m = t.Message.Error()
+	}
 	tp.TaskId = t.TaskId
 	tp.Token = t.Token
 	tp.From = t.From
@@ -8,7 +12,7 @@ func ToPub(t Task) (tp TaskPub) {
 	tp.TriggerFrom = t.TriggerFrom
 	tp.TriggerAccount = t.TriggerAccount
 	tp.Status = t.Status
-	tp.Message = t.Message.Error()
+	tp.Message = m
 	tp.TemplateID = t.TemplateId
 	tp.Template = t.Template
 	return

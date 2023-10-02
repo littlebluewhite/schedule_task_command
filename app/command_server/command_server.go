@@ -127,7 +127,7 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 }
 
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
-	ctx, cancel := context.WithTimeout(context.Background(),
+	ctx, cancel := context.WithTimeout(ctx,
 		time.Duration(com.Template.Timeout)*time.Millisecond)
 	defer cancel()
 

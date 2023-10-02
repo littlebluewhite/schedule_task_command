@@ -110,7 +110,7 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	from := time.Now()
 	task.From = from
 	taskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
-	taskId = task.TaskId
+	task.TaskId = taskId
 	go func() {
 		t.doTask(ctx, task)
 	}()
@@ -129,10 +129,24 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	task.TaskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
 	ch := make(chan e_task.Task)
 	go func() {
-		t.doTask(ctx, task)
+		ch <- t.doTask(ctx, task)
 	}()
 	task = <-ch
 	return task
+}
+
+func (t *TaskServer[T]) CancelTask(taskId string) error {
+	m := t.ReadMap()
+	task, ok := m[taskId]
+	if !ok {
+		return TaskNotFind
+	}
+	if task.Status.TStatus != e_task.Process {
+		return TaskCannotCancel
+	} else {
+		task.CancelFunc()
+	}
+	return nil
 }
 
 func (t *TaskServer[T]) removeFinishedTask(ctx context.Context, s time.Duration) {

@@ -76,7 +76,7 @@ func main() {
 	taskStage := g.GenerateModel("task_stage",
 		gen.FieldRelate(field.BelongsTo, "CommandTemplate", commandTemplate, &field.RelateConfig{
 			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
-			RelatePointer: true,
+			RelatePointer: false,
 		}),
 		gen.FieldType("tags", "json.RawMessage"))
 	taskTemplate := g.GenerateModel("task_template",

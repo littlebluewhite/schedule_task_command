@@ -19,13 +19,13 @@ type TaskTemplate struct {
 }
 
 type TaskStage struct {
-	ID                int32                               `json:"id"`
-	Name              string                              `json:"name"`
-	StageNumber       int32                               `json:"stage_number"`
-	Mode              string                              `json:"mode"`
-	CommandTemplateID int32                               `json:"command_template_id,omitempty"`
-	Tags              json.RawMessage                     `json:"tags"`
-	CommandTemplate   *e_command_template.CommandTemplate `json:"command_template,omitempty"`
+	ID                int32                              `json:"id"`
+	Name              string                             `json:"name"`
+	StageNumber       int32                              `json:"stage_number"`
+	Mode              Mode                               `json:"mode"`
+	CommandTemplateID int32                              `json:"command_template_id,omitempty"`
+	Tags              json.RawMessage                    `json:"tags"`
+	CommandTemplate   e_command_template.CommandTemplate `json:"command_template,omitempty"`
 }
 
 type TaskTemplateCreate struct {
@@ -38,7 +38,7 @@ type TaskTemplateCreate struct {
 type TaskStageCreate struct {
 	Name              string          `json:"name" binding:"required"`
 	StageNumber       int32           `json:"stage_number" binding:"required"`
-	Mode              string          `json:"mode" binding:"required"`
+	Mode              Mode            `json:"mode" binding:"required"`
 	CommandTemplateID int32           `json:"command_template_id"`
 	Tags              json.RawMessage `json:"tags"`
 }
@@ -46,29 +46,44 @@ type TaskStageCreate struct {
 type TaskTemplateUpdate struct {
 	ID       int32             `json:"id" binding:"required"`
 	Name     *string           `json:"name"`
-	Variable *json.RawMessage  `json:"variable"`
+	Variable json.RawMessage   `json:"variable"`
 	Stages   []TaskStageUpdate `json:"stages"`
-	Tags     *json.RawMessage  `json:"tags"`
+	Tags     json.RawMessage   `json:"tags"`
 }
 
 type TaskStageUpdate struct {
-	ID                int32            `json:"id"`
-	Name              *string          `json:"name" binding:"required"`
-	StageNumber       *int32           `json:"stage_number" binding:"required"`
-	Mode              *string          `json:"mode" binding:"required"`
-	CommandTemplateID *int32           `json:"command_template_id"`
-	Tags              *json.RawMessage `json:"tags"`
+	ID                int32           `json:"id"`
+	Name              *string         `json:"name" binding:"required"`
+	StageNumber       *int32          `json:"stage_number" binding:"required"`
+	Mode              Mode            `json:"mode" binding:"required"`
+	CommandTemplateID *int32          `json:"command_template_id"`
+	Tags              json.RawMessage `json:"tags"`
 }
 
 type Mode int
 
 const (
-	monitor Mode = iota
-	execute
+	NoneMode Mode = iota
+	Monitor
+	Execute
 )
 
 func (m Mode) String() string {
-	return [...]string{"monitor", "execute"}[m]
+	return [...]string{"", "monitor", "execute"}[m]
+}
+
+func (m Mode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(m.String())
+}
+
+func (m *Mode) UnmarshalJSON(data []byte) error {
+	var tStatus string
+	err := json.Unmarshal(data, &tStatus)
+	if err != nil {
+		return err
+	}
+	*m = S2Mode(&tStatus)
+	return nil
 }
 
 func TaskTemplateNotFound(id int) util.MyErr {
