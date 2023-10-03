@@ -1,7 +1,6 @@
 package e_task
 
 import (
-	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -29,34 +28,6 @@ type Status struct {
 	FailedCommandId         string      `json:"failed_command_id"`
 	FailedCommandTemplateId int         `json:"failed_command_template_id"`
 	FailedMessage           *util.MyErr `json:"failed_message"`
-}
-
-type TStatus int
-
-const (
-	Prepared TStatus = iota
-	Process
-	Success
-	Failure
-	Cancel
-)
-
-func (s TStatus) String() string {
-	return [...]string{"Prepared", "Process", "Success", "Failure", "Cancel"}[s]
-}
-
-func (s TStatus) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
-}
-
-func (s *TStatus) UnmarshalJSON(data []byte) error {
-	var tStatus string
-	err := json.Unmarshal(data, &tStatus)
-	if err != nil {
-		return err
-	}
-	*s = S2Status(&tStatus)
-	return nil
 }
 
 type TaskStageC struct {
