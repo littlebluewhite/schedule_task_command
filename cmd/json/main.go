@@ -7,12 +7,27 @@ import (
 )
 
 func main() {
-	t := Command{Message: MyError("asdf")}
+	t := Command{
+		Message: MyError("asdf"),
+		Stages: map[int]string{
+			1: "sss",
+		},
+	}
 	tb, e := json.Marshal(t)
 	if e != nil {
 		fmt.Println(e)
 	}
 	fmt.Println(string(tb))
+
+	h := map[string]interface{}{
+		"1":   []string{"aaa"},
+		"ccc": 3,
+	}
+	hb, e := json.Marshal(h)
+	if e != nil {
+		fmt.Println(e)
+	}
+	fmt.Println(string(hb))
 }
 
 type Status int
@@ -41,6 +56,7 @@ type Command struct {
 	TriggerFrom    []string        `json:"trigger_from"`
 	TriggerAccount string          `json:"trigger_account"`
 	StatusCode     int             `json:"status_code"`
+	Stages         map[int]string  `json:"stages"`
 	RespData       json.RawMessage `json:"resp_data"`
 	Status         Status          `json:"status"`
 	Message        error           `json:"message"`

@@ -1,6 +1,7 @@
 package task_server
 
 import (
+	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -22,5 +23,13 @@ type stageMapValue struct {
 	execute []e_task_template.TaskStage
 }
 
+type comBuilder struct {
+	mode e_task_template.Mode
+	name string
+	com  e_command.Command
+}
+
 var TaskCanceled = util.MyErr("Task has been canceled")
 var SendToRedisErr = util.MyErr("send task to redis cannot format")
+var TaskNotFind = util.MyErr("can not find task")
+var TaskCannotCancel = util.MyErr("task cannot be canceled")

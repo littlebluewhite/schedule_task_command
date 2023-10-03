@@ -10,16 +10,16 @@ import (
 func TestGetStages(t *testing.T) {
 	t.Run("test1", func(t *testing.T) {
 		ts := []e_task_template.TaskStage{
-			{StageNumber: 2, Name: "a", Mode: e_task_template.Mode(1).String()},
-			{StageNumber: 5, Name: "b", Mode: e_task_template.Mode(1).String()},
-			{StageNumber: 1, Name: "c", Mode: e_task_template.Mode(0).String()},
-			{StageNumber: 2, Name: "d", Mode: e_task_template.Mode(0).String()},
-			{StageNumber: 1, Name: "e", Mode: e_task_template.Mode(0).String()},
-			{StageNumber: 1, Name: "f", Mode: e_task_template.Mode(1).String()},
-			{StageNumber: 1, Name: "g", Mode: e_task_template.Mode(0).String()},
-			{StageNumber: 3, Name: "h", Mode: e_task_template.Mode(0).String()},
-			{StageNumber: 1, Name: "i", Mode: e_task_template.Mode(1).String()},
-			{StageNumber: 6, Name: "j", Mode: e_task_template.Mode(0).String()},
+			{StageNumber: 2, Name: "a", Mode: e_task_template.Execute},
+			{StageNumber: 5, Name: "b", Mode: e_task_template.Execute},
+			{StageNumber: 1, Name: "c", Mode: e_task_template.Monitor},
+			{StageNumber: 2, Name: "d", Mode: e_task_template.Monitor},
+			{StageNumber: 1, Name: "e", Mode: e_task_template.Monitor},
+			{StageNumber: 1, Name: "f", Mode: e_task_template.Execute},
+			{StageNumber: 1, Name: "g", Mode: e_task_template.Monitor},
+			{StageNumber: 3, Name: "h", Mode: e_task_template.Monitor},
+			{StageNumber: 1, Name: "i", Mode: e_task_template.Execute},
+			{StageNumber: 6, Name: "j", Mode: e_task_template.Monitor},
 		}
 		gsr := getStages(ts)
 		fmt.Println(gsr.stageMap)

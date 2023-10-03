@@ -52,7 +52,7 @@ func (o *Operate) GetHistory(templateId, start, stop, status string) ([]e_task.T
 	if s != e_task.Success && s != e_task.Failure && s != e_task.Cancel {
 		return nil, HistoryStatusErr
 	}
-	ht, e := o.taskS.ReadFromHistory(templateId, status, start, stop)
+	ht, e := o.taskS.ReadFromHistory(templateId, start, stop, status)
 	if e != nil {
 		return nil, e
 	}

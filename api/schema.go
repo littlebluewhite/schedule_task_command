@@ -12,7 +12,7 @@ type TaskServer interface {
 	ReadMap() map[string]e_task.Task
 	GetList() []e_task.Task
 	ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error)
-	ReadFromHistory(taskTemplateId, status, start, stop string) ([]e_task.TaskPub, error)
+	ReadFromHistory(taskTemplateId, start, stop, status string) ([]e_task.TaskPub, error)
 	GetCommandServer() CommandServer
 }
 
@@ -25,7 +25,7 @@ type CommandServer interface {
 	ReadMap() map[string]e_command.Command
 	GetList() []e_command.Command
 	ExecuteReturnId(ctx context.Context, command e_command.Command) (commandId string, err error)
-	ReadFromHistory(commandTemplateId, status, start, stop string) ([]e_command.CommandPub, error)
+	ReadFromHistory(commandTemplateId, start, stop, status string) ([]e_command.CommandPub, error)
 }
 
 type ScheduleSer interface {

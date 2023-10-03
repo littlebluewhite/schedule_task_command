@@ -13,20 +13,15 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 		fmt.Printf("%+v\n", item)
 		sResult := make([]TaskStage, 0, len(item.Stages))
 		for _, s := range item.Stages {
-			var cTemplate *e_command_template.CommandTemplate
-			if s.CommandTemplate != nil {
-				cTemplate = &e_command_template.Format([]model.CommandTemplate{*s.CommandTemplate})[0]
-			} else {
-				cTemplate = nil
-			}
+			m := s.Mode
 			i := TaskStage{
 				ID:                s.ID,
 				Name:              s.Name,
 				StageNumber:       s.StageNumber,
-				Mode:              s.Mode,
+				Mode:              S2Mode(&m),
 				CommandTemplateID: s.CommandTemplateID,
 				Tags:              s.Tags,
-				CommandTemplate:   cTemplate,
+				CommandTemplate:   e_command_template.Format([]model.CommandTemplate{s.CommandTemplate})[0],
 			}
 			sResult = append(sResult, i)
 		}
@@ -52,7 +47,7 @@ func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 			i := model.TaskStage{
 				Name:              s.Name,
 				StageNumber:       s.StageNumber,
-				Mode:              s.Mode,
+				Mode:              s.Mode.String(),
 				CommandTemplateID: s.CommandTemplateID,
 				Tags:              s.Tags,
 			}
@@ -80,10 +75,10 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 			tt.Name = *u.Name
 		}
 		if u.Variable != nil {
-			tt.Variable = *u.Variable
+			tt.Variable = u.Variable
 		}
 		if u.Tags != nil {
-			tt.Tags = *u.Tags
+			tt.Tags = u.Tags
 		}
 		sId := make(map[int32]model.TaskStage)
 		for _, s := range tt.Stages {
@@ -103,14 +98,14 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 				if s.StageNumber != nil {
 					ts.StageNumber = *s.StageNumber
 				}
-				if s.Mode != nil {
-					ts.Mode = *s.Mode
+				if s.Mode != NoneMode {
+					ts.Mode = s.Mode.String()
 				}
 				if s.CommandTemplateID != nil {
 					ts.CommandTemplateID = *s.CommandTemplateID
 				}
 				if s.Tags != nil {
-					ts.Tags = *s.Tags
+					ts.Tags = s.Tags
 				}
 				sResult = append(sResult, ts)
 			}
@@ -119,4 +114,18 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 		result = append(result, &tt)
 	}
 	return
+}
+
+func S2Mode(s *string) Mode {
+	if s == nil {
+		return NoneMode
+	}
+	switch *s {
+	case "monitor":
+		return Monitor
+	case "execute":
+		return Execute
+	default:
+		return NoneMode
+	}
 }

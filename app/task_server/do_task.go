@@ -2,9 +2,7 @@ package task_server
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_task"
@@ -32,15 +30,15 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		t.writeTask(task)
 
 		s := gsr.stageMap[sn]
-		task = t.doStages(ctx, s, task)
-		if task.Status.FailedCommandId != "" {
-			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d", task.TaskId, sn))
+		task = t.doOneStage(ctx, s, task)
+		if task.Status.FailedMessage != nil {
+			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d\n", task.TaskId, sn))
 			task.Message = &e
 			break
 		}
 	}
 	// no wrong, is success
-	if task.Status.FailedCommandId == "" {
+	if task.Message == nil {
 		task.Status.TStatus = e_task.Success
 	}
 
@@ -73,9 +71,9 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 		monitor := gsr.stageMap[sn].monitor
 		execute := gsr.stageMap[sn].execute
 		switch stages[i].Mode {
-		case e_task_template.Mode(0).String():
+		case e_task_template.Monitor:
 			monitor = append(monitor, stages[i])
-		case e_task_template.Mode(1).String():
+		case e_task_template.Execute:
 			execute = append(execute, stages[i])
 		default:
 		}
@@ -87,82 +85,71 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 	return
 }
 
-func (t *TaskServer[T]) doStages(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
-	select {
-	case <-ctx.Done():
-		if errors.Is(ctx.Err(), context.Canceled) {
-			task.Status.TStatus = e_task.Cancel
-			task.Message = &TaskCanceled
-		}
-		return task
-	default:
-		comNumber := len(sv.monitor) + len(sv.execute)
-		ch := make(chan e_command.Command, comNumber)
-		defer close(ch)
+func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
+	comNumber := len(sv.monitor) + len(sv.execute)
+	ch := make(chan comBuilder, comNumber)
+	defer close(ch)
 
-		triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
-		for _, stage := range sv.monitor {
-			go func(stage e_task_template.TaskStage) {
-				sc := e_command_template.SendCommandTemplate{
-					TemplateId:     int(stage.CommandTemplateID),
-					TriggerFrom:    triggerFrom,
-					TriggerAccount: task.TriggerAccount,
-					Token:          task.Token,
-				}
-				com := t.generateCommand(sc)
-				com = t.cs.ExecuteWait(ctx, com)
-				ch <- com
-			}(stage)
-		}
-		// wait 500 milliseconds to ExecuteReturnId "ExecuteReturnId command"
-		time.Sleep(500 * time.Millisecond)
-		for _, stage := range sv.execute {
-			go func(stage e_task_template.TaskStage) {
-				sc := e_command_template.SendCommandTemplate{
-					TemplateId:     int(stage.CommandTemplateID),
-					TriggerFrom:    triggerFrom,
-					TriggerAccount: task.TriggerAccount,
-					Token:          task.Token,
-				}
-				com := t.generateCommand(sc)
-				com = t.cs.ExecuteWait(ctx, com)
-				ch <- com
-			}(stage)
-		}
-		for i := 0; i < comNumber; i++ {
-			select {
-			case com := <-ch:
-				if com.Status != e_command.Success {
-					task.Status.TStatus = e_task.TStatus(com.Status)
-					task.Status.FailedCommandId = com.CommandId
-					task.Status.FailedCommandTemplateId = com.TemplateId
-					task.Status.FailedMessage = com.Message
-					return task
-				}
+	triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
+	for _, stage := range sv.monitor {
+		go func(stage e_task_template.TaskStage) {
+			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
+				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
+			com = t.cs.ExecuteWait(ctx, com)
+			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com}
+		}(stage)
+	}
+	// wait 500 milliseconds to Execute executed command
+	time.Sleep(500 * time.Millisecond)
+	for _, stage := range sv.execute {
+		go func(stage e_task_template.TaskStage) {
+			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
+				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
+			com = t.cs.ExecuteWait(ctx, com)
+			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com}
+		}(stage)
+	}
+	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
+	ets := make([]e_task.TaskStage, 0, len(sv.execute))
+	for i := 0; i < comNumber; i++ {
+		select {
+		case comB := <-ch:
+			com := comB.com
+			ts := e_task.TaskStage{
+				Name:       comB.name,
+				CommandId:  com.CommandId,
+				From:       com.From,
+				To:         com.To,
+				Status:     com.Status,
+				Message:    com.Message,
+				TemplateId: com.TemplateId,
+			}
+			switch comB.mode {
+			case e_task_template.Monitor:
+				mts = append(mts, ts)
+			case e_task_template.Execute:
+				ets = append(ets, ts)
+			}
+			if com.Status != e_command.Success {
+				task.Status.TStatus = e_task.TStatus(com.Status)
+				task.Status.FailedCommandId = com.CommandId
+				task.Status.FailedCommandTemplateId = com.TemplateId
+				task.Status.FailedMessage = com.Message
 			}
 		}
-		return task
 	}
+	task.Stages[task.Status.Stages] = e_task.TaskStageC{Execute: ets, Monitor: mts}
+	return task
 }
 
-func (t *TaskServer[T]) generateCommand(sc e_command_template.SendCommandTemplate) (c e_command.Command) {
+func (t *TaskServer[T]) ts2Com(templateId int, triggerFrom []string, triggerAccount string, token string,
+	comTemplate e_command_template.CommandTemplate) (c e_command.Command) {
 	c = e_command.Command{
-		TemplateId:     sc.TemplateId,
-		TriggerFrom:    sc.TriggerFrom,
-		TriggerAccount: sc.TriggerAccount,
-		Token:          sc.Token,
+		TemplateId:     templateId,
+		TriggerFrom:    triggerFrom,
+		TriggerAccount: triggerAccount,
+		Token:          token,
 	}
-	var cacheMap map[int]model.CommandTemplate
-	if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
-		cacheMap = x.(map[int]model.CommandTemplate)
-	}
-	mt, ok := cacheMap[sc.TemplateId]
-	if !ok {
-		c.Status = e_command.Failure
-		c.Message = &e_command_template.CannotFindTemplate
-		return
-	}
-	ct := e_command_template.Format([]model.CommandTemplate{mt})[0]
-	c.Template = ct
+	c.Template = comTemplate
 	return
 }

@@ -6,19 +6,6 @@ import (
 	"sync"
 )
 
-type Protocol int
-
-const (
-	https Protocol = iota
-	websocket
-	mqtt
-	redisTopic
-)
-
-func (p Protocol) String() string {
-	return [...]string{"http", "websocket", "mqtt", "redis_topic"}[p]
-}
-
 type chs struct {
 	rec chan e_command.Command
 	mu  *sync.RWMutex

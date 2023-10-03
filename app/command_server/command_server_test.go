@@ -71,7 +71,7 @@ func TestDoCommand(t *testing.T) {
 	go func() { cs.Start(ctx, 2*time.Minute) }()
 	t.Run("test1", func(t *testing.T) {
 		h1 := e_command_template.HTTPSCommand{
-			Method: "GET",
+			Method: e_command_template.GET,
 			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
 			Header: nil,
 		}
@@ -91,26 +91,25 @@ func TestDoCommand(t *testing.T) {
 			Token: "test",
 			Template: e_command_template.CommandTemplate{
 				Name:     "object_test",
-				Protocol: "http",
+				Protocol: e_command_template.Http,
 				Timeout:  10000,
 				Http:     &h1,
 				Monitor:  &m1,
 			},
 		}
 
-		bt := "json"
 		h2 := e_command_template.HTTPSCommand{
-			Method:   "PUT",
+			Method:   e_command_template.PUT,
 			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
 			Body:     []byte(`[{"id": 1,"value": "2"}]`),
-			BodyType: &bt,
+			BodyType: e_command_template.Json,
 		}
 		com2 := e_command.Command{
 			Token: "test",
 			Template: e_command_template.CommandTemplate{
 				Name:     "object_test",
-				Protocol: "http",
+				Protocol: e_command_template.Http,
 				Timeout:  10000,
 				Http:     &h2,
 			},
@@ -136,9 +135,9 @@ func TestDoCommand(t *testing.T) {
 		err := cs.CancelCommand(comId)
 		require.Error(t, err)
 	})
-	t.Run("test2", func(t *testing.T) {
+	t.Run("command cancel", func(t *testing.T) {
 		h := e_command_template.HTTPSCommand{
-			Method: "GET",
+			Method: e_command_template.GET,
 			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
 			Header: nil,
 		}
@@ -158,7 +157,7 @@ func TestDoCommand(t *testing.T) {
 			Token: "test",
 			Template: e_command_template.CommandTemplate{
 				Name:     "object_test",
-				Protocol: "http",
+				Protocol: e_command_template.Http,
 				Timeout:  10000,
 				Http:     &h,
 				Monitor:  &m,
@@ -184,6 +183,38 @@ func TestDoCommand(t *testing.T) {
 		time.Sleep(1 * time.Second)
 		err := cs.CancelCommand(comId)
 		require.Error(t, err)
+	})
+	t.Run("execute wait", func(t *testing.T) {
+		h := e_command_template.HTTPSCommand{
+			Method: e_command_template.GET,
+			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
+			Header: nil,
+		}
+		m := e_command_template.Monitor{
+			StatusCode: 200,
+			Interval:   1000,
+			MConditions: []e_command_template.MCondition{
+				{
+					Order:         0,
+					CalculateType: ">=",
+					SearchRule:    "root.[0]array.value",
+					Value:         "50",
+				},
+			},
+		}
+		com := e_command.Command{
+			Token: "test",
+			Template: e_command_template.CommandTemplate{
+				Name:     "object_test",
+				Protocol: e_command_template.Http,
+				Timeout:  3000,
+				Http:     &h,
+				Monitor:  &m,
+			},
+		}
+		com = cs.ExecuteWait(ctx, com)
+		fmt.Printf("%+v\n", com)
+		fmt.Printf("%+v\n", string(com.RespData))
 	})
 }
 

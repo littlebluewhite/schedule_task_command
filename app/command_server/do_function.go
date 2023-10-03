@@ -32,21 +32,23 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			return com
 		default:
 			switch com.Template.Protocol {
-			case https.String():
+			case e_command_template.Http:
 				com = c.doHttp(ctx, com)
-			case websocket.String():
-			case mqtt.String():
-			case redisTopic.String():
+			case e_command_template.Websocket:
+			case e_command_template.Mqtt:
+			case e_command_template.RedisTopic:
 			default:
 			}
 			if com.Template.Monitor == nil {
 				com.Status = e_command.Success
+				c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
 				return com
 			} else {
 				com = monitorData(com, *com.Template.Monitor)
 				if com.Status == e_command.Success {
 					return com
 				}
+				c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
 				time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Millisecond)
 			}
 		}
@@ -59,21 +61,21 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	h := com.Template.Http
 	var contentType string
 	if h.Body != nil {
-		switch *h.BodyType {
-		case "json":
+		switch h.BodyType {
+		case e_command_template.Json:
 			body = bytes.NewBuffer(h.Body)
 			contentType = "application/json"
-		case "form_data":
+		case e_command_template.FormData:
 			//TODO form data body
 			contentType = "multipart/form-data"
-		case "x_www_form_urlencoded":
+		case e_command_template.XWWWFormUrlencoded:
 			//TODO x_www_form_urlencoded body
 			contentType = "application/x-www-form-urlencoded"
 		default:
 		}
 	}
 	header := make([]httpHeader, 0, 20)
-	req, e := http.NewRequestWithContext(ctx, h.Method, h.URL, body)
+	req, e := http.NewRequestWithContext(ctx, h.Method.String(), h.URL, body)
 	if e != nil {
 		com.Status = e_command.Failure
 		com.Message = &HttpTimeout
@@ -92,12 +94,11 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	req.Header.Set("Content-Type", contentType)
 	client := &http.Client{}
 	var resp *http.Response
-	if resp1, e := client.Do(req); e != nil {
-		com.RespData = []byte{}
+	resp1, e := client.Do(req)
+	if e != nil {
 		c.l.Error().Printf("id: %s request failed", com.CommandId)
-	} else {
-		resp = resp1
 	}
+	resp = resp1
 	com.StatusCode = resp.StatusCode
 	if respBody1, e := io.ReadAll(resp.Body); e != nil {
 		com.RespData = []byte{}
@@ -111,7 +112,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 			c.l.Error().Println("Response body closed failed")
 		}
 	}()
-	c.l.Info().Printf("id: %s request status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
+	c.l.Info().Printf("id: %s \nrequest result: %s\n", com.CommandId, com.RespData)
 	return com
 }
 
