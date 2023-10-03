@@ -100,6 +100,7 @@ func (t *TaskServer[T]) GetList() []e_task.Task {
 }
 
 func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
+	task.Stages = map[int]e_task.TaskStageC{}
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
@@ -118,6 +119,7 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 }
 
 func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task {
+	task.Stages = map[int]e_task.TaskStageC{}
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {

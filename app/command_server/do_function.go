@@ -94,12 +94,11 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	req.Header.Set("Content-Type", contentType)
 	client := &http.Client{}
 	var resp *http.Response
-	if resp1, e := client.Do(req); e != nil {
-		com.RespData = []byte{}
+	resp1, e := client.Do(req)
+	if e != nil {
 		c.l.Error().Printf("id: %s request failed", com.CommandId)
-	} else {
-		resp = resp1
 	}
+	resp = resp1
 	com.StatusCode = resp.StatusCode
 	if respBody1, e := io.ReadAll(resp.Body); e != nil {
 		com.RespData = []byte{}

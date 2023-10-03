@@ -87,7 +87,7 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 
 func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
 	comNumber := len(sv.monitor) + len(sv.execute)
-	ch := make(chan e_command.Command, comNumber)
+	ch := make(chan comBuilder, comNumber)
 	defer close(ch)
 
 	triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
@@ -96,7 +96,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
 				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- com
+			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com}
 		}(stage)
 	}
 	// wait 500 milliseconds to Execute executed command
@@ -106,12 +106,30 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
 				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- com
+			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com}
 		}(stage)
 	}
+	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
+	ets := make([]e_task.TaskStage, 0, len(sv.execute))
 	for i := 0; i < comNumber; i++ {
 		select {
-		case com := <-ch:
+		case comB := <-ch:
+			com := comB.com
+			ts := e_task.TaskStage{
+				Name:       comB.name,
+				CommandId:  com.CommandId,
+				From:       com.From,
+				To:         com.To,
+				Status:     com.Status,
+				Message:    com.Message,
+				TemplateId: com.TemplateId,
+			}
+			switch comB.mode {
+			case e_task_template.Monitor:
+				mts = append(mts, ts)
+			case e_task_template.Execute:
+				ets = append(ets, ts)
+			}
 			if com.Status != e_command.Success {
 				task.Status.TStatus = e_task.TStatus(com.Status)
 				task.Status.FailedCommandId = com.CommandId
@@ -120,6 +138,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			}
 		}
 	}
+	task.Stages[task.Status.Stages] = e_task.TaskStageC{Execute: ets, Monitor: mts}
 	return task
 }
 

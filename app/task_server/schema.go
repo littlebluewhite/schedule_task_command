@@ -1,6 +1,7 @@
 package task_server
 
 import (
+	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -20,6 +21,12 @@ type getStagesResult struct {
 type stageMapValue struct {
 	monitor []e_task_template.TaskStage
 	execute []e_task_template.TaskStage
+}
+
+type comBuilder struct {
+	mode e_task_template.Mode
+	name string
+	com  e_command.Command
 }
 
 var TaskCanceled = util.MyErr("Task has been canceled")

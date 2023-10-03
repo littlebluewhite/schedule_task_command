@@ -286,6 +286,7 @@ func TestDoTask(t *testing.T) {
 		comM := ts.GetCommandServer().ReadMap()
 		fmt.Printf("tasks: %+v\n", task)
 		fmt.Printf("coms: %+v\n", comM)
+		require.Equal(t, e_task.Cancel, task.Status.TStatus)
 	})
 }
 
