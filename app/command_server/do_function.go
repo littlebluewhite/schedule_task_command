@@ -39,6 +39,9 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			case e_command_template.RedisTopic:
 			default:
 			}
+			if com.Message != nil {
+				return com
+			}
 			if com.Template.Monitor == nil {
 				com.Status = e_command.Success
 				c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
@@ -56,14 +59,19 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 }
 
 func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_command.Command {
-	// TODO: add variable function
 	var body io.Reader
 	h := com.Template.Http
 	var contentType string
 	if h.Body != nil {
+		changeBody, err := util.ChangeByteVariables(h.Body, com.Variables)
+		if err != nil {
+			com.Status = e_command.Failure
+			com.Message = &URLVariables
+			return com
+		}
 		switch h.BodyType {
 		case e_command_template.Json:
-			body = bytes.NewBuffer(h.Body)
+			body = bytes.NewBuffer(changeBody)
 			contentType = "application/json"
 		case e_command_template.FormData:
 			//TODO form data body
@@ -75,14 +83,26 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		}
 	}
 	header := make([]httpHeader, 0, 20)
-	req, e := http.NewRequestWithContext(ctx, h.Method.String(), h.URL, body)
+	url, e := util.ChangeStringVariables(h.URL, com.Variables)
+	if e != nil {
+		com.Status = e_command.Failure
+		com.Message = &URLVariables
+		return com
+	}
+	req, e := http.NewRequestWithContext(ctx, h.Method.String(), url, body)
 	if e != nil {
 		com.Status = e_command.Failure
 		com.Message = &HttpTimeout
 		return com
 	}
 	if h.Header != nil {
-		if e := json.Unmarshal(h.Header, &header); e != nil {
+		hh, err := util.ChangeByteVariables(h.Header, com.Variables)
+		if err != nil {
+			com.Status = e_command.Failure
+			com.Message = &HeaderVariables
+			return com
+		}
+		if e := json.Unmarshal(hh, &header); e != nil {
 			c.l.Error().Printf("id: %s header unmarshal failed", com.CommandId)
 		}
 	}
@@ -123,7 +143,10 @@ func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.
 	}
 	asserts := make([]assertResult, 0, len(m.MConditions))
 	for _, condition := range m.MConditions {
-		ar := stringAnalyze(com.RespData, condition.SearchRule)
+		searchRule, _ := util.ChangeStringVariables(condition.SearchRule, com.Variables)
+		value, _ := util.ChangeStringVariables(condition.Value, com.Variables)
+		condition.Value = value
+		ar := stringAnalyze(com.RespData, searchRule)
 		assert := assertValue(ar, condition)
 		asserts = append(asserts, assert)
 	}

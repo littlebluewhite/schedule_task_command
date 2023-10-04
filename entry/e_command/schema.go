@@ -40,6 +40,7 @@ type Command struct {
 	Token          string                             `json:"token"`
 	From           time.Time                          `json:"from"`
 	To             *time.Time                         `json:"to"`
+	Variables      map[string]string                  `json:"variables"`
 	TriggerFrom    []string                           `json:"trigger_from"`
 	TriggerAccount string                             `json:"trigger_account"`
 	StatusCode     int                                `json:"status_code"`
@@ -56,6 +57,7 @@ type CommandPub struct {
 	Token          string                             `json:"token"`
 	From           time.Time                          `json:"from"`
 	To             *time.Time                         `json:"to"`
+	Variables      map[string]string                  `json:"variables"`
 	TriggerFrom    []string                           `json:"trigger_from"`
 	TriggerAccount string                             `json:"trigger_account"`
 	StatusCode     int                                `json:"status_code"`

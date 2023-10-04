@@ -9,6 +9,7 @@ func ToPub(c Command) (cp CommandPub) {
 	cp.Token = c.Token
 	cp.From = c.From
 	cp.To = c.To
+	cp.Variables = c.Variables
 	cp.TriggerFrom = c.TriggerFrom
 	cp.TriggerAccount = c.TriggerAccount
 	cp.StatusCode = c.StatusCode

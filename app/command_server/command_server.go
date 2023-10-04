@@ -89,6 +89,10 @@ func (c *CommandServer) GetList() []e_command.Command {
 }
 
 func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (commandId string, err error) {
+	// add initial variables
+	if com.Variables == nil {
+		com.Variables = make(map[string]string)
+	}
 	// publish to redis
 	_ = c.rdbPub(com)
 	if com.Message != nil {
@@ -108,6 +112,10 @@ func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Comma
 }
 
 func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) e_command.Command {
+	// add initial variables
+	if com.Variables == nil {
+		com.Variables = make(map[string]string)
+	}
 	// publish to redis
 	_ = c.rdbPub(com)
 	if com.Message != nil {
