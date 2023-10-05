@@ -196,7 +196,9 @@ Loop1:
 
 func (c *CommandServer) writeToHistory(com e_command.Command) {
 	ctx := context.Background()
-	jCom, err := json.Marshal(e_command.ToPub(com))
+	tp := e_command.ToPub(com)
+	fmt.Println(string(tp.Template.Http.Body))
+	jCom, err := json.Marshal(tp)
 	if err != nil {
 		panic(err)
 	}

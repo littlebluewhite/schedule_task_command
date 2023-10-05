@@ -23,8 +23,10 @@ func TestChangeVariables(t *testing.T) {
 func TestChangeStringVariables(t *testing.T) {
 	t.Run("test1", func(t *testing.T) {
 		m := map[string]string{"name": "wilson", "id": "123456wwww"}
-		data, err := ChangeStringVariables("{name:{{name}}, id:{{id}}, last_name:{{name}}}", m)
-		fmt.Println(data)
+		data := "{name:{{name}}, id:{{id}}, last_name:{{name}}}"
+		data2, err := ChangeStringVariables(data, m)
+		fmt.Println("data: ", data)
+		fmt.Println(data2)
 		require.NoError(t, err)
 	})
 	t.Run("test2", func(t *testing.T) {

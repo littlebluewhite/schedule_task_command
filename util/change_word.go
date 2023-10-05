@@ -8,20 +8,21 @@ import (
 )
 
 func ChangeByteVariables(data []byte, variables map[string]string) ([]byte, error) {
+	dataC := slices.Clone(data)
 	r, _ := regexp.Compile(`{{([^{}]*)}}`)
-	c := r.FindAllIndex(data, -1)
+	c := r.FindAllIndex(dataC, -1)
 	for i := len(c) - 1; i >= 0; i-- {
 		start := c[i][0]
 		end := c[i][1]
-		v := string(data[start+2 : end-2])
+		v := string(dataC[start+2 : end-2])
 		word, ok := variables[v]
 		if !ok {
 			return nil, fmt.Errorf("variable: %v not found", v)
 		}
 		wordBytes := []byte(word)
-		data = slices.Replace(data, start, end, wordBytes...)
+		dataC = slices.Replace(dataC, start, end, wordBytes...)
 	}
-	return data, nil
+	return dataC, nil
 }
 
 func ChangeStringVariables(data string, variables map[string]string) (string, error) {

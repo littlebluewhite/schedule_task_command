@@ -24,7 +24,9 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 		case <-ctx.Done():
 			if errors.Is(ctx.Err(), context.Canceled) {
 				com.Status = e_command.Cancel
-				com.Message = &CommandCanceled
+				if com.Message == nil {
+					com.Message = &CommandCanceled
+				}
 			} else if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 				com.Status = e_command.Failure
 				com.Message = &CommandTimeout
@@ -40,19 +42,24 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			default:
 			}
 			if com.Message != nil {
-				return com
-			}
-			if com.Template.Monitor == nil {
-				com.Status = e_command.Success
-				c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
-				return com
+				// variables failed so cancel this command
+				com.CancelFunc()
 			} else {
-				com = monitorData(com, *com.Template.Monitor)
-				if com.Status == e_command.Success {
+				// send command successfully
+				if com.Template.Monitor == nil {
+					// mode execute
+					com.Status = e_command.Success
+					c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
 					return com
+				} else {
+					// mode monitor
+					com = monitorData(com, *com.Template.Monitor)
+					if com.Status == e_command.Success {
+						return com
+					}
+					c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
+					time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Millisecond)
 				}
-				c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
-				time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Millisecond)
 			}
 		}
 	}
