@@ -14,6 +14,7 @@ import (
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
+	"schedule_task_command/util"
 )
 
 type Operate struct {
@@ -143,6 +144,103 @@ func (o *Operate) Create(c []*e_command_template.CommandTemplateCreate) ([]model
 	return result, nil
 }
 
+func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
+	cacheMap := o.getCacheMap()
+	ct, e := e_command_template.UpdateConvert(cacheMap, u)
+	if e != nil {
+		return e
+	}
+	ids := make([]int32, 0, len(ct))
+	q := query.Use(o.db)
+	ctx := context.Background()
+	err := q.Transaction(func(tx *query.Query) error {
+		for _, item := range ct {
+			ids = append(ids, item.ID)
+			if item.Monitor != nil {
+				mcUpdate := make([]map[string]interface{}, 0, 10)
+				mcCreate := make([]*model.MCondition, 0, 10)
+				mcDelete := make([]int32, 0, 10)
+				for _, mCondition := range item.Monitor.MConditions {
+					mc := mCondition
+					switch {
+					case mc.ID < 0:
+						mcDelete = append(mcDelete, -mc.ID)
+					case mc.ID == 0:
+						mcCreate = append(mcCreate, &mc)
+					case mc.ID > 0:
+						mcUpdate = append(mcUpdate, util.StructToMap(mc))
+					}
+				}
+				m := util.StructToMap(item.Monitor)
+				delete(m, "m_conditions")
+				if _, err := tx.Monitor.WithContext(ctx).Where(tx.Monitor.ID.Eq(
+					item.Monitor.ID)).Updates(m); err != nil {
+					return err
+				}
+				for _, mci := range mcUpdate {
+					if _, err := tx.MCondition.WithContext(ctx).Where(tx.MCondition.ID.Eq(
+						(mci["id"]).(int32))).Updates(mci); err != nil {
+						return err
+					}
+				}
+				if err := tx.MCondition.WithContext(ctx).CreateInBatches(mcCreate, 100); err != nil {
+					return err
+				}
+				if _, err := tx.MCondition.WithContext(ctx).Where(tx.MCondition.ID.In(mcDelete...)).Delete(); err != nil {
+					return err
+				}
+			}
+			if item.Http != nil {
+				h := util.StructToMap(item.Http)
+				if _, err := tx.HTTPSCommand.WithContext(ctx).Where(tx.HTTPSCommand.ID.Eq(
+					item.Http.ID)).Updates(h); err != nil {
+					return err
+				}
+			}
+			if item.Mqtt != nil {
+				mq := util.StructToMap(item.Monitor)
+				if _, err := tx.MqttCommand.WithContext(ctx).Where(tx.MqttCommand.ID.Eq(
+					item.Mqtt.ID)).Updates(mq); err != nil {
+					return err
+				}
+			}
+			if item.Websocket != nil {
+				w := util.StructToMap(item.Websocket)
+				if _, err := tx.WebsocketCommand.WithContext(ctx).Where(tx.WebsocketCommand.ID.Eq(
+					item.Websocket.ID)).Updates(w); err != nil {
+					return err
+				}
+			}
+			if item.Redis != nil {
+				r := util.StructToMap(item.Redis)
+				if _, err := tx.RedisCommand.WithContext(ctx).Where(tx.RedisCommand.ID.Eq(
+					item.Redis.ID)).Updates(r); err != nil {
+					return err
+				}
+			}
+			t := util.StructToMap(item)
+			if _, err := tx.CommandTemplate.WithContext(ctx).Where(tx.CommandTemplate.ID.Eq(
+				item.ID)).Updates(t); err != nil {
+				return err
+			}
+			return nil
+		}
+		newCommandTemplate, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, c := range newCommandTemplate {
+			cacheMap[int(c.ID)] = *c
+		}
+		o.setCacheMap(cacheMap)
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (o *Operate) Delete(ids []int32) error {
 	cacheMap := o.getCacheMap()
 	q := query.Use(o.db)
@@ -176,6 +274,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		TriggerFrom:    sc.TriggerFrom,
 		TriggerAccount: sc.TriggerAccount,
 		Token:          sc.Token,
+		Variables:      sc.Variables,
 	}
 	cList, err := o.findCache([]int32{int32(sc.TemplateId)})
 	if err != nil {

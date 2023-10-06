@@ -158,21 +158,21 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 	err := q.Transaction(func(tx *query.Query) error {
 		for _, item := range tt {
 			ids = append(ids, item.ID)
-			t := util.StructToMap(item)
 			sUpdate := make([]map[string]interface{}, 0, 10)
 			sCreate := make([]*model.TaskStage, 0, 10)
 			sDelete := make([]int32, 0, 10)
 			for _, stage := range item.Stages {
 				s := stage
 				switch {
-				case stage.ID < 0:
+				case s.ID < 0:
 					sDelete = append(sDelete, -s.ID)
-				case stage.ID == 0:
+				case s.ID == 0:
 					sCreate = append(sCreate, &s)
-				case stage.ID > 0:
+				case s.ID > 0:
 					sUpdate = append(sUpdate, util.StructToMap(s))
 				}
 			}
+			t := util.StructToMap(item)
 			t["stages"] = sUpdate
 			delete(t, "stages")
 			delete(t, "updated_at")
@@ -183,11 +183,12 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 			}
 			for _, si := range sUpdate {
 				delete(si, "command_template")
-				if _, err := tx.TaskStage.WithContext(ctx).Where(tx.TaskStage.ID.Eq((si["id"]).(int32))).Updates(si); err != nil {
+				if _, err := tx.TaskStage.WithContext(ctx).Where(tx.TaskStage.ID.Eq(
+					(si["id"]).(int32))).Updates(si); err != nil {
 					return err
 				}
 			}
-			if err := tx.TaskStage.WithContext(ctx).Create(sCreate...); err != nil {
+			if err := tx.TaskStage.WithContext(ctx).CreateInBatches(sCreate, 100); err != nil {
 				return err
 			}
 			tts := make([]*model.TaskTemplateStage, 0, len(sCreate))
@@ -195,7 +196,7 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 				tts = append(tts, &model.TaskTemplateStage{
 					TaskStageID: ts.ID, TaskTemplateID: item.ID})
 			}
-			if err := tx.TaskTemplateStage.WithContext(ctx).Create(tts...); err != nil {
+			if err := tx.TaskTemplateStage.WithContext(ctx).CreateInBatches(tts, 100); err != nil {
 				return err
 			}
 			if _, err := tx.TaskStage.WithContext(ctx).Where(tx.TaskStage.ID.In(
@@ -266,6 +267,7 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		TriggerFrom:    st.TriggerFrom,
 		TriggerAccount: st.TriggerAccount,
 		Token:          st.Token,
+		Variables:      st.Variables,
 	}
 	ttList, err := o.findCache([]int32{int32(st.TemplateId)})
 	if err != nil {

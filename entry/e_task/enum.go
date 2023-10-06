@@ -1,6 +1,10 @@
 package e_task
 
-import "github.com/goccy/go-json"
+import (
+	"github.com/goccy/go-json"
+	"schedule_task_command/entry/e_task_template"
+	"time"
+)
 
 type TStatus int
 
@@ -28,4 +32,24 @@ func (s *TStatus) UnmarshalJSON(data []byte) error {
 	}
 	*s = S2Status(&tStatus)
 	return nil
+}
+
+type TaskStageC struct {
+	Monitor []TaskStage `json:"monitor"`
+	Execute []TaskStage `json:"execute"`
+}
+
+type TaskPub struct {
+	TaskId         string                       `json:"task_id"`
+	Token          string                       `json:"token"`
+	From           time.Time                    `json:"from"`
+	To             *time.Time                   `json:"to"`
+	Variables      map[string]string            `json:"variables"`
+	TriggerFrom    []string                     `json:"trigger_from"`
+	TriggerAccount string                       `json:"trigger_account"`
+	Status         Status                       `json:"status"`
+	Stages         map[int]TaskStageC           `json:"stages"`
+	Message        string                       `json:"message"`
+	TemplateID     int                          `json:"template_id"`
+	Template       e_task_template.TaskTemplate `json:"template"`
 }

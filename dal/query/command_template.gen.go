@@ -37,6 +37,7 @@ func newCommandTemplate(db *gorm.DB, opts ...gen.DOOption) commandTemplate {
 	_commandTemplate.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_commandTemplate.CreatedAt = field.NewTime(tableName, "created_at")
 	_commandTemplate.Tags = field.NewBytes(tableName, "tags")
+	_commandTemplate.Variable = field.NewBytes(tableName, "variable")
 	_commandTemplate.Http = commandTemplateHasOneHttp{
 		db: db.Session(&gorm.Session{}),
 
@@ -91,6 +92,7 @@ type commandTemplate struct {
 	UpdatedAt   field.Time
 	CreatedAt   field.Time
 	Tags        field.Bytes
+	Variable    field.Bytes
 	Http        commandTemplateHasOneHttp
 
 	Mqtt commandTemplateHasOneMqtt
@@ -126,6 +128,7 @@ func (c *commandTemplate) updateTableName(table string) *commandTemplate {
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.Tags = field.NewBytes(table, "tags")
+	c.Variable = field.NewBytes(table, "variable")
 
 	c.fillFieldMap()
 
@@ -154,7 +157,7 @@ func (c *commandTemplate) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (c *commandTemplate) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 15)
+	c.fieldMap = make(map[string]field.Expr, 16)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["protocol"] = c.Protocol
@@ -165,6 +168,7 @@ func (c *commandTemplate) fillFieldMap() {
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["tags"] = c.Tags
+	c.fieldMap["variable"] = c.Variable
 
 }
 

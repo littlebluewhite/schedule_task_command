@@ -90,20 +90,25 @@ func TestDoTask(t *testing.T) {
 		}
 		h2 := e_command_template.HTTPSCommand{
 			Method:   e_command_template.PUT,
-			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
-			Body:     []byte(`[{"id": 1,"value": "2"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value2}}"}]`),
 			BodyType: e_command_template.Json,
 		}
 		h3 := e_command_template.HTTPSCommand{
 			Method:   e_command_template.PUT,
-			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
-			Body:     []byte(`[{"id": 1,"value": "1"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value1}}"}]`),
 			BodyType: e_command_template.Json,
 		}
 		t1 := e_task.Task{
 			Token: "test1",
+			Variables: map[string]string{
+				"value1": "1",
+				"value2": "2",
+				"iv":     "insert_value",
+			},
 			Template: e_task_template.TaskTemplate{
 				Name: "test1_name",
 				Stages: []e_task_template.TaskStage{

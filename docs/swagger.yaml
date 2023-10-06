@@ -12,6 +12,10 @@ definitions:
         items:
           type: string
         type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   e_command.Command:
     properties:
@@ -43,6 +47,10 @@ definitions:
         items:
           type: string
         type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   e_command_template.CommandTemplate:
     properties:
@@ -65,7 +73,7 @@ definitions:
       port:
         type: string
       protocol:
-        type: string
+        type: integer
       redis:
         $ref: '#/definitions/e_command_template.RedisCommand'
       tags:
@@ -76,6 +84,10 @@ definitions:
         type: integer
       updated_at:
         type: string
+      variable:
+        items:
+          type: integer
+        type: array
       websocket:
         $ref: '#/definitions/e_command_template.WebsocketCommand'
     type: object
@@ -96,7 +108,7 @@ definitions:
       port:
         type: string
       protocol:
-        type: string
+        type: integer
       redis:
         $ref: '#/definitions/e_command_template.RedisCommand'
       tags:
@@ -105,6 +117,10 @@ definitions:
         type: array
       timeout:
         type: integer
+      variable:
+        items:
+          type: integer
+        type: array
       websocket:
         $ref: '#/definitions/e_command_template.WebsocketCommand'
     required:
@@ -113,6 +129,41 @@ definitions:
     - port
     - protocol
     - timeout
+    type: object
+  e_command_template.CommandTemplateUpdate:
+    properties:
+      description:
+        type: string
+      host:
+        type: string
+      http:
+        $ref: '#/definitions/e_command_template.HTTPSCommand'
+      id:
+        type: integer
+      monitor:
+        $ref: '#/definitions/e_command_template.Monitor'
+      mqtt:
+        $ref: '#/definitions/e_command_template.MqttCommand'
+      name:
+        type: string
+      port:
+        type: string
+      protocol:
+        type: integer
+      redis:
+        $ref: '#/definitions/e_command_template.RedisCommand'
+      tags:
+        items:
+          type: integer
+        type: array
+      timeout:
+        type: integer
+      variable:
+        items:
+          type: integer
+        type: array
+      websocket:
+        $ref: '#/definitions/e_command_template.WebsocketCommand'
     type: object
   e_command_template.HTTPSCommand:
     properties:
@@ -123,13 +174,13 @@ definitions:
           type: integer
         type: array
       body_type:
-        type: string
+        type: integer
       header:
         items:
           type: integer
         type: array
       method:
-        type: string
+        type: integer
       params:
         items:
           type: integer
@@ -333,6 +384,10 @@ definitions:
         type: string
       message:
         type: string
+      stages:
+        additionalProperties:
+          $ref: '#/definitions/e_task.TaskStageC'
+        type: object
       status:
         $ref: '#/definitions/e_task.Status'
       task_id:
@@ -351,6 +406,42 @@ definitions:
         items:
           type: string
         type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  e_task.TaskStage:
+    properties:
+      command_id:
+        type: string
+      from:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      template_id:
+        type: integer
+      to:
+        type: string
+    type: object
+  e_task.TaskStageC:
+    properties:
+      execute:
+        items:
+          $ref: '#/definitions/e_task.TaskStage'
+        type: array
+      monitor:
+        items:
+          $ref: '#/definitions/e_task.TaskStage'
+        type: array
     type: object
   e_task_template.TaskStage:
     properties:
@@ -361,7 +452,7 @@ definitions:
       id:
         type: integer
       mode:
-        type: string
+        type: integer
       name:
         type: string
       stage_number:
@@ -376,7 +467,7 @@ definitions:
       command_template_id:
         type: integer
       mode:
-        type: string
+        type: integer
       name:
         type: string
       stage_number:
@@ -397,7 +488,7 @@ definitions:
       id:
         type: integer
       mode:
-        type: string
+        type: integer
       name:
         type: string
       stage_number:
@@ -635,6 +726,10 @@ definitions:
         items:
           type: string
         type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   time_template.CheckTime:
     properties:
@@ -784,6 +879,28 @@ paths:
               $ref: '#/definitions/e_command_template.CommandTemplate'
             type: array
       summary: Show all command templates
+      tags:
+      - command_template
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify command template body
+        in: body
+        name: command_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_command_template.CommandTemplateUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update command templates
       tags:
       - command_template
     post:

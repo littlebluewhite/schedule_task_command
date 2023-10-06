@@ -33,6 +33,9 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			}
 			return com
 		default:
+			// "condition not match" error cancel
+			com.Message = nil
+
 			switch com.Template.Protocol {
 			case e_command_template.Http:
 				com = c.doHttp(ctx, com)
@@ -41,6 +44,7 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			case e_command_template.RedisTopic:
 			default:
 			}
+			// variables error only
 			if com.Message != nil {
 				// variables failed so cancel this command
 				com.CancelFunc()

@@ -72,6 +72,7 @@ func main() {
 			RelatePointer: true,
 		}),
 		gen.FieldType("tags", "json.RawMessage"),
+		gen.FieldType("variable", "json.RawMessage"),
 	)
 	taskStage := g.GenerateModel("task_stage",
 		gen.FieldRelate(field.BelongsTo, "CommandTemplate", commandTemplate, &field.RelateConfig{

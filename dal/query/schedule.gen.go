@@ -31,7 +31,7 @@ func newSchedule(db *gorm.DB, opts ...gen.DOOption) schedule {
 	_schedule.Name = field.NewString(tableName, "name")
 	_schedule.Description = field.NewString(tableName, "description")
 	_schedule.TimeDataID = field.NewInt32(tableName, "time_data_id")
-	_schedule.TaskID = field.NewInt32(tableName, "task_id")
+	_schedule.TaskTemplateID = field.NewInt32(tableName, "task_template_id")
 	_schedule.Enabled = field.NewBool(tableName, "enabled")
 	_schedule.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_schedule.CreatedAt = field.NewTime(tableName, "created_at")
@@ -50,17 +50,17 @@ func newSchedule(db *gorm.DB, opts ...gen.DOOption) schedule {
 type schedule struct {
 	scheduleDo scheduleDo
 
-	ALL         field.Asterisk
-	ID          field.Int32
-	Name        field.String
-	Description field.String
-	TimeDataID  field.Int32
-	TaskID      field.Int32
-	Enabled     field.Bool
-	UpdatedAt   field.Time
-	CreatedAt   field.Time
-	Tags        field.Bytes
-	TimeData    scheduleBelongsToTimeData
+	ALL            field.Asterisk
+	ID             field.Int32
+	Name           field.String
+	Description    field.String
+	TimeDataID     field.Int32
+	TaskTemplateID field.Int32
+	Enabled        field.Bool
+	UpdatedAt      field.Time
+	CreatedAt      field.Time
+	Tags           field.Bytes
+	TimeData       scheduleBelongsToTimeData
 
 	fieldMap map[string]field.Expr
 }
@@ -81,7 +81,7 @@ func (s *schedule) updateTableName(table string) *schedule {
 	s.Name = field.NewString(table, "name")
 	s.Description = field.NewString(table, "description")
 	s.TimeDataID = field.NewInt32(table, "time_data_id")
-	s.TaskID = field.NewInt32(table, "task_id")
+	s.TaskTemplateID = field.NewInt32(table, "task_template_id")
 	s.Enabled = field.NewBool(table, "enabled")
 	s.UpdatedAt = field.NewTime(table, "updated_at")
 	s.CreatedAt = field.NewTime(table, "created_at")
@@ -115,7 +115,7 @@ func (s *schedule) fillFieldMap() {
 	s.fieldMap["name"] = s.Name
 	s.fieldMap["description"] = s.Description
 	s.fieldMap["time_data_id"] = s.TimeDataID
-	s.fieldMap["task_id"] = s.TaskID
+	s.fieldMap["task_template_id"] = s.TaskTemplateID
 	s.fieldMap["enabled"] = s.Enabled
 	s.fieldMap["updated_at"] = s.UpdatedAt
 	s.fieldMap["created_at"] = s.CreatedAt
