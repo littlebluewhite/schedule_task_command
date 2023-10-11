@@ -1891,7 +1891,10 @@ const docTemplate = `{
                 "variables": {
                     "type": "object",
                     "additionalProperties": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }

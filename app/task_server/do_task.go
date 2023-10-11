@@ -35,6 +35,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		if task.Status.FailedMessage != nil {
 			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d\n", task.TaskId, sn))
 			task.Message = &e
+			// cancel task
 			break
 		}
 	}
@@ -89,13 +90,12 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
 	comNumber := len(sv.monitor) + len(sv.execute)
 	ch := make(chan comBuilder, comNumber)
-	defer close(ch)
 
 	triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
 	for _, stage := range sv.monitor {
 		go func(stage e_task_template.TaskStage) {
 			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
-				task.TriggerAccount, task.Variables)
+				task.TriggerAccount, task.Variables[stage.Name])
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com, tags: stage.Tags}
 		}(stage)
@@ -105,13 +105,14 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 	for _, stage := range sv.execute {
 		go func(stage e_task_template.TaskStage) {
 			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
-				task.TriggerAccount, task.Variables)
+				task.TriggerAccount, task.Variables[stage.Name])
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com, tags: stage.Tags}
 		}(stage)
 	}
 	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
 	ets := make([]e_task.TaskStage, 0, len(sv.execute))
+Loop:
 	for i := 0; i < comNumber; i++ {
 		select {
 		case comB := <-ch:
@@ -137,6 +138,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 				task.Status.FailedCommandId = com.CommandId
 				task.Status.FailedCommandTemplateId = com.TemplateId
 				task.Status.FailedMessage = com.Message
+				break Loop
 			}
 		}
 	}

@@ -1,3 +1,20 @@
+# Schedule_Task_Command_Time  version 2.4.0
+
+### Task Server
+- 新增變數
+
+### Command Server
+- 新增變數
+- DB command_template新增variable欄位
+- command_template add Patch method 修改command API
+
+------------------------------------------------------------------
+## 下一個版本預計完成
+ - cancel task 新增message
+ - cancel command 新增message
+ - Gamma 文件
+
+
 # Schedule_Task_Command_Time  version 2.3.0
 
 ### Time server

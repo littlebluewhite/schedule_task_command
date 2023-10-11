@@ -44,11 +44,12 @@ type TaskPub struct {
 	Token          string                       `json:"token"`
 	From           time.Time                    `json:"from"`
 	To             *time.Time                   `json:"to"`
-	Variables      map[string]string            `json:"variables"`
+	Variables      map[string]map[string]string `json:"variables"`
 	TriggerFrom    []string                     `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
 	Stages         map[int]TaskStageC           `json:"stages"`
+	AccountMessage string                       `json:"account_message"`
 	Message        string                       `json:"message"`
 	TemplateID     int                          `json:"template_id"`
 	Template       e_task_template.TaskTemplate `json:"template"`

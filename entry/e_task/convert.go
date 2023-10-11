@@ -14,6 +14,7 @@ func ToPub(t Task) (tp TaskPub) {
 	tp.TriggerAccount = t.TriggerAccount
 	tp.Status = t.Status
 	tp.Stages = t.Stages
+	tp.AccountMessage = t.AccountMessage
 	tp.Message = m
 	tp.TemplateID = t.TemplateId
 	tp.Template = t.Template

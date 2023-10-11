@@ -408,7 +408,9 @@ definitions:
         type: array
       variables:
         additionalProperties:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: object
     type: object
   e_task.TaskStage:

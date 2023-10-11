@@ -89,10 +89,8 @@ func (c *CommandServer) GetList() []e_command.Command {
 }
 
 func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (commandId string, err error) {
-	// add initial variables
-	if com.Variables == nil {
-		com.Variables = make(map[string]string)
-	}
+	// pass the variables
+	com = c.getVariables(com)
 	// publish to redis
 	_ = c.rdbPub(com)
 	if com.Message != nil {
@@ -112,6 +110,8 @@ func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Comma
 }
 
 func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) e_command.Command {
+	// pass the variables
+	com = c.getVariables(com)
 	// add initial variables
 	if com.Variables == nil {
 		com.Variables = make(map[string]string)
@@ -265,4 +265,20 @@ func (c *CommandServer) writeCommand(com e_command.Command) {
 	c.chs.mu.Lock()
 	defer c.chs.mu.Unlock()
 	c.c[com.CommandId] = com
+}
+
+func (c *CommandServer) getVariables(com e_command.Command) e_command.Command {
+	if com.Variables == nil {
+		v := make(map[string]string)
+		com.Variables = v
+		// template have variables
+		if com.Template.Variable != nil {
+			e := json.Unmarshal(com.Template.Variable, &v)
+			if e != nil {
+				com.Message = &CommandTemplateVariable
+				return com
+			}
+		}
+	}
+	return com
 }
