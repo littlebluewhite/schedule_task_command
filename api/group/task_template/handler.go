@@ -160,6 +160,7 @@ func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
 		TriggerFrom:    entry.TriggerFrom,
 		TriggerAccount: entry.TriggerAccount,
 		Token:          entry.Token,
+		Variables:      entry.Variables,
 	}
 	taskId, err := h.o.Execute(c.UserContext(), st)
 	if err != nil {

@@ -13,6 +13,7 @@ type hOperate interface {
 	List() ([]model.CommandTemplate, error)
 	Find(ids []int32) ([]model.CommandTemplate, error)
 	Create([]*e_command_template.CommandTemplateCreate) ([]model.CommandTemplate, error)
+	Update([]*e_command_template.CommandTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
 	Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (commandId string, err error)
@@ -93,6 +94,28 @@ func (h *Handler) AddCommandTemplate(c *fiber.Ctx) error {
 	return c.Status(200).JSON(e_command_template.Format(result))
 }
 
+// UpdateCommandTemplate swagger
+// @Summary Update command templates
+// @Tags    command_template
+// @Accept  json
+// @Produce json
+// @Param   command_template body     []e_command_template.CommandTemplateUpdate true "modify command template body"
+// @Success 200           {string} string "update successfully"
+// @Router  /api/command_template/ [patch]
+func (h *Handler) UpdateCommandTemplate(c *fiber.Ctx) error {
+	entry := []*e_command_template.CommandTemplateUpdate{nil}
+	if err := c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("UpdateCommandTemplate: ", err)
+		return util.Err(c, err, 0)
+	}
+	err := h.o.Update(entry)
+	if err != nil {
+		h.l.Error().Println("UpdateCommandTemplate: ", err)
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON("update successfully")
+}
+
 // DeleteCommandTemplate swagger
 // @Summary Delete command templates
 // @Tags    command_template
@@ -138,6 +161,7 @@ func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 		TriggerFrom:    entry.TriggerFrom,
 		TriggerAccount: entry.TriggerAccount,
 		Token:          entry.Token,
+		Variables:      entry.Variables,
 	}
 	commandId, err := h.o.Execute(c.UserContext(), st)
 	if err != nil {

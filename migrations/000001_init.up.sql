@@ -26,7 +26,7 @@ CREATE TABLE `schedule`
     `name`         varchar(255) UNIQUE   NOT NULL,
     `description`  varchar(255),
     `time_data_id` int UNIQUE            NOT NULL,
-    `task_id`      int                   NOT NULL,
+    `task_template_id`      int                   NOT NULL,
     `enabled`      boolean DEFAULT false NOT NULL,
     `updated_at`   datetime,
     `created_at`   datetime,
@@ -44,7 +44,8 @@ CREATE TABLE `command_template`
     `port`        varchar(255)                                      NOT NULL,
     `updated_at`  datetime,
     `created_at`  datetime,
-    `tags`        json DEFAULT (JSON_ARRAY())
+    `tags`        json DEFAULT (JSON_ARRAY()),
+    `variable`   json DEFAULT (JSON_OBJECT())
 );
 
 CREATE TABLE `https_command`
@@ -150,7 +151,7 @@ ALTER TABLE `schedule`
     ADD FOREIGN KEY (`time_data_id`) REFERENCES `time_data` (`id`);
 
 ALTER TABLE `schedule`
-    ADD FOREIGN KEY (`task_id`) REFERENCES `task_template` (`id`);
+    ADD FOREIGN KEY (`task_template_id`) REFERENCES `task_template` (`id`);
 
 ALTER TABLE `https_command`
     ADD FOREIGN KEY (`command_template_id`) REFERENCES `command_template` (`id`) ON DELETE CASCADE;

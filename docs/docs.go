@@ -250,6 +250,40 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Update command templates",
+                "parameters": [
+                    {
+                        "description": "modify command template body",
+                        "name": "command_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command_template.CommandTemplateUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/api/command_template/execute/{id}": {
@@ -1257,6 +1291,12 @@ const docTemplate = `{
                     "example": [
                         "[task execute]"
                     ]
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -1304,6 +1344,12 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -1338,7 +1384,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "protocol": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "redis": {
                     "$ref": "#/definitions/e_command_template.RedisCommand"
@@ -1354,6 +1400,12 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
@@ -1392,7 +1444,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "protocol": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "redis": {
                     "$ref": "#/definitions/e_command_template.RedisCommand"
@@ -1405,6 +1457,65 @@ const docTemplate = `{
                 },
                 "timeout": {
                     "type": "integer"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "websocket": {
+                    "$ref": "#/definitions/e_command_template.WebsocketCommand"
+                }
+            }
+        },
+        "e_command_template.CommandTemplateUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "http": {
+                    "$ref": "#/definitions/e_command_template.HTTPSCommand"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "monitor": {
+                    "$ref": "#/definitions/e_command_template.Monitor"
+                },
+                "mqtt": {
+                    "$ref": "#/definitions/e_command_template.MqttCommand"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "integer"
+                },
+                "redis": {
+                    "$ref": "#/definitions/e_command_template.RedisCommand"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
@@ -1424,7 +1535,7 @@ const docTemplate = `{
                     }
                 },
                 "body_type": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "header": {
                     "type": "array",
@@ -1433,7 +1544,7 @@ const docTemplate = `{
                     }
                 },
                 "method": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "params": {
                     "type": "array",
@@ -1744,6 +1855,12 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
+                "stages": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/e_task.TaskStageC"
+                    }
+                },
                 "status": {
                     "$ref": "#/definitions/e_task.Status"
                 },
@@ -1770,6 +1887,64 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "e_task.TaskStage": {
+            "type": "object",
+            "properties": {
+                "command_id": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_task.TaskStageC": {
+            "type": "object",
+            "properties": {
+                "execute": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.TaskStage"
+                    }
+                },
+                "monitor": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.TaskStage"
+                    }
                 }
             }
         },
@@ -1786,7 +1961,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "mode": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -1814,7 +1989,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "mode": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -1845,7 +2020,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "mode": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -2196,6 +2371,12 @@ const docTemplate = `{
                     "example": [
                         "[task execute]"
                     ]
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },

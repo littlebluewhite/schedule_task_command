@@ -102,7 +102,7 @@ func TestDoCommand(t *testing.T) {
 			Method:   e_command_template.PUT,
 			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
-			Body:     []byte(`[{"id": 1,"value": "2"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
 			BodyType: e_command_template.Json,
 		}
 		com2 := e_command.Command{
@@ -113,15 +113,34 @@ func TestDoCommand(t *testing.T) {
 				Timeout:  10000,
 				Http:     &h2,
 			},
+			Variables: map[string]string{"value": "3"},
 		}
+		com3 := e_command.Command{
+			Token: "test",
+			Template: e_command_template.CommandTemplate{
+				Name:     "object_test",
+				Protocol: e_command_template.Http,
+				Timeout:  10000,
+				Http:     &h2,
+			},
+			Variables: map[string]string{"value": "2"},
+		}
+
+		wg := &sync.WaitGroup{}
+		wg.Add(2)
+		go func() {
+			com2 = cs.ExecuteWait(ctx, com2)
+			fmt.Printf("com2: %+v\n", com2)
+			fmt.Printf("com2: %+v\n", string(com2.RespData))
+			wg.Done()
+		}()
+		time.Sleep(1 * time.Second)
 		comId, _ := cs.ExecuteReturnId(ctx, com1)
 		time.Sleep(1 * time.Second)
 		com1 = cs.ReadMap()[comId]
-		wg := &sync.WaitGroup{}
-		wg.Add(1)
 		go func() {
 			time.Sleep(4 * time.Second)
-			com2 = cs.ExecuteWait(ctx, com2)
+			com3 = cs.ExecuteWait(ctx, com3)
 			fmt.Printf("com2: %+v\n", com2)
 			fmt.Printf("com2: %+v\n", string(com2.RespData))
 			wg.Done()
@@ -149,7 +168,7 @@ func TestDoCommand(t *testing.T) {
 					Order:         0,
 					CalculateType: ">=",
 					SearchRule:    "root.[0]array.value",
-					Value:         "3",
+					Value:         "{{value}}",
 				},
 			},
 		}
@@ -162,6 +181,7 @@ func TestDoCommand(t *testing.T) {
 				Http:     &h,
 				Monitor:  &m,
 			},
+			Variables: map[string]string{"value": "4"},
 		}
 		comId, _ := cs.ExecuteReturnId(ctx, com)
 		time.Sleep(1 * time.Second)
@@ -169,7 +189,7 @@ func TestDoCommand(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
 		go func() {
-			time.Sleep(4 * time.Second)
+			time.Sleep(3 * time.Second)
 			e := cs.CancelCommand(comId)
 			require.NoError(t, e)
 			fmt.Println("---------------------------------------------------------")
@@ -215,6 +235,39 @@ func TestDoCommand(t *testing.T) {
 		com = cs.ExecuteWait(ctx, com)
 		fmt.Printf("%+v\n", com)
 		fmt.Printf("%+v\n", string(com.RespData))
+	})
+	t.Run("variable error", func(t *testing.T) {
+		h := e_command_template.HTTPSCommand{
+			Method: e_command_template.GET,
+			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
+			Header: []byte(`[{"key": "{{test}}","value": "123456","is_active": true,"data_type": "text"}]`),
+		}
+		m := e_command_template.Monitor{
+			StatusCode: 200,
+			Interval:   1000,
+			MConditions: []e_command_template.MCondition{
+				{
+					Order:         0,
+					CalculateType: ">=",
+					SearchRule:    "root.[0]array.value",
+					Value:         "50",
+				},
+			},
+		}
+		com := e_command.Command{
+			Token: "test",
+			Template: e_command_template.CommandTemplate{
+				Name:     "object_test",
+				Protocol: e_command_template.Http,
+				Timeout:  3000,
+				Http:     &h,
+				Monitor:  &m,
+			},
+		}
+		com = cs.ExecuteWait(ctx, com)
+		fmt.Printf("%+v\n", com)
+		fmt.Printf("%+v\n", string(com.RespData))
+		require.ErrorIs(t, com.Message, &HeaderVariables)
 	})
 }
 

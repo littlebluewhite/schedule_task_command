@@ -1,6 +1,7 @@
 package e_command_template
 
 import (
+	"fmt"
 	"github.com/goccy/go-json"
 	"schedule_task_command/util"
 	"time"
@@ -22,6 +23,7 @@ type CommandTemplate struct {
 	Redis       *RedisCommand     `json:"redis,omitempty"`
 	Monitor     *Monitor          `json:"monitor"`
 	Tags        json.RawMessage   `json:"tags"`
+	Variable    json.RawMessage   `json:"variable"`
 }
 
 type HTTPSCommand struct {
@@ -82,26 +84,46 @@ type CommandTemplateCreate struct {
 	Redis       *RedisCommand     `json:"redis"`
 	Monitor     *Monitor          `json:"monitor"`
 	Tags        json.RawMessage   `json:"tags"`
+	Variable    json.RawMessage   `json:"variable"`
+}
+
+type CommandTemplateUpdate struct {
+	ID          int32             `json:"id"`
+	Name        *string           `json:"name"`
+	Protocol    Protocol          `json:"protocol"`
+	Timeout     *int32            `json:"timeout"`
+	Description *string           `json:"description"`
+	Host        *string           `json:"host"`
+	Port        *string           `json:"port"`
+	Http        *HTTPSCommand     `json:"http"`
+	Mqtt        *MqttCommand      `json:"mqtt"`
+	Websocket   *WebsocketCommand `json:"websocket"`
+	Redis       *RedisCommand     `json:"redis"`
+	Monitor     *Monitor          `json:"monitor"`
+	Tags        json.RawMessage   `json:"tags"`
+	Variable    json.RawMessage   `json:"variable"`
 }
 
 type SendCommandTemplate struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
+	TemplateId     int               `json:"template_id"`
+	TriggerFrom    []string          `json:"trigger_from"`
+	TriggerAccount string            `json:"trigger_account"`
+	Token          string            `json:"token"`
+	Variables      map[string]string `json:"variables"`
 }
 
 type Protocol int
 
 const (
-	Http Protocol = iota
+	ProtocolNone Protocol = iota
+	Http
 	Websocket
 	Mqtt
 	RedisTopic
 )
 
 func (p Protocol) String() string {
-	return [...]string{"http", "websocket", "mqtt", "redis_topic"}[p]
+	return [...]string{"", "http", "websocket", "mqtt", "redis_topic"}[p]
 }
 
 func (p Protocol) MarshalJSON() ([]byte, error) {
@@ -177,3 +199,8 @@ func (b *BodyType) UnmarshalJSON(data []byte) error {
 }
 
 var CannotFindTemplate = util.MyErr("can not find Command template")
+
+func CommandTemplateNotFound(id int) util.MyErr {
+	e := fmt.Sprintf("command template id: %d not found", id)
+	return util.MyErr(e)
+}

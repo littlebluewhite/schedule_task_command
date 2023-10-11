@@ -86,7 +86,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 					now := time.Now()
 					token := fmt.Sprintf("schedule-%s-%s-%s", scheduleId, schedule.Tags, now)
 					st := e_task_template.SendTaskTemplate{
-						TemplateId:  int(schedule.TaskID),
+						TemplateId:  int(schedule.TaskTemplateID),
 						TriggerFrom: []string{"schedule", scheduleId},
 						Token:       token,
 					}

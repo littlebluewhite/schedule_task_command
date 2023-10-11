@@ -9,14 +9,14 @@ func Format(sd []model.Schedule) []Schedule {
 	result := make([]Schedule, 0, len(sd))
 	for _, item := range sd {
 		i := Schedule{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
-			TaskID:      item.TaskID,
-			Enabled:     item.Enabled,
-			UpdatedAt:   item.UpdatedAt,
-			CreatedAt:   item.CreatedAt,
-			Tags:        item.Tags,
+			ID:             item.ID,
+			Name:           item.Name,
+			Description:    item.Description,
+			TaskTemplateID: item.TaskTemplateID,
+			Enabled:        item.Enabled,
+			UpdatedAt:      item.UpdatedAt,
+			CreatedAt:      item.CreatedAt,
+			Tags:           item.Tags,
 			TimeData: e_time_data.TimeDatum{
 				RepeatType:      e_time_data.S2RepeatType(item.TimeData.RepeatType),
 				StartDate:       item.TimeData.StartDate,
@@ -35,14 +35,14 @@ func Format(sd []model.Schedule) []Schedule {
 
 func Model2Entry(s model.Schedule) Schedule {
 	se := Schedule{
-		ID:          s.ID,
-		Name:        s.Name,
-		Description: s.Description,
-		TaskID:      s.TaskID,
-		Enabled:     s.Enabled,
-		UpdatedAt:   s.UpdatedAt,
-		CreatedAt:   s.CreatedAt,
-		Tags:        s.Tags,
+		ID:             s.ID,
+		Name:           s.Name,
+		Description:    s.Description,
+		TaskTemplateID: s.TaskTemplateID,
+		Enabled:        s.Enabled,
+		UpdatedAt:      s.UpdatedAt,
+		CreatedAt:      s.CreatedAt,
+		Tags:           s.Tags,
 		TimeData: e_time_data.TimeDatum{
 			RepeatType:      e_time_data.S2RepeatType(s.TimeData.RepeatType),
 			StartDate:       s.TimeData.StartDate,
@@ -61,11 +61,11 @@ func CreateConvert(c []*ScheduleCreate) []*model.Schedule {
 	result := make([]*model.Schedule, 0, len(c))
 	for _, item := range c {
 		i := model.Schedule{
-			Name:        item.Name,
-			Description: item.Description,
-			TaskID:      item.TaskID,
-			Enabled:     item.Enabled,
-			Tags:        item.Tags,
+			Name:           item.Name,
+			Description:    item.Description,
+			TaskTemplateID: item.TaskTemplateID,
+			Enabled:        item.Enabled,
+			Tags:           item.Tags,
 			TimeData: model.TimeDatum{
 				RepeatType:      item.TimeData.RepeatType.ToModel(),
 				StartDate:       item.TimeData.StartDate,
@@ -93,8 +93,8 @@ func UpdateConvert(sMap map[int]model.Schedule, us []*ScheduleUpdate) (result []
 			s.Name = *u.Name
 		}
 		s.Description = u.Description
-		if u.TaskID != nil {
-			s.TaskID = *u.TaskID
+		if u.TaskTemplateID != nil {
+			s.TaskTemplateID = *u.TaskTemplateID
 		}
 		if u.Enabled != nil {
 			s.Enabled = *u.Enabled

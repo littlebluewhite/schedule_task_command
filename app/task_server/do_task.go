@@ -3,6 +3,7 @@ package task_server
 import (
 	"context"
 	"fmt"
+	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_task"
@@ -34,6 +35,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		if task.Status.FailedMessage != nil {
 			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d\n", task.TaskId, sn))
 			task.Message = &e
+			// cancel task
 			break
 		}
 	}
@@ -88,29 +90,29 @@ func getStages(stages []e_task_template.TaskStage) (gsr getStagesResult) {
 func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e_task.Task) e_task.Task {
 	comNumber := len(sv.monitor) + len(sv.execute)
 	ch := make(chan comBuilder, comNumber)
-	defer close(ch)
 
 	triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
 	for _, stage := range sv.monitor {
 		go func(stage e_task_template.TaskStage) {
-			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
-				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
+			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
+				task.TriggerAccount, task.Variables[stage.Name])
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com}
+			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com, tags: stage.Tags}
 		}(stage)
 	}
 	// wait 500 milliseconds to Execute executed command
 	time.Sleep(500 * time.Millisecond)
 	for _, stage := range sv.execute {
 		go func(stage e_task_template.TaskStage) {
-			com := t.ts2Com(int(stage.CommandTemplateID), triggerFrom,
-				task.TriggerAccount, task.TriggerAccount, stage.CommandTemplate)
+			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
+				task.TriggerAccount, task.Variables[stage.Name])
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com}
+			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com, tags: stage.Tags}
 		}(stage)
 	}
 	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
 	ets := make([]e_task.TaskStage, 0, len(sv.execute))
+Loop:
 	for i := 0; i < comNumber; i++ {
 		select {
 		case comB := <-ch:
@@ -122,6 +124,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 				To:         com.To,
 				Status:     com.Status,
 				Message:    com.Message,
+				Tags:       comB.tags,
 				TemplateId: com.TemplateId,
 			}
 			switch comB.mode {
@@ -135,6 +138,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 				task.Status.FailedCommandId = com.CommandId
 				task.Status.FailedCommandTemplateId = com.TemplateId
 				task.Status.FailedMessage = com.Message
+				break Loop
 			}
 		}
 	}
@@ -142,14 +146,29 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 	return task
 }
 
-func (t *TaskServer[T]) ts2Com(templateId int, triggerFrom []string, triggerAccount string, token string,
-	comTemplate e_command_template.CommandTemplate) (c e_command.Command) {
+func (t *TaskServer[T]) ts2Com(stage e_task_template.TaskStage, triggerFrom []string,
+	triggerAccount string, token string, variables map[string]string) (c e_command.Command) {
 	c = e_command.Command{
-		TemplateId:     templateId,
+		TemplateId:     int(stage.CommandTemplateID),
 		TriggerFrom:    triggerFrom,
 		TriggerAccount: triggerAccount,
 		Token:          token,
+		Variables:      variables,
 	}
-	c.Template = comTemplate
+	// use command template id first
+	if stage.CommandTemplateID != 0 {
+		var cacheMap map[int]model.CommandTemplate
+		if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
+			cacheMap = x.(map[int]model.CommandTemplate)
+			c.Template = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
+		} else {
+			t.l.Info().Printf("Cannot find command template id %v, so use template to execute command",
+				stage.CommandTemplateID)
+			c.Template = stage.CommandTemplate
+		}
+	} else {
+		c.Template = stage.CommandTemplate
+	}
+
 	return
 }

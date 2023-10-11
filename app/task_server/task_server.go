@@ -101,6 +101,8 @@ func (t *TaskServer[T]) GetList() []e_task.Task {
 
 func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
 	task.Stages = map[int]e_task.TaskStageC{}
+	// pass the variables
+	task = t.getVariables(task)
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
@@ -120,6 +122,8 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 
 func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task {
 	task.Stages = map[int]e_task.TaskStageC{}
+	// pass the variables
+	task = t.getVariables(task)
 	// publish to redis
 	_ = t.rdbPub(task)
 	if task.Message != nil {
@@ -244,4 +248,20 @@ func (t *TaskServer[T]) rdbPub(task e_task.Task) (e error) {
 
 func (t *TaskServer[T]) GetCommandServer() T {
 	return t.cs.(T)
+}
+
+func (t *TaskServer[T]) getVariables(task e_task.Task) e_task.Task {
+	if task.Variables == nil {
+		v := make(map[string]map[string]string)
+		task.Variables = v
+		// template have variables
+		if task.Template.Variable != nil {
+			e := json.Unmarshal(task.Template.Variable, &v)
+			if e != nil {
+				task.Message = &TaskTemplateVariable
+				return task
+			}
+		}
+	}
+	return task
 }

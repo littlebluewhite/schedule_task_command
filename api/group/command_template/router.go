@@ -24,6 +24,7 @@ func RegisterRouter(g group) {
 	ct.Get("/", h.GetCommandTemplates)
 	ct.Get("/:id", h.GetCommandTemplateById)
 	ct.Post("/", h.AddCommandTemplate)
+	ct.Patch("/", h.UpdateCommandTemplate)
 	ct.Delete("/", h.DeleteCommandTemplate)
 	ct.Post("/execute/:id", h.ExecuteCommand)
 }

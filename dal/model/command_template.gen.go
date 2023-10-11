@@ -23,6 +23,7 @@ type CommandTemplate struct {
 	UpdatedAt   *time.Time        `gorm:"column:updated_at" json:"updated_at"`
 	CreatedAt   *time.Time        `gorm:"column:created_at" json:"created_at"`
 	Tags        json.RawMessage   `gorm:"column:tags;default:json_array()" json:"tags"`
+	Variable    json.RawMessage   `gorm:"column:variable;default:json_object()" json:"variable"`
 	Http        *HTTPSCommand     `gorm:"foreignKey:command_template_id" json:"http"`
 	Mqtt        *MqttCommand      `gorm:"foreignKey:command_template_id" json:"mqtt"`
 	Websocket   *WebsocketCommand `gorm:"foreignKey:command_template_id" json:"websocket"`

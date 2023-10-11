@@ -92,8 +92,9 @@ func TaskTemplateNotFound(id int) util.MyErr {
 }
 
 type SendTaskTemplate struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
+	TemplateId     int                          `json:"template_id"`
+	TriggerFrom    []string                     `json:"trigger_from"`
+	TriggerAccount string                       `json:"trigger_account"`
+	Token          string                       `json:"token"`
+	Variables      map[string]map[string]string `json:"variables"`
 }

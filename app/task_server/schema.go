@@ -1,6 +1,7 @@
 package task_server
 
 import (
+	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
@@ -27,9 +28,11 @@ type comBuilder struct {
 	mode e_task_template.Mode
 	name string
 	com  e_command.Command
+	tags json.RawMessage
 }
 
 var TaskCanceled = util.MyErr("Task has been canceled")
 var SendToRedisErr = util.MyErr("send task to redis cannot format")
 var TaskNotFind = util.MyErr("can not find task")
 var TaskCannotCancel = util.MyErr("task cannot be canceled")
+var TaskTemplateVariable = util.MyErr("task template variable failed to format")

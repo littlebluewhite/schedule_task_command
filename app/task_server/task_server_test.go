@@ -90,20 +90,24 @@ func TestDoTask(t *testing.T) {
 		}
 		h2 := e_command_template.HTTPSCommand{
 			Method:   e_command_template.PUT,
-			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
-			Body:     []byte(`[{"id": 1,"value": "2"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
 			BodyType: e_command_template.Json,
 		}
 		h3 := e_command_template.HTTPSCommand{
 			Method:   e_command_template.PUT,
-			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
 			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
-			Body:     []byte(`[{"id": 1,"value": "1"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
 			BodyType: e_command_template.Json,
 		}
 		t1 := e_task.Task{
 			Token: "test1",
+			Variables: map[string]map[string]string{
+				"c1": {"value": "1", "iv": "insert_value"},
+				"c2": {"value": "2", "iv": "insert_value"},
+			},
 			Template: e_task_template.TaskTemplate{
 				Name: "test1_name",
 				Stages: []e_task_template.TaskStage{
@@ -287,6 +291,91 @@ func TestDoTask(t *testing.T) {
 		fmt.Printf("tasks: %+v\n", task)
 		fmt.Printf("coms: %+v\n", comM)
 		require.Equal(t, e_task.Cancel, task.Status.TStatus)
+	})
+	t.Run("test variable error", func(t *testing.T) {
+		h1 := e_command_template.HTTPSCommand{
+			Method: e_command_template.GET,
+			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
+			Header: nil,
+		}
+		m1 := e_command_template.Monitor{
+			StatusCode: 200,
+			Interval:   1000,
+			MConditions: []e_command_template.MCondition{
+				{
+					Order:         0,
+					CalculateType: ">=",
+					SearchRule:    "root.[0]array.value",
+					Value:         "2",
+				},
+			},
+		}
+		h2 := e_command_template.HTTPSCommand{
+			Method:   e_command_template.PUT,
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
+			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
+			BodyType: e_command_template.Json,
+		}
+		h3 := e_command_template.HTTPSCommand{
+			Method:   e_command_template.PUT,
+			URL:      "http://192.168.1.10:9330/api/object/{{iv}}/",
+			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
+			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
+			BodyType: e_command_template.Json,
+		}
+		t1 := e_task.Task{
+			Token: "test1",
+			Variables: map[string]map[string]string{
+				"c1": {"value": "1", "iv": "insert_value"},
+				"c2": {"value": "2"},
+			},
+			Template: e_task_template.TaskTemplate{
+				Name: "test1_name",
+				Stages: []e_task_template.TaskStage{
+					{
+						Name:        "c3",
+						StageNumber: 2,
+						Mode:        e_task_template.Monitor,
+						CommandTemplate: e_command_template.CommandTemplate{
+							Name:     "object_get_test",
+							Protocol: e_command_template.Http,
+							Timeout:  10000,
+							Http:     &h1,
+							Monitor:  &m1,
+						},
+					},
+					{
+						Name:        "c2",
+						StageNumber: 2,
+						Mode:        e_task_template.Execute,
+						CommandTemplate: e_command_template.CommandTemplate{
+							Name:     "object_put_test",
+							Protocol: e_command_template.Http,
+							Timeout:  10000,
+							Http:     &h2,
+						},
+					},
+					{
+						Name:        "c1",
+						StageNumber: 1,
+						Mode:        e_task_template.Execute,
+						CommandTemplate: e_command_template.CommandTemplate{
+							Name:     "object_put_test",
+							Protocol: e_command_template.Http,
+							Timeout:  10000,
+							Http:     &h3,
+						},
+					},
+				},
+			},
+		}
+		taskId, _ := ts.ExecuteReturnId(ctx, t1)
+		time.Sleep(3 * time.Second)
+		task := ts.ReadMap()[taskId]
+		fmt.Printf("task: %+v\n", task)
+		cm := ts.GetCommandServer().ReadMap()
+		fmt.Printf("command: %+v\n", cm)
 	})
 }
 
