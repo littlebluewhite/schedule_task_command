@@ -380,6 +380,8 @@ definitions:
     type: object
   e_task.Task:
     properties:
+      account_message:
+        type: string
       from:
         type: string
       message:
@@ -730,7 +732,9 @@ definitions:
         type: array
       variables:
         additionalProperties:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: object
     type: object
   time_template.CheckTime:

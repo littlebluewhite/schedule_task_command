@@ -1849,6 +1849,9 @@ const docTemplate = `{
         "e_task.Task": {
             "type": "object",
             "properties": {
+                "account_message": {
+                    "type": "string"
+                },
                 "from": {
                     "type": "string"
                 },
@@ -2375,7 +2378,10 @@ const docTemplate = `{
                 "variables": {
                     "type": "object",
                     "additionalProperties": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }
