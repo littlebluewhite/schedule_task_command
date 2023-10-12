@@ -1,3 +1,19 @@
+# Schedule_Task_Command_Time  version 2.5.0
+
+### Task Server
+- Cancel task 增加 message
+
+### Command Server
+- Cancel command 增加 message
+
+### Task Template API
+- mCondition id 顯示
+
+------------------------------------------------------------------
+## 下一個版本預計完成
+
+
+
 # Schedule_Task_Command_Time  version 2.4.0
 
 ### Task Server
