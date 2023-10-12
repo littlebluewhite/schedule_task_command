@@ -141,7 +141,7 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	return task
 }
 
-func (t *TaskServer[T]) CancelTask(taskId string) error {
+func (t *TaskServer[T]) CancelTask(taskId, message string) error {
 	m := t.ReadMap()
 	task, ok := m[taskId]
 	if !ok {
@@ -149,9 +149,10 @@ func (t *TaskServer[T]) CancelTask(taskId string) error {
 	}
 	if task.Status.TStatus != e_task.Process {
 		return TaskCannotCancel
-	} else {
-		task.CancelFunc()
 	}
+	task.AccountMessage = message
+	t.writeTask(task)
+	task.CancelFunc()
 	return nil
 }
 

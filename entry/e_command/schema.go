@@ -46,6 +46,7 @@ type Command struct {
 	StatusCode     int                                `json:"status_code"`
 	RespData       json.RawMessage                    `json:"resp_data"`
 	Status         Status                             `json:"status"`
+	AccountMessage string                             `json:"account_message"`
 	Message        *util.MyErr                        `json:"message"`
 	TemplateId     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`
@@ -63,6 +64,7 @@ type CommandPub struct {
 	StatusCode     int                                `json:"status_code"`
 	RespData       json.RawMessage                    `json:"resp_data"`
 	Status         Status                             `json:"status"`
+	AccountMessage string                             `json:"account_message"`
 	Message        string                             `json:"message"`
 	TemplateID     int                                `json:"template_id"`
 	Template       e_command_template.CommandTemplate `json:"template"`

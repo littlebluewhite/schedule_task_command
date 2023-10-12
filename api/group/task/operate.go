@@ -37,13 +37,10 @@ func (o *Operate) Find(taskIds []string) ([]e_task.Task, error) {
 	return tl, nil
 }
 
-func (o *Operate) Cancel(taskId string) error {
-	tm := o.taskS.ReadMap()
-	task, ok := tm[taskId]
-	if !ok {
-		return errors.New(fmt.Sprintf("cannot find task id: %s", taskId))
+func (o *Operate) Cancel(taskId, message string) error {
+	if err := o.taskS.CancelTask(taskId, message); err != nil {
+		return err
 	}
-	task.CancelFunc()
 	return nil
 }
 

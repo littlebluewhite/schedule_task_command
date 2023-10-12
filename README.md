@@ -1,16 +1,30 @@
-# Schedule_Task_Command 2.4.0
+# Schedule_Task_Command 2.4.1
 
 * API Server
 
   * time template API
   * command template API
+  * command API
   * header template API
   * task template API
+  * task API
   * schedule API
 * Time Server
-
+  1. redis subscribe publish topic
+  2. 判斷時間是否在規範內
+* Command Server
+  1. redis subscribe publish topic
+  2. 觸發/顯示 即時command
+  3. 取消command
+  4. 紀錄/顯示 歷史command
+* Task Server
+  1. redis subscribe publish topic
+  2. 觸發/顯示 即時task
+  3. 取消task
+  4. 紀錄/顯示 歷史task
+* Schedule Server
   1. 每秒監控一次schedule
-  2. 時間符合則執行相對應的命令
+  2. 時間符合則執行相對應的task
 
 ## 啟動方式
 
@@ -49,7 +63,7 @@
       `create database schedule;`
    2. 創建需要的image
       api image:
-      `docker build -t schedule:2.4.0 -f deploy/api/windows/Dockerfile .`
+      `docker build -t schedule:2.4.1 -f deploy/api/windows/Dockerfile .`
       migrate image:
 
       `docker build -t schedule-migrate:latest -f deploy/migrate/windows/Dockerfile .`
@@ -61,14 +75,14 @@
          `docker run --name schedule-migrate --rm -e DB_HOST=host.docker.internal schedule-migrate:latest`
       2. run api container
 
-         `docker run --name schedule -p 5487:5487 -e DB_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.4.0`
+         `docker run --name schedule -p 5487:5487 -e DB_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.4.1`
 2. ##### Linux系統
 
    1. 到mysql創建一個新的database "schedule"
       `create database schedule;`
    2. 創建需要的image
       api image:
-      `docker build -t schedule:2.4.0 -f deploy/api/linux/Dockerfile .`
+      `docker build -t schedule:2.4.1 -f deploy/api/linux/Dockerfile .`
       migrate image:
 
       `docker build -t schedule-migrate:latest -f deploy/migrate/linux/Dockerfile .`
@@ -81,8 +95,8 @@
          `docker run --name schedule-migrate --rm -e DB_HOST=192.168.1.11 schedule-migrate:latest`
       2. run api container
 
-         `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:2.4.0`
-         `docker run --name schedule -p 5487:5487 -e DB_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.4.0`
+         `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:2.4.1`
+         `docker run --name schedule -p 5487:5487 -e DB_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.4.1`
 
 # Log File
 

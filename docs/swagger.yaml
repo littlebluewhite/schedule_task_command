@@ -1,4 +1,9 @@
 definitions:
+  command.CancelBody:
+    properties:
+      message:
+        type: string
+    type: object
   command_template.SendCommand:
     properties:
       token:
@@ -19,6 +24,8 @@ definitions:
     type: object
   e_command.Command:
     properties:
+      account_message:
+        type: string
       command_id:
         type: string
       from:
@@ -192,6 +199,8 @@ definitions:
     properties:
       calculate_type:
         type: string
+      id:
+        type: integer
       order:
         type: integer
       pre_logic_type:
@@ -380,6 +389,8 @@ definitions:
     type: object
   e_task.Task:
     properties:
+      account_message:
+        type: string
       from:
         type: string
       message:
@@ -715,6 +726,11 @@ definitions:
         example: asdfasdf
         type: string
     type: object
+  task.CancelBody:
+    properties:
+      message:
+        type: string
+    type: object
   task_template.SendTask:
     properties:
       token:
@@ -730,7 +746,9 @@ definitions:
         type: array
       variables:
         additionalProperties:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: object
     type: object
   time_template.CheckTime:
@@ -782,6 +800,12 @@ paths:
         name: commandId
         required: true
         type: string
+      - description: cancel message
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/command.CancelBody'
       produces:
       - application/json
       responses:
@@ -1224,6 +1248,12 @@ paths:
         name: taskId
         required: true
         type: string
+      - description: cancel message
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/task.CancelBody'
       produces:
       - application/json
       responses:
