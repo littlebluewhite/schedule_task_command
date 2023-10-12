@@ -25,7 +25,7 @@ func (o *Operate) List() ([]e_command.Command, error) {
 
 func (o *Operate) Find(commandIds []string) ([]e_command.Command, error) {
 	tm := o.commandS.ReadMap()
-	tl := make([]e_command.Command, len(commandIds))
+	tl := make([]e_command.Command, 0, len(commandIds))
 	for _, commandId := range commandIds {
 		t, ok := tm[commandId]
 		if !ok {

@@ -25,7 +25,7 @@ func (o *Operate) List() ([]e_task.Task, error) {
 
 func (o *Operate) Find(taskIds []string) ([]e_task.Task, error) {
 	tm := o.taskS.ReadMap()
-	tl := make([]e_task.Task, len(taskIds))
+	tl := make([]e_task.Task, 0, len(taskIds))
 	for _, taskId := range taskIds {
 		t, ok := tm[taskId]
 		if !ok {

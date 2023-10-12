@@ -18,7 +18,7 @@ func RegisterRouter(g group) {
 	tt.Get("/", h.GetTasks)
 	tt.Get("/history", h.GetHistory)
 	tt.Get("/:taskId", h.GetTaskByTaskId)
-	tt.Delete("/:taskTemplateId", h.CancelTask)
+	tt.Delete("/:taskId", h.CancelTask)
 }
 
 type group interface {
