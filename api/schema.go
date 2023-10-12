@@ -14,6 +14,7 @@ type TaskServer interface {
 	ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error)
 	ReadFromHistory(taskTemplateId, start, stop, status string) ([]e_task.TaskPub, error)
 	GetCommandServer() CommandServer
+	CancelTask(commandId, message string) error
 }
 
 type TimeServer interface {
@@ -26,6 +27,7 @@ type CommandServer interface {
 	GetList() []e_command.Command
 	ExecuteReturnId(ctx context.Context, command e_command.Command) (commandId string, err error)
 	ReadFromHistory(commandTemplateId, start, stop, status string) ([]e_command.CommandPub, error)
+	CancelCommand(commandId, message string) error
 }
 
 type ScheduleSer interface {

@@ -279,7 +279,7 @@ func TestDoTask(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			time.Sleep(2 * time.Second)
-			e := ts.CancelTask(taskId)
+			e := ts.CancelTask(taskId, "test")
 			require.NoError(t, e)
 			fmt.Println("---------------------------------------------------------")
 			wg.Done()

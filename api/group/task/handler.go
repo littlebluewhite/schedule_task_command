@@ -11,7 +11,7 @@ import (
 type hOperate interface {
 	List() ([]e_task.Task, error)
 	Find(taskIds []string) ([]e_task.Task, error)
-	Cancel(taskId string) error
+	Cancel(taskId, message string) error
 	GetHistory(templateId, start, stop, status string) ([]e_task.TaskPub, error)
 }
 
@@ -71,6 +71,7 @@ func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
 // @Tags        task
 // @Produce     json
 // @Param       taskId  path     string true "taskId"
+// @Param   message body     task.CancelBody true "cancel message"
 // @Success     200 {string} cancel successfully
 // @Router      /api/task/{taskId} [Delete]
 func (h *Handler) CancelTask(c *fiber.Ctx) error {
@@ -80,7 +81,12 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 		h.l.Error().Println("GetTaskByTaskId: ", e)
 		return util.Err(c, e, 0)
 	}
-	err := h.o.Cancel(taskId)
+	entry := CancelBody{}
+	if err := c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("CancelTask: ", err)
+		return util.Err(c, err, 0)
+	}
+	err := h.o.Cancel(taskId, entry.Message)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

@@ -64,6 +64,7 @@ type Monitor struct {
 }
 
 type MCondition struct {
+	ID            int32   `json:"id"`
 	Order         int32   `json:"order"`
 	CalculateType string  `json:"calculate_type"`
 	PreLogicType  *string `json:"pre_logic_type"`

@@ -151,7 +151,7 @@ func TestDoCommand(t *testing.T) {
 		fmt.Printf("%+v\n", com1)
 		fmt.Printf("%+v\n", string(com1.RespData))
 		time.Sleep(1 * time.Second)
-		err := cs.CancelCommand(comId)
+		err := cs.CancelCommand(comId, "test")
 		require.Error(t, err)
 	})
 	t.Run("command cancel", func(t *testing.T) {
@@ -190,7 +190,7 @@ func TestDoCommand(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			time.Sleep(3 * time.Second)
-			e := cs.CancelCommand(comId)
+			e := cs.CancelCommand(comId, "test")
 			require.NoError(t, e)
 			fmt.Println("---------------------------------------------------------")
 			wg.Done()
@@ -201,7 +201,7 @@ func TestDoCommand(t *testing.T) {
 		fmt.Printf("%+v\n", com)
 		fmt.Printf("%+v\n", string(com.RespData))
 		time.Sleep(1 * time.Second)
-		err := cs.CancelCommand(comId)
+		err := cs.CancelCommand(comId, "test")
 		require.Error(t, err)
 	})
 	t.Run("execute wait", func(t *testing.T) {

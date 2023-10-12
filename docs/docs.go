@@ -149,6 +149,15 @@ const docTemplate = `{
                         "name": "commandId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "cancel message",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command.CancelBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -827,6 +836,15 @@ const docTemplate = `{
                         "name": "taskId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "cancel message",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.CancelBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -1273,6 +1291,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "command.CancelBody": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "command_template.SendCommand": {
             "type": "object",
             "properties": {
@@ -1303,6 +1329,9 @@ const docTemplate = `{
         "e_command.Command": {
             "type": "object",
             "properties": {
+                "account_message": {
+                    "type": "string"
+                },
                 "command_id": {
                     "type": "string"
                 },
@@ -1562,6 +1591,9 @@ const docTemplate = `{
             "properties": {
                 "calculate_type": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "order": {
                     "type": "integer"
@@ -2353,6 +2385,14 @@ const docTemplate = `{
                 "example": {
                     "type": "string",
                     "example": "asdfasdf"
+                }
+            }
+        },
+        "task.CancelBody": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },

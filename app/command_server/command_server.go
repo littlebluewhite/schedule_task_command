@@ -160,7 +160,7 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	return com
 }
 
-func (c *CommandServer) CancelCommand(commandId string) error {
+func (c *CommandServer) CancelCommand(commandId, message string) error {
 	m := c.ReadMap()
 	com, ok := m[commandId]
 	if !ok {
@@ -168,9 +168,10 @@ func (c *CommandServer) CancelCommand(commandId string) error {
 	}
 	if com.Status != e_command.Process {
 		return CommandCannotCancel
-	} else {
-		com.CancelFunc()
 	}
+	com.AccountMessage = message
+	c.writeCommand(com)
+	com.CancelFunc()
 	return nil
 }
 

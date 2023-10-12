@@ -37,13 +37,10 @@ func (o *Operate) Find(commandIds []string) ([]e_command.Command, error) {
 	return tl, nil
 }
 
-func (o *Operate) Cancel(commandId string) error {
-	tm := o.commandS.ReadMap()
-	command, ok := tm[commandId]
-	if !ok {
-		return errors.New(fmt.Sprintf("cannot find command id: %s", commandId))
+func (o *Operate) Cancel(commandId, message string) error {
+	if err := o.commandS.CancelCommand(commandId, message); err != nil {
+		return err
 	}
-	command.CancelFunc()
 	return nil
 }
 

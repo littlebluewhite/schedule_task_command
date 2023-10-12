@@ -68,6 +68,7 @@ func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 		mResult := make([]MCondition, 0, len(mct.Monitor.MConditions))
 		for _, m := range mct.Monitor.MConditions {
 			i := MCondition{
+				ID:            m.ID,
 				Order:         m.Order,
 				CalculateType: m.CalculateType,
 				PreLogicType:  m.PreLogicType,
@@ -143,6 +144,7 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 			mResult := make([]model.MCondition, 0, len(item.Monitor.MConditions))
 			for _, m := range item.Monitor.MConditions {
 				i := model.MCondition{
+					ID:            m.ID,
 					Order:         m.Order,
 					CalculateType: m.CalculateType,
 					PreLogicType:  m.PreLogicType,
@@ -237,6 +239,7 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 			mResult := make([]model.MCondition, 0, len(u.Monitor.MConditions))
 			for _, m := range u.Monitor.MConditions {
 				i := model.MCondition{
+					ID:            m.ID,
 					Order:         m.Order,
 					CalculateType: m.CalculateType,
 					PreLogicType:  m.PreLogicType,
