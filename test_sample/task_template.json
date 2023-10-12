@@ -27,10 +27,6 @@
         "command_template_id": 4
       }
     ],
-    "variable": {
-      "name": "aaaa",
-      "tem": 37
-    },
     "tags": {
       "a": "b"
     }

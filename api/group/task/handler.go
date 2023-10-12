@@ -38,6 +38,7 @@ func (h *Handler) GetTasks(c *fiber.Ctx) error {
 	tasks, err := h.o.List()
 	if err != nil {
 		h.l.Error().Println("Error getting tasks")
+		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.ToPubSlice(tasks))
 }
