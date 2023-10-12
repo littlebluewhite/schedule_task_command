@@ -166,6 +166,8 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 					case mc.ID < 0:
 						mcDelete = append(mcDelete, -mc.ID)
 					case mc.ID == 0:
+						id := item.Monitor.ID
+						mc.MonitorID = &id
 						mcCreate = append(mcCreate, &mc)
 					case mc.ID > 0:
 						mcUpdate = append(mcUpdate, util.StructToMap(mc))

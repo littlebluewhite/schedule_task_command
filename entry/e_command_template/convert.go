@@ -101,10 +101,9 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 		}
 		if item.Http != nil {
 			var bodyType *string
-			if *bodyType == "" {
-				bodyType = nil
-			} else {
-				*bodyType = item.Http.BodyType.String()
+			if item.Http.BodyType.String() != "" {
+				bt := item.Http.BodyType.String()
+				bodyType = &bt
 			}
 			i.Http = &model.HTTPSCommand{
 				Method:            item.Http.Method.String(),
@@ -143,7 +142,7 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 		if item.Monitor != nil {
 			mResult := make([]model.MCondition, 0, len(item.Monitor.MConditions))
 			for _, m := range item.Monitor.MConditions {
-				i := model.MCondition{
+				mc := model.MCondition{
 					ID:            m.ID,
 					Order:         m.Order,
 					CalculateType: m.CalculateType,
@@ -151,7 +150,7 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 					Value:         m.Value,
 					SearchRule:    m.SearchRule,
 				}
-				mResult = append(mResult, i)
+				mResult = append(mResult, mc)
 			}
 			i.Monitor = &model.Monitor{
 				StatusCode:  item.Monitor.StatusCode,
@@ -196,10 +195,9 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 		}
 		if u.Http != nil && ct.Http != nil {
 			var bodyType *string
-			if *bodyType == "" {
-				bodyType = nil
-			} else {
-				*bodyType = u.Http.BodyType.String()
+			if u.Http.BodyType.String() != "" {
+				bt := u.Http.BodyType.String()
+				bodyType = &bt
 			}
 			ct.Http = &model.HTTPSCommand{
 				Method:            u.Http.Method.String(),
