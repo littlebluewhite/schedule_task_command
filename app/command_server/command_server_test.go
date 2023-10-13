@@ -89,7 +89,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com1 := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  10000,
@@ -107,7 +107,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com2 := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  10000,
@@ -117,7 +117,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com3 := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  10000,
@@ -174,7 +174,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  10000,
@@ -224,7 +224,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  3000,
@@ -256,7 +256,7 @@ func TestDoCommand(t *testing.T) {
 		}
 		com := e_command.Command{
 			Token: "test",
-			Template: e_command_template.CommandTemplate{
+			CommandData: e_command_template.CommandTemplate{
 				Name:     "object_test",
 				Protocol: e_command_template.Http,
 				Timeout:  3000,

@@ -275,7 +275,6 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		task.Message = &CannotFindTemplate
 		return
 	}
-	tt := e_task_template.Format(ttList)[0]
-	task.Template = tt
+	task.TaskData = e_task_template.Format(ttList)[0]
 	return
 }

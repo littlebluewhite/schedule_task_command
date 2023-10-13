@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
-	"schedule_task_command/app/command_server"
+	"schedule_task_command/api/group/time_template"
 	"schedule_task_command/app/dbs/rdb"
 	"sync"
 	"time"
@@ -31,36 +31,26 @@ func main() {
 }
 
 func pub(ctx context.Context, r *redis.Client) {
-	c := command_server.SendCommand{
-		TemplateId:     1,
-		TriggerFrom:    []string{"execute"},
-		TriggerAccount: "Wilson",
+	c := time_template.SendTime{
+		TemplateId: 2,
+		Token:      "test",
 	}
 	b, err := json.Marshal(c)
 	if err != nil {
 		panic(err)
 	}
-	err = r.Publish(ctx, "commandTest", b).Err()
+	err = r.Publish(ctx, "sendTimeTemplate", b).Err()
 	if err != nil {
 		panic(err)
 	}
 }
 
 func sub(ctx context.Context, r *redis.Client) {
-	pubsub := r.Subscribe(ctx, "commandTest")
+	pubsub := r.Subscribe(ctx, "timeRec")
 	msg, err := pubsub.ReceiveMessage(ctx)
 	if err != nil {
 		panic(err)
 	}
 	m := msg.Payload
 	fmt.Println(m)
-	b := []byte(m)
-	var s command_server.SendCommand
-	json.Unmarshal(b, &s)
-
-	fmt.Println(s)
-	fmt.Printf("%T, %v\n", s, s)
-	fmt.Println("msg.Pattern: ", msg.Pattern)
-	fmt.Println(msg.PayloadSlice)
-	fmt.Println(msg.Channel)
 }

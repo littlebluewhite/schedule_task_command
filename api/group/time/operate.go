@@ -1,0 +1,25 @@
+package time
+
+import (
+	"schedule_task_command/api"
+	"schedule_task_command/entry/e_time"
+)
+
+type Operate struct {
+	timeS api.TimeServer
+}
+
+func NewOperate(timeS api.TimeServer) *Operate {
+	o := &Operate{
+		timeS: timeS,
+	}
+	return o
+}
+
+func (o *Operate) GetHistory(templateId, start, stop, isTime string) ([]e_time.PublishTime, error) {
+	pt, e := o.timeS.ReadFromHistory(templateId, start, stop, isTime)
+	if e != nil {
+		return nil, e
+	}
+	return pt, nil
+}

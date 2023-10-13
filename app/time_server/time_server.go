@@ -6,12 +6,9 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_time"
-	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util/logFile"
 	"sync"
-	"time"
 )
 
 type TimeServer struct {
@@ -82,31 +79,20 @@ func (t *TimeServer) checkTime(pt e_time.PublishTime) e_time.PublishTime {
 		return pt
 	}
 	pt.Status = e_time.Success
-	isTime := pt.Template.CheckTimeData(time.Now())
-	pt.IsTime = isTime
+	pt.IsTime = pt.TimeData.CheckTimeData(pt.Time)
 	return pt
-}
-
-func (t *TimeServer) getTimeTemplate() map[int]e_time_template.TimeTemplate {
-	cacheMap := make(map[int]e_time_template.TimeTemplate)
-	if x, found := t.dbs.GetCache().Get("timeTemplates"); found {
-		c := x.(map[int]model.TimeTemplate)
-		for key, value := range c {
-			cacheMap[key] = e_time_template.Model2Entry(value)
-		}
-	}
-	return cacheMap
 }
 
 func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 	ctx := context.Background()
 	templateId := fmt.Sprintf("%d", pt.TemplateId)
+	isTime := fmt.Sprintf("%t", pt.IsTime)
 	jsonPt, err := json.Marshal(pt)
 	if err != nil {
 		panic(err)
 	}
 	p := influxdb2.NewPoint("time_history",
-		map[string]string{"template_id": templateId},
+		map[string]string{"template_id": templateId, "is_time": isTime},
 		map[string]interface{}{"data": jsonPt},
 		pt.Time,
 	)
@@ -115,7 +101,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 	}
 }
 
-func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []e_time.PublishTime, err error) {
+func (t *TimeServer) ReadFromHistory(templateId, start, stop, isTime string) (ht []e_time.PublishTime, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -125,12 +111,17 @@ func (t *TimeServer) ReadFromHistory(templateId, start, stop string) (ht []e_tim
 	if templateId != "" {
 		templateIdValue = fmt.Sprintf(`|> filter(fn: (r) => r.template_id == "%s")`, templateId)
 	}
+	isTimeValue := ""
+	if isTime != "" {
+		isTimeValue = fmt.Sprintf(`|> filter(fn: (r) => r.is_time == "%s")`, isTime)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "time_history")
 |> filter(fn: (r) => r._field == "data")
 %s
-`, start, stopValue, templateIdValue)
+%s
+`, start, stopValue, templateIdValue, isTimeValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {

@@ -36,7 +36,7 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			// "condition not match" error cancel
 			com.Message = nil
 
-			switch com.Template.Protocol {
+			switch com.CommandData.Protocol {
 			case e_command_template.Http:
 				com = c.doHttp(ctx, com)
 			case e_command_template.Websocket:
@@ -50,19 +50,19 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 				com.CancelFunc()
 			} else {
 				// send command successfully
-				if com.Template.Monitor == nil {
+				if com.CommandData.Monitor == nil {
 					// mode execute
 					com.Status = e_command.Success
 					c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
 					return com
 				} else {
 					// mode monitor
-					com = monitorData(com, *com.Template.Monitor)
+					com = monitorData(com, *com.CommandData.Monitor)
 					if com.Status == e_command.Success {
 						return com
 					}
 					c.l.Info().Printf("id: %s \ncommand status: %v\nrequest result: %s\n", com.CommandId, com.Status, com.RespData)
-					time.Sleep(time.Duration(com.Template.Monitor.Interval) * time.Millisecond)
+					time.Sleep(time.Duration(com.CommandData.Monitor.Interval) * time.Millisecond)
 				}
 			}
 		}
@@ -71,7 +71,7 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 
 func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_command.Command {
 	var body io.Reader
-	h := com.Template.Http
+	h := com.CommandData.Http
 	var contentType string
 	if h.Body != nil {
 		changeBody, err := util.ChangeByteVariables(h.Body, com.Variables)

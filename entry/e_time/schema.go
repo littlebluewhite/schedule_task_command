@@ -2,21 +2,21 @@ package e_time
 
 import (
 	"github.com/goccy/go-json"
-	"schedule_task_command/entry/e_time_template"
+	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/util"
 	"time"
 )
 
 type PublishTime struct {
-	TemplateId     int                          `json:"template_id"`
-	TriggerFrom    []string                     `json:"trigger_from"`
-	TriggerAccount string                       `json:"trigger_account"`
-	Token          string                       `json:"token"`
-	Time           time.Time                    `json:"time"`
-	IsTime         bool                         `json:"is_time"`
-	Status         Status                       `json:"status"`
-	Message        *util.MyErr                  `json:"message"`
-	Template       e_time_template.TimeTemplate `json:"template"`
+	TemplateId     int                   `json:"template_id"`
+	TriggerFrom    []string              `json:"trigger_from"`
+	TriggerAccount string                `json:"trigger_account"`
+	Token          string                `json:"token"`
+	Time           time.Time             `json:"time"`
+	IsTime         bool                  `json:"is_time"`
+	Status         Status                `json:"status"`
+	Message        *util.MyErr           `json:"message"`
+	TimeData       e_time_data.TimeDatum `json:"time_data"`
 }
 
 type Status int

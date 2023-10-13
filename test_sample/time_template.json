@@ -3,7 +3,7 @@
     "id": 2,
     "name": "update2",
     "time_data": {
-      "end_date": "2023-06-02T00:00:00+08:00",
+      "end_date": "2025-06-02T00:00:00+08:00",
       "end_time": "04:02:02",
       "interval_seconds": 20,
       "t_condition": [
@@ -19,9 +19,9 @@
     "id": 1,
     "name": "update1",
     "time_data": {
-      "end_date": "2023-06-01T00:00:00+08:00",
-      "end_time": "3",
-      "interval_seconds": 20,
+      "end_date": "2025-06-01T00:00:00+08:00",
+      "end_time": "23:59:59",
+      "interval_seconds": 1,
       "t_condition": [
         0
       ],

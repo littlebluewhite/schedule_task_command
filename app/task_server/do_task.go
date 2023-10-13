@@ -22,7 +22,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 	// write task
 	t.writeTask(task)
 
-	stages := task.Template.Stages
+	stages := task.TaskData.Stages
 	gsr := getStages(stages)
 
 	for _, sn := range gsr.sns {
@@ -160,14 +160,14 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.TaskStage, triggerFrom []st
 		var cacheMap map[int]model.CommandTemplate
 		if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
 			cacheMap = x.(map[int]model.CommandTemplate)
-			c.Template = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
+			c.CommandData = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
 		} else {
 			t.l.Info().Printf("Cannot find command template id %v, so use template to execute command",
 				stage.CommandTemplateID)
-			c.Template = stage.CommandTemplate
+			c.CommandData = stage.CommandTemplate
 		}
 	} else {
-		c.Template = stage.CommandTemplate
+		c.CommandData = stage.CommandTemplate
 	}
 
 	return

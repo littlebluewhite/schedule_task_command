@@ -30,10 +30,3 @@ func TimeTemplateNotFound(id int) util.MyErr {
 	e := fmt.Sprintf("time template id: %d not found", id)
 	return util.MyErr(e)
 }
-
-type SendTimeTemplate struct {
-	TemplateId     int      `json:"template_id"`
-	TriggerFrom    []string `json:"trigger_from"`
-	TriggerAccount string   `json:"trigger_account"`
-	Token          string   `json:"token"`
-}

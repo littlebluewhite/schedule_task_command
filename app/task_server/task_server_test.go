@@ -108,7 +108,7 @@ func TestDoTask(t *testing.T) {
 				"c1": {"value": "1", "iv": "insert_value"},
 				"c2": {"value": "2", "iv": "insert_value"},
 			},
-			Template: e_task_template.TaskTemplate{
+			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
 				Stages: []e_task_template.TaskStage{
 					{
@@ -182,7 +182,7 @@ func TestDoTask(t *testing.T) {
 		}
 		t1 := e_task.Task{
 			Token: "test2",
-			Template: e_task_template.TaskTemplate{
+			TaskData: e_task_template.TaskTemplate{
 				Name: "test2_name",
 				Stages: []e_task_template.TaskStage{
 					{
@@ -243,7 +243,7 @@ func TestDoTask(t *testing.T) {
 		}
 		t1 := e_task.Task{
 			Token: "test2",
-			Template: e_task_template.TaskTemplate{
+			TaskData: e_task_template.TaskTemplate{
 				Name: "test2_name",
 				Stages: []e_task_template.TaskStage{
 					{
@@ -330,7 +330,7 @@ func TestDoTask(t *testing.T) {
 				"c1": {"value": "1", "iv": "insert_value"},
 				"c2": {"value": "2"},
 			},
-			Template: e_task_template.TaskTemplate{
+			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
 				Stages: []e_task_template.TaskStage{
 					{

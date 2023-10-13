@@ -1,7 +1,7 @@
 definitions:
   command.CancelBody:
     properties:
-      message:
+      client_message:
         type: string
     type: object
   command_template.SendCommand:
@@ -24,8 +24,10 @@ definitions:
     type: object
   e_command.Command:
     properties:
-      account_message:
+      client_message:
         type: string
+      command_data:
+        $ref: '#/definitions/e_command_template.CommandTemplate'
       command_id:
         type: string
       from:
@@ -40,8 +42,6 @@ definitions:
         type: integer
       status_code:
         type: integer
-      template:
-        $ref: '#/definitions/e_command_template.CommandTemplate'
       template_id:
         type: integer
       to:
@@ -389,7 +389,7 @@ definitions:
     type: object
   e_task.Task:
     properties:
-      account_message:
+      client_message:
         type: string
       from:
         type: string
@@ -401,10 +401,10 @@ definitions:
         type: object
       status:
         $ref: '#/definitions/e_task.Status'
+      task_data:
+        $ref: '#/definitions/e_task_template.TaskTemplate'
       task_id:
         type: string
-      template:
-        $ref: '#/definitions/e_task_template.TaskTemplate'
       template_id:
         type: integer
       to:
@@ -586,12 +586,12 @@ definitions:
         type: string
       status:
         type: integer
-      template:
-        $ref: '#/definitions/e_time_template.TimeTemplate'
       template_id:
         type: integer
       time:
         type: string
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatum'
       token:
         type: string
       trigger_account:
@@ -728,7 +728,7 @@ definitions:
     type: object
   task.CancelBody:
     properties:
-      message:
+      client_message:
         type: string
     type: object
   task_template.SendTask:
@@ -753,6 +753,8 @@ definitions:
     type: object
   time_template.CheckTime:
     properties:
+      time:
+        type: string
       token:
         type: string
       trigger_account:
@@ -1425,6 +1427,43 @@ paths:
       summary: execute task templates
       tags:
       - task_template
+  /api/time/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: query
+        name: template_id
+        type: integer
+      - description: is_time
+        enum:
+        - "false"
+        - "true"
+        in: query
+        name: is_time
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_time.PublishTime'
+            type: array
+      summary: get time history
+      tags:
+      - time
   /api/time_template/:
     delete:
       parameters:
@@ -1549,37 +1588,6 @@ paths:
           schema:
             type: boolean
       summary: Check time templates
-      tags:
-      - time_template
-  /api/time_template/history/{id}:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: time template id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: start time
-        in: query
-        name: start
-        required: true
-        type: string
-      - description: stop time
-        in: query
-        name: stop
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/e_time.PublishTime'
-            type: array
-      summary: get time history
       tags:
       - time_template
   /task_template/{id}:

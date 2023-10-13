@@ -23,7 +23,7 @@ func rdbSub(o *Operate, l logFile.LogFile) {
 		if err != nil {
 			l.Error().Println("send data is not correctly")
 		}
-		sc.TriggerFrom = append(sc.TriggerFrom, "redis channel")
+		sc.TriggerFrom = append(sc.TriggerFrom, "command_template redis channel")
 		c := o.generateCommand(sc)
 		_, err = o.commandS.ExecuteReturnId(ctx, c)
 		if err != nil {

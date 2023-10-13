@@ -27,7 +27,6 @@ func RegisterRouter(g group) {
 	tt.Patch("/", h.UpdateTimeTemplate)
 	tt.Delete("/", h.DeleteTimeTemplate)
 	tt.Post("/checkTime/:id", h.CheckTime)
-	tt.Get("/history/:id", h.GetHistory)
 }
 
 type group interface {

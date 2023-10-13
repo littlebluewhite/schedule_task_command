@@ -78,8 +78,8 @@ func main() {
 	//addr := sb.String()
 	apiServer := fiber.New(
 		fiber.Config{
-			ReadTimeout:  ServerConfig.ReadTimeout * time.Second,
-			WriteTimeout: ServerConfig.WriteTimeout * time.Second,
+			ReadTimeout:  ServerConfig.ReadTimeout * time.Minute,
+			WriteTimeout: ServerConfig.WriteTimeout * time.Minute,
 			AppName:      "schedule_task_command",
 			JSONEncoder:  json.Marshal,
 			JSONDecoder:  json.Unmarshal,

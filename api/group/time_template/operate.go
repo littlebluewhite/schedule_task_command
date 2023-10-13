@@ -15,6 +15,7 @@ import (
 	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
+	"time"
 )
 
 type Operate struct {
@@ -223,28 +224,31 @@ func (o *Operate) Delete(ids []int32) error {
 }
 
 func (o *Operate) CheckTime(id int, c CheckTime) (isTime bool, err error) {
-	st := e_time_template.SendTimeTemplate{
+	st := SendTime{
 		TemplateId:     id,
 		TriggerFrom:    c.TriggerFrom,
 		TriggerAccount: c.TriggerAccount,
 		Token:          c.Token,
+		Time:           c.Time,
 	}
 	pt := o.generatePublishTime(st)
 	isTime, err = o.timeS.Execute(pt)
 	return
 }
 
-func (o *Operate) GetHistory(templateId, start, stop string) ([]e_time.PublishTime, error) {
-	data, err := o.timeS.ReadFromHistory(templateId, start, stop)
-	return data, err
-}
-
-func (o *Operate) generatePublishTime(st e_time_template.SendTimeTemplate) (pt e_time.PublishTime) {
+func (o *Operate) generatePublishTime(st SendTime) (pt e_time.PublishTime) {
+	var ti time.Time
+	if st.Time == nil {
+		ti = time.Now()
+	} else {
+		ti = *st.Time
+	}
 	pt = e_time.PublishTime{
 		TemplateId:     st.TemplateId,
 		TriggerFrom:    st.TriggerFrom,
 		TriggerAccount: st.TriggerAccount,
 		Token:          st.Token,
+		Time:           ti,
 	}
 	ttList, err := o.findCache([]int32{int32(st.TemplateId)})
 	if err != nil {
@@ -252,6 +256,6 @@ func (o *Operate) generatePublishTime(st e_time_template.SendTimeTemplate) (pt e
 		pt.Message = &CannotFindTemplate
 		return
 	}
-	pt.Template = e_time_template.Format(ttList)[0]
+	pt.TimeData = e_time_template.Format(ttList)[0].TimeData
 	return
 }

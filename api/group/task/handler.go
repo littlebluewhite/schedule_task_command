@@ -87,7 +87,7 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 		h.l.Error().Println("CancelTask: ", err)
 		return util.Err(c, err, 0)
 	}
-	err := h.o.Cancel(taskId, entry.Message)
+	err := h.o.Cancel(taskId, entry.ClientMessage)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}
