@@ -2,12 +2,20 @@
 
 ### Task Server
 - Cancel task 增加 message
+- history 可搜尋全部狀態
 
 ### Command Server
 - Cancel command 增加 message
+- history 可搜尋全部狀態
 
 ### Task Template API
 - mCondition id 顯示
+
+### Time API
+- [GET] history
+
+### Time Server
+- redis topic 修改傳入格式
 
 ------------------------------------------------------------------
 ## 下一個版本預計完成

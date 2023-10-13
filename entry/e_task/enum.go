@@ -49,8 +49,8 @@ type TaskPub struct {
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
 	Stages         map[int]TaskStageC           `json:"stages"`
-	AccountMessage string                       `json:"account_message"`
+	ClientMessage  string                       `json:"client_message"`
 	Message        string                       `json:"message"`
 	TemplateID     int                          `json:"template_id"`
-	Template       e_task_template.TaskTemplate `json:"template"`
+	TaskData       e_task_template.TaskTemplate `json:"task_data"`
 }

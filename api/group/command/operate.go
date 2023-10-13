@@ -46,7 +46,7 @@ func (o *Operate) Cancel(commandId, message string) error {
 
 func (o *Operate) GetHistory(templateId, start, stop, status string) ([]e_command.CommandPub, error) {
 	s := e_command.S2Status(&status)
-	if s != e_command.Success && s != e_command.Failure && s != e_command.Cancel {
+	if s != e_command.Success && s != e_command.Failure && s != e_command.Cancel && status != "" {
 		return nil, HistoryStatusErr
 	}
 	ht, e := o.commandS.ReadFromHistory(templateId, start, stop, status)

@@ -112,7 +112,7 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	}
 	from := time.Now()
 	task.From = from
-	taskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
+	taskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.TaskData.Name, from.UnixMicro())
 	task.TaskId = taskId
 	go func() {
 		t.doTask(ctx, task)
@@ -132,7 +132,7 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	}
 	from := time.Now()
 	task.From = from
-	task.TaskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.Template.Name, from.UnixMicro())
+	task.TaskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.TaskData.Name, from.UnixMicro())
 	ch := make(chan e_task.Task)
 	go func() {
 		ch <- t.doTask(ctx, task)
@@ -150,7 +150,7 @@ func (t *TaskServer[T]) CancelTask(taskId, message string) error {
 	if task.Status.TStatus != e_task.Process {
 		return TaskCannotCancel
 	}
-	task.AccountMessage = message
+	task.ClientMessage = message
 	t.writeTask(task)
 	task.CancelFunc()
 	return nil
@@ -256,8 +256,8 @@ func (t *TaskServer[T]) getVariables(task e_task.Task) e_task.Task {
 		v := make(map[string]map[string]string)
 		task.Variables = v
 		// template have variables
-		if task.Template.Variable != nil {
-			e := json.Unmarshal(task.Template.Variable, &v)
+		if task.TaskData.Variable != nil {
+			e := json.Unmarshal(task.TaskData.Variable, &v)
 			if e != nil {
 				task.Message = &TaskTemplateVariable
 				return task

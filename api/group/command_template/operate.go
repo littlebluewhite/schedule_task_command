@@ -285,7 +285,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		return
 	}
 	ct := e_command_template.Format(cList)[0]
-	c.Template = ct
+	c.CommandData = ct
 
 	return
 }

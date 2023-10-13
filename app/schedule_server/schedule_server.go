@@ -9,6 +9,7 @@ import (
 	"schedule_task_command/entry/e_schedule"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
+	"schedule_task_command/entry/e_time"
 	"schedule_task_command/util/logFile"
 	"sync"
 	"time"
@@ -77,22 +78,32 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 		for _, sItem := range cacheMap {
 			go func(wg *sync.WaitGroup, schedule e_schedule.Schedule, t time.Time) {
 				defer wg.Done()
-				isTime := schedule.CheckTimeData(t)
-				isActive := isTime && schedule.Enabled
-				if isActive {
+				if !schedule.Enabled {
+					return
+				}
+				scheduleId := fmt.Sprintf("%d", schedule.ID)
+				token := fmt.Sprintf("schedule-%s-%s", scheduleId, t)
+				triggerFrom := []string{"schedule", scheduleId}
+				// Check time
+				pt := e_time.PublishTime{
+					TriggerFrom: triggerFrom,
+					Token:       token,
+					Time:        t,
+					TimeData:    schedule.TimeData,
+				}
+				isTime, _ := s.timeS.Execute(pt)
+				if isTime {
 					// Task execute
-					scheduleId := fmt.Sprintf("%d", schedule.ID)
 					s.l.Info().Printf("id: %d execute", scheduleId)
-					now := time.Now()
-					token := fmt.Sprintf("schedule-%s-%s-%s", scheduleId, schedule.Tags, now)
 					st := e_task_template.SendTaskTemplate{
 						TemplateId:  int(schedule.TaskTemplateID),
-						TriggerFrom: []string{"schedule", scheduleId},
+						TriggerFrom: triggerFrom,
 						Token:       token,
 					}
 					task := s.generateTask(st)
 					_ = s.taskS.ExecuteWait(ctx, task)
 				}
+				wg.Done()
 			}(wg, sItem, t)
 		}
 		wg.Wait()
@@ -127,8 +138,7 @@ func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate)
 		task.Message = &e_command_template.CannotFindTemplate
 		return
 	}
-	tt := e_task_template.Format([]model.TaskTemplate{mt})[0]
-	task.Template = tt
+	task.TaskData = e_task_template.Format([]model.TaskTemplate{mt})[0]
 	return
 }
 

@@ -101,7 +101,7 @@ func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Comma
 	from := time.Now()
 	com.From = from
 	commandId = fmt.Sprintf("%v_%v_%v_%v",
-		com.TemplateId, com.Template.Name, com.Template.Protocol, from.UnixMicro())
+		com.TemplateId, com.CommandData.Name, com.CommandData.Protocol, from.UnixMicro())
 	com.CommandId = commandId
 	go func() {
 		c.doCommand(ctx, com)
@@ -125,7 +125,7 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 	from := time.Now()
 	com.From = from
 	com.CommandId = fmt.Sprintf("%v_%v_%v_%v",
-		com.TemplateId, com.Template.Name, com.Template.Protocol, from.UnixMicro())
+		com.TemplateId, com.CommandData.Name, com.CommandData.Protocol, from.UnixMicro())
 	ch := make(chan e_command.Command)
 	go func() {
 		ch <- c.doCommand(ctx, com)
@@ -136,7 +136,7 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
 	ctx, cancel := context.WithTimeout(ctx,
-		time.Duration(com.Template.Timeout)*time.Millisecond)
+		time.Duration(com.CommandData.Timeout)*time.Millisecond)
 	defer cancel()
 
 	com.Status = e_command.Process
@@ -169,7 +169,7 @@ func (c *CommandServer) CancelCommand(commandId, message string) error {
 	if com.Status != e_command.Process {
 		return CommandCannotCancel
 	}
-	com.AccountMessage = message
+	com.ClientMessage = message
 	c.writeCommand(com)
 	com.CancelFunc()
 	return nil
@@ -198,7 +198,7 @@ Loop1:
 func (c *CommandServer) writeToHistory(com e_command.Command) {
 	ctx := context.Background()
 	tp := e_command.ToPub(com)
-	fmt.Println(string(tp.Template.Http.Body))
+	fmt.Println(string(tp.CommandData.Http.Body))
 	jCom, err := json.Marshal(tp)
 	if err != nil {
 		panic(err)
@@ -273,8 +273,8 @@ func (c *CommandServer) getVariables(com e_command.Command) e_command.Command {
 		v := make(map[string]string)
 		com.Variables = v
 		// template have variables
-		if com.Template.Variable != nil {
-			e := json.Unmarshal(com.Template.Variable, &v)
+		if com.CommandData.Variable != nil {
+			e := json.Unmarshal(com.CommandData.Variable, &v)
 			if e != nil {
 				com.Message = &CommandTemplateVariable
 				return com

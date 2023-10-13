@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
 	"schedule_task_command/util/logFile"
@@ -18,7 +17,6 @@ type hOperate interface {
 	Delete([]int32) error
 	ReloadCache() error
 	CheckTime(id int, c CheckTime) (bool, error)
-	GetHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
 }
 type Handler struct {
 	o hOperate
@@ -164,28 +162,4 @@ func (h *Handler) CheckTime(c *fiber.Ctx) error {
 	}
 	fmt.Println(isTime)
 	return c.Status(200).JSON(isTime)
-}
-
-// GetHistory swagger
-// @Summary get time history
-// @Tags    time_template
-// @Accept  json
-// @Produce json
-// @Param       id  path     int true "time template id"
-// @Param       start  query     string true "start time"
-// @Param       stop  query     string false "stop time"
-// @Success 200 {array} e_time.PublishTime
-// @Router  /api/time_template/history/{id} [get]
-func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	id := c.Params("id")
-	start := c.Query("start")
-	if start == "" {
-		return util.Err(c, NoStartTime, 0)
-	}
-	stop := c.Query("stop")
-	data, err := h.o.GetHistory(id, start, stop)
-	if err != nil {
-		return util.Err(c, err, 0)
-	}
-	return c.Status(200).JSON(data)
 }

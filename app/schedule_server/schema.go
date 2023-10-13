@@ -19,5 +19,5 @@ type taskServer interface {
 type timeServer interface {
 	Start(ctx context.Context)
 	Execute(pt e_time.PublishTime) (bool, error)
-	ReadFromHistory(templateId, start, stop string) ([]e_time.PublishTime, error)
+	ReadFromHistory(templateId, start, stop, isTime string) ([]e_time.PublishTime, error)
 }

@@ -1019,6 +1019,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/time/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time"
+                ],
+                "summary": "get time history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "false",
+                            "true"
+                        ],
+                        "type": "string",
+                        "description": "is_time",
+                        "name": "is_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time.PublishTime"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/time_template/": {
             "get": {
                 "description": "Get all time templates",
@@ -1184,53 +1240,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/time_template/history/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "time_template"
-                ],
-                "summary": "get time history",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "time template id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "start time",
-                        "name": "start",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "stop time",
-                        "name": "stop",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/e_time.PublishTime"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/time_template/{id}": {
             "get": {
                 "description": "Get time templates by id",
@@ -1294,7 +1303,7 @@ const docTemplate = `{
         "command.CancelBody": {
             "type": "object",
             "properties": {
-                "message": {
+                "client_message": {
                     "type": "string"
                 }
             }
@@ -1329,8 +1338,11 @@ const docTemplate = `{
         "e_command.Command": {
             "type": "object",
             "properties": {
-                "account_message": {
+                "client_message": {
                     "type": "string"
+                },
+                "command_data": {
+                    "$ref": "#/definitions/e_command_template.CommandTemplate"
                 },
                 "command_id": {
                     "type": "string"
@@ -1352,9 +1364,6 @@ const docTemplate = `{
                 },
                 "status_code": {
                     "type": "integer"
-                },
-                "template": {
-                    "$ref": "#/definitions/e_command_template.CommandTemplate"
                 },
                 "template_id": {
                     "type": "integer"
@@ -1881,7 +1890,7 @@ const docTemplate = `{
         "e_task.Task": {
             "type": "object",
             "properties": {
-                "account_message": {
+                "client_message": {
                     "type": "string"
                 },
                 "from": {
@@ -1899,11 +1908,11 @@ const docTemplate = `{
                 "status": {
                     "$ref": "#/definitions/e_task.Status"
                 },
+                "task_data": {
+                    "$ref": "#/definitions/e_task_template.TaskTemplate"
+                },
                 "task_id": {
                     "type": "string"
-                },
-                "template": {
-                    "$ref": "#/definitions/e_task_template.TaskTemplate"
                 },
                 "template_id": {
                     "type": "integer"
@@ -2179,14 +2188,14 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "template": {
-                    "$ref": "#/definitions/e_time_template.TimeTemplate"
-                },
                 "template_id": {
                     "type": "integer"
                 },
                 "time": {
                     "type": "string"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
                 "token": {
                     "type": "string"
@@ -2391,7 +2400,7 @@ const docTemplate = `{
         "task.CancelBody": {
             "type": "object",
             "properties": {
-                "message": {
+                "client_message": {
                     "type": "string"
                 }
             }
@@ -2429,6 +2438,9 @@ const docTemplate = `{
         "time_template.CheckTime": {
             "type": "object",
             "properties": {
+                "time": {
+                    "type": "string"
+                },
                 "token": {
                     "type": "string"
                 },

@@ -16,6 +16,7 @@ import (
 	"schedule_task_command/api/group/schedule"
 	"schedule_task_command/api/group/task"
 	"schedule_task_command/api/group/task_template"
+	"schedule_task_command/api/group/time"
 	"schedule_task_command/api/group/time_template"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/util/logFile"
@@ -48,6 +49,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
 	task_template.RegisterRouter(g)
 	task.RegisterRouter(g)
 	time_template.RegisterRouter(g)
+	time.RegisterRouter(g)
 }
 
 func getFiberLogFile(log logFile.LogFile) io.Writer {
