@@ -3,15 +3,13 @@ package task_server
 import (
 	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
 	"sync"
 )
 
 type chs struct {
-	rec chan e_task.Task
-	mu  *sync.RWMutex
+	mu *sync.RWMutex
 }
 
 type getStagesResult struct {

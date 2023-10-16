@@ -33,8 +33,8 @@ func TestExecuteReturnId(t *testing.T) {
 		task := e_task.Task{
 			Token: "test1",
 		}
-		taskId, err := ts.ExecuteReturnId(ctx, task)
-		require.NotEqual(t, taskId, "")
+		id, err := ts.ExecuteReturnId(ctx, task)
+		require.NotEqual(t, id, "")
 		require.NoError(t, err)
 		time.Sleep(1 * time.Second)
 		fmt.Println(ts.GetList())
@@ -45,9 +45,9 @@ func TestExecuteReturnId(t *testing.T) {
 			Token:   "test2",
 			Message: &e,
 		}
-		taskId, err := ts.ExecuteReturnId(ctx, task)
+		id, err := ts.ExecuteReturnId(ctx, task)
 		require.Error(t, err)
-		require.Equal(t, taskId, "")
+		require.Equal(t, id, "")
 		time.Sleep(1 * time.Second)
 		fmt.Println(ts.GetList())
 	})
@@ -104,14 +104,15 @@ func TestDoTask(t *testing.T) {
 		}
 		t1 := e_task.Task{
 			Token: "test1",
-			Variables: map[string]map[string]string{
-				"c1": {"value": "1", "iv": "insert_value"},
-				"c2": {"value": "2", "iv": "insert_value"},
+			Variables: map[int]map[string]string{
+				1: {"value": "1", "iv": "insert_value"},
+				2: {"value": "2", "iv": "insert_value"},
 			},
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
 				Stages: []e_task_template.TaskStage{
 					{
+						ID:          3,
 						Name:        "c3",
 						StageNumber: 2,
 						Mode:        e_task_template.Monitor,
@@ -124,6 +125,7 @@ func TestDoTask(t *testing.T) {
 						},
 					},
 					{
+						ID:          2,
 						Name:        "c2",
 						StageNumber: 2,
 						Mode:        e_task_template.Execute,
@@ -135,6 +137,7 @@ func TestDoTask(t *testing.T) {
 						},
 					},
 					{
+						ID:          1,
 						Name:        "c1",
 						StageNumber: 1,
 						Mode:        e_task_template.Execute,
@@ -148,9 +151,9 @@ func TestDoTask(t *testing.T) {
 				},
 			},
 		}
-		taskId, _ := ts.ExecuteReturnId(ctx, t1)
+		id, _ := ts.ExecuteReturnId(ctx, t1)
 		time.Sleep(3 * time.Second)
-		task := ts.ReadMap()[taskId]
+		task := ts.ReadMap()[id]
 		fmt.Printf("task: %+v\n", task)
 		cm := ts.GetCommandServer().ReadMap()
 		fmt.Printf("command: %+v\n", cm)
@@ -272,21 +275,21 @@ func TestDoTask(t *testing.T) {
 				},
 			},
 		}
-		taskId, _ := ts.ExecuteReturnId(ctx, t1)
+		id, _ := ts.ExecuteReturnId(ctx, t1)
 		time.Sleep(1 * time.Second)
-		task := ts.ReadMap()[taskId]
+		task := ts.ReadMap()[id]
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
 		go func() {
 			time.Sleep(2 * time.Second)
-			e := ts.CancelTask(taskId, "test")
+			e := ts.CancelTask(id, "test")
 			require.NoError(t, e)
 			fmt.Println("---------------------------------------------------------")
 			wg.Done()
 		}()
 		wg.Wait()
 		time.Sleep(1 * time.Second)
-		task = ts.ReadMap()[taskId]
+		task = ts.ReadMap()[id]
 		comM := ts.GetCommandServer().ReadMap()
 		fmt.Printf("tasks: %+v\n", task)
 		fmt.Printf("coms: %+v\n", comM)
@@ -326,9 +329,9 @@ func TestDoTask(t *testing.T) {
 		}
 		t1 := e_task.Task{
 			Token: "test1",
-			Variables: map[string]map[string]string{
-				"c1": {"value": "1", "iv": "insert_value"},
-				"c2": {"value": "2"},
+			Variables: map[int]map[string]string{
+				1: {"value": "1", "iv": "insert_value"},
+				2: {"value": "2"},
 			},
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
@@ -346,6 +349,7 @@ func TestDoTask(t *testing.T) {
 						},
 					},
 					{
+						ID:          2,
 						Name:        "c2",
 						StageNumber: 2,
 						Mode:        e_task_template.Execute,
@@ -357,6 +361,7 @@ func TestDoTask(t *testing.T) {
 						},
 					},
 					{
+						ID:          1,
 						Name:        "c1",
 						StageNumber: 1,
 						Mode:        e_task_template.Execute,
@@ -370,9 +375,9 @@ func TestDoTask(t *testing.T) {
 				},
 			},
 		}
-		taskId, _ := ts.ExecuteReturnId(ctx, t1)
+		id, _ := ts.ExecuteReturnId(ctx, t1)
 		time.Sleep(3 * time.Second)
-		task := ts.ReadMap()[taskId]
+		task := ts.ReadMap()[id]
 		fmt.Printf("task: %+v\n", task)
 		cm := ts.GetCommandServer().ReadMap()
 		fmt.Printf("command: %+v\n", cm)

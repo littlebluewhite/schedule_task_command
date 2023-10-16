@@ -105,9 +105,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/command/{commandId}": {
+        "/api/command/{id}": {
             "get": {
-                "description": "Get Command by commandId",
+                "description": "Get Command by id",
                 "produces": [
                     "application/json"
                 ],
@@ -118,8 +118,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "commandId",
-                        "name": "commandId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -134,7 +134,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Cancel Command by commandId",
+                "description": "Cancel Command by id",
                 "produces": [
                     "application/json"
                 ],
@@ -145,8 +145,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "commandId",
-                        "name": "commandId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -792,9 +792,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/task/{taskId}": {
+        "/api/task/{id}": {
             "get": {
-                "description": "Get task by taskId",
+                "description": "Get task by id",
                 "produces": [
                     "application/json"
                 ],
@@ -805,8 +805,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "taskId",
-                        "name": "taskId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -821,7 +821,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Cancel task by taskId",
+                "description": "Cancel task by id",
                 "produces": [
                     "application/json"
                 ],
@@ -832,8 +832,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "taskId",
-                        "name": "taskId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -1344,11 +1344,11 @@ const docTemplate = `{
                 "command_data": {
                     "$ref": "#/definitions/e_command_template.CommandTemplate"
                 },
-                "command_id": {
-                    "type": "string"
-                },
                 "from": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
@@ -1871,7 +1871,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "failed_command_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "failed_command_template_id": {
                     "type": "integer"
@@ -1896,6 +1896,9 @@ const docTemplate = `{
                 "from": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -1910,9 +1913,6 @@ const docTemplate = `{
                 },
                 "task_data": {
                     "$ref": "#/definitions/e_task_template.TaskTemplate"
-                },
-                "task_id": {
-                    "type": "string"
                 },
                 "template_id": {
                     "type": "integer"
@@ -1947,7 +1947,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "command_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "from": {
                     "type": "string"
@@ -1972,6 +1972,12 @@ const docTemplate = `{
                 },
                 "to": {
                     "type": "string"
+                },
+                "variable": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -2018,6 +2024,12 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -2042,6 +2054,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2077,6 +2095,12 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -2106,12 +2130,6 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "variable": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -2131,12 +2149,6 @@ const docTemplate = `{
                     }
                 },
                 "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2163,12 +2175,6 @@ const docTemplate = `{
                     }
                 },
                 "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"

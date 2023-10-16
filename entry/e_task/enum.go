@@ -40,11 +40,11 @@ type TaskStageC struct {
 }
 
 type TaskPub struct {
-	TaskId         string                       `json:"task_id"`
+	ID             uint64                       `json:"id"`
 	Token          string                       `json:"token"`
 	From           time.Time                    `json:"from"`
 	To             *time.Time                   `json:"to"`
-	Variables      map[string]map[string]string `json:"variables"`
+	Variables      map[int]map[string]string    `json:"variables"`
 	TriggerFrom    []string                     `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`

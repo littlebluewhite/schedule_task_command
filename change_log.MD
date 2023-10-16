@@ -3,10 +3,15 @@
 ### Task Server
 - Cancel task 增加 message
 - history 可搜尋全部狀態
+- stages加上變數(Variable)
+- 刪除taskId
+- 新增ID
 
 ### Command Server
 - Cancel command 增加 message
 - history 可搜尋全部狀態
+- 刪除commandId
+- 新增ID
 
 ### Task Template API
 - mCondition id 顯示

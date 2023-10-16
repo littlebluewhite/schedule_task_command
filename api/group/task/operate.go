@@ -23,13 +23,13 @@ func (o *Operate) List() ([]e_task.Task, error) {
 	return tl, nil
 }
 
-func (o *Operate) Find(taskIds []string) ([]e_task.Task, error) {
+func (o *Operate) Find(ids []uint64) ([]e_task.Task, error) {
 	tm := o.taskS.ReadMap()
-	tl := make([]e_task.Task, 0, len(taskIds))
-	for _, taskId := range taskIds {
-		t, ok := tm[taskId]
+	tl := make([]e_task.Task, 0, len(ids))
+	for _, id := range ids {
+		t, ok := tm[id]
 		if !ok {
-			return nil, errors.New(fmt.Sprintf("cannot find task id: %s", taskId))
+			return nil, errors.New(fmt.Sprintf("cannot find id: %d", id))
 		} else {
 			tl = append(tl, t)
 		}
@@ -37,8 +37,8 @@ func (o *Operate) Find(taskIds []string) ([]e_task.Task, error) {
 	return tl, nil
 }
 
-func (o *Operate) Cancel(taskId, message string) error {
-	if err := o.taskS.CancelTask(taskId, message); err != nil {
+func (o *Operate) Cancel(id uint64, message string) error {
+	if err := o.taskS.CancelTask(id, message); err != nil {
 		return err
 	}
 	return nil

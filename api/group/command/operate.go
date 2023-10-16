@@ -23,13 +23,13 @@ func (o *Operate) List() ([]e_command.Command, error) {
 	return tl, nil
 }
 
-func (o *Operate) Find(commandIds []string) ([]e_command.Command, error) {
+func (o *Operate) Find(ids []uint64) ([]e_command.Command, error) {
 	tm := o.commandS.ReadMap()
-	tl := make([]e_command.Command, 0, len(commandIds))
-	for _, commandId := range commandIds {
-		t, ok := tm[commandId]
+	tl := make([]e_command.Command, 0, len(ids))
+	for _, id := range ids {
+		t, ok := tm[id]
 		if !ok {
-			return nil, errors.New(fmt.Sprintf("cannot find command id: %s", commandId))
+			return nil, errors.New(fmt.Sprintf("cannot find command id: %d", id))
 		} else {
 			tl = append(tl, t)
 		}
@@ -37,8 +37,8 @@ func (o *Operate) Find(commandIds []string) ([]e_command.Command, error) {
 	return tl, nil
 }
 
-func (o *Operate) Cancel(commandId, message string) error {
-	if err := o.commandS.CancelCommand(commandId, message); err != nil {
+func (o *Operate) Cancel(id uint64, message string) error {
+	if err := o.commandS.CancelCommand(id, message); err != nil {
 		return err
 	}
 	return nil

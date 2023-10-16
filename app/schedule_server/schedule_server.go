@@ -34,22 +34,15 @@ func NewScheduleServer[T, U any](dbs dbs.Dbs, taskS taskServer, timeS timeServer
 
 func (s *ScheduleServer[T, U]) Start(ctx context.Context, interval, removeTime time.Duration) {
 	s.l.Info().Println("Schedule server started")
-	defer s.l.Error().Println("Schedule server stopped")
-	wg := &sync.WaitGroup{}
-	wg.Add(3)
-	go func(wg *sync.WaitGroup) {
+	go func() {
 		s.listen(ctx, interval)
-		wg.Done()
-	}(wg)
-	go func(wg *sync.WaitGroup) {
+	}()
+	go func() {
 		s.taskS.Start(ctx, removeTime)
-		wg.Done()
-	}(wg)
-	go func(wg *sync.WaitGroup) {
+	}()
+	go func() {
 		s.timeS.Start(ctx)
-		wg.Done()
-	}(wg)
-	wg.Wait()
+	}()
 }
 
 func (s *ScheduleServer[T, U]) listen(ctx context.Context, duration time.Duration) {

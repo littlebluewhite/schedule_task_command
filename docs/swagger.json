@@ -97,9 +97,9 @@
                 }
             }
         },
-        "/api/command/{commandId}": {
+        "/api/command/{id}": {
             "get": {
-                "description": "Get Command by commandId",
+                "description": "Get Command by id",
                 "produces": [
                     "application/json"
                 ],
@@ -110,8 +110,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "commandId",
-                        "name": "commandId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -126,7 +126,7 @@
                 }
             },
             "delete": {
-                "description": "Cancel Command by commandId",
+                "description": "Cancel Command by id",
                 "produces": [
                     "application/json"
                 ],
@@ -137,8 +137,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "commandId",
-                        "name": "commandId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -784,9 +784,9 @@
                 }
             }
         },
-        "/api/task/{taskId}": {
+        "/api/task/{id}": {
             "get": {
-                "description": "Get task by taskId",
+                "description": "Get task by id",
                 "produces": [
                     "application/json"
                 ],
@@ -797,8 +797,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "taskId",
-                        "name": "taskId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -813,7 +813,7 @@
                 }
             },
             "delete": {
-                "description": "Cancel task by taskId",
+                "description": "Cancel task by id",
                 "produces": [
                     "application/json"
                 ],
@@ -824,8 +824,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "taskId",
-                        "name": "taskId",
+                        "description": "id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -1336,11 +1336,11 @@
                 "command_data": {
                     "$ref": "#/definitions/e_command_template.CommandTemplate"
                 },
-                "command_id": {
-                    "type": "string"
-                },
                 "from": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
@@ -1863,7 +1863,7 @@
             "type": "object",
             "properties": {
                 "failed_command_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "failed_command_template_id": {
                     "type": "integer"
@@ -1888,6 +1888,9 @@
                 "from": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -1902,9 +1905,6 @@
                 },
                 "task_data": {
                     "$ref": "#/definitions/e_task_template.TaskTemplate"
-                },
-                "task_id": {
-                    "type": "string"
                 },
                 "template_id": {
                     "type": "integer"
@@ -1939,7 +1939,7 @@
             "type": "object",
             "properties": {
                 "command_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "from": {
                     "type": "string"
@@ -1964,6 +1964,12 @@
                 },
                 "to": {
                     "type": "string"
+                },
+                "variable": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -2010,6 +2016,12 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -2034,6 +2046,12 @@
                     "type": "integer"
                 },
                 "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2069,6 +2087,12 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -2098,12 +2122,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "variable": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -2123,12 +2141,6 @@
                     }
                 },
                 "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2155,12 +2167,6 @@
                     }
                 },
                 "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "variable": {
                     "type": "array",
                     "items": {
                         "type": "integer"

@@ -12,3 +12,4 @@ DROP table IF EXISTS task_stage;
 DROP table IF EXISTS m_condition;
 DROP table IF EXISTS monitor;
 DROP table IF EXISTS command_template;
+DROP table IF EXISTS counter;

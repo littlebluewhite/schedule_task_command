@@ -36,7 +36,7 @@ func (s *Status) UnmarshalJSON(data []byte) error {
 }
 
 type Command struct {
-	CommandId      string                             `json:"command_id"`
+	ID             uint64                             `json:"id"`
 	Token          string                             `json:"token"`
 	From           time.Time                          `json:"from"`
 	To             *time.Time                         `json:"to"`
@@ -54,7 +54,7 @@ type Command struct {
 }
 
 type CommandPub struct {
-	CommandId      string                             `json:"command_id"`
+	ID             uint64                             `json:"id"`
 	Token          string                             `json:"token"`
 	From           time.Time                          `json:"from"`
 	To             *time.Time                         `json:"to"`

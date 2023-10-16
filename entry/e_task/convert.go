@@ -5,7 +5,7 @@ func ToPub(t Task) (tp TaskPub) {
 	if t.Message != nil {
 		m = t.Message.Error()
 	}
-	tp.TaskId = t.TaskId
+	tp.ID = t.ID
 	tp.Token = t.Token
 	tp.From = t.From
 	tp.To = t.To

@@ -255,9 +255,9 @@ func (o *Operate) Delete(ids []int32) error {
 	return nil
 }
 
-func (o *Operate) Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (taskId string, err error) {
+func (o *Operate) Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (id uint64, err error) {
 	task := o.generateTask(st)
-	taskId, err = o.taskS.ExecuteReturnId(ctx, task)
+	id, err = o.taskS.ExecuteReturnId(ctx, task)
 	return
 }
 

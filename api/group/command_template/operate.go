@@ -264,9 +264,9 @@ func (o *Operate) Delete(ids []int32) error {
 	return nil
 }
 
-func (o *Operate) Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (commandId string, err error) {
+func (o *Operate) Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (id uint64, err error) {
 	c := o.generateCommand(sc)
-	commandId, err = o.commandS.ExecuteReturnId(ctx, c)
+	id, err = o.commandS.ExecuteReturnId(ctx, c)
 	return
 }
 
