@@ -100,9 +100,15 @@ type CommandTemplateUpdate struct {
 	Mqtt        *MqttCommand      `json:"mqtt"`
 	Websocket   *WebsocketCommand `json:"websocket"`
 	Redis       *RedisCommand     `json:"redis"`
-	Monitor     *Monitor          `json:"monitor"`
+	Monitor     *MonitorUpdate    `json:"monitor"`
 	Tags        json.RawMessage   `json:"tags"`
 	Variable    json.RawMessage   `json:"variable"`
+}
+
+type MonitorUpdate struct {
+	StatusCode  *int32       `json:"status_code" binding:"required"`
+	Interval    *int32       `json:"interval" binding:"required"`
+	MConditions []MCondition `json:"m_conditions"`
 }
 
 type SendCommandTemplate struct {

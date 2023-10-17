@@ -247,9 +247,17 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 				mResult = append(mResult, i)
 			}
 			ct.Monitor = &model.Monitor{
-				StatusCode:  u.Monitor.StatusCode,
-				Interval:    u.Monitor.Interval,
-				MConditions: mResult,
+				ID:                ct.Monitor.ID,
+				StatusCode:        ct.Monitor.StatusCode,
+				Interval:          ct.Monitor.Interval,
+				CommandTemplateID: ct.Monitor.CommandTemplateID,
+				MConditions:       mResult,
+			}
+			if u.Monitor.StatusCode != nil {
+				ct.Monitor.StatusCode = *u.Monitor.StatusCode
+			}
+			if u.Monitor.Interval != nil {
+				ct.Monitor.Interval = *u.Monitor.Interval
 			}
 		}
 		result = append(result, &ct)

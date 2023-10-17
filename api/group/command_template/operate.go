@@ -160,16 +160,17 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 				mcUpdate := make([]map[string]interface{}, 0, 10)
 				mcCreate := make([]*model.MCondition, 0, 10)
 				mcDelete := make([]int32, 0, 10)
+				MonitorId := item.Monitor.ID
 				for _, mCondition := range item.Monitor.MConditions {
 					mc := mCondition
 					switch {
 					case mc.ID < 0:
 						mcDelete = append(mcDelete, -mc.ID)
 					case mc.ID == 0:
-						id := item.Monitor.ID
-						mc.MonitorID = &id
+						mc.MonitorID = &MonitorId
 						mcCreate = append(mcCreate, &mc)
 					case mc.ID > 0:
+						mc.MonitorID = &MonitorId
 						mcUpdate = append(mcUpdate, util.StructToMap(mc))
 					}
 				}
@@ -221,11 +222,15 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 				}
 			}
 			t := util.StructToMap(item)
+			delete(t, "http")
+			delete(t, "mqtt")
+			delete(t, "websocket")
+			delete(t, "redis")
+			delete(t, "monitor")
 			if _, err := tx.CommandTemplate.WithContext(ctx).Where(tx.CommandTemplate.ID.Eq(
 				item.ID)).Updates(t); err != nil {
 				return err
 			}
-			return nil
 		}
 		newCommandTemplate, err := o.findDB(ctx, tx, ids)
 		if err != nil {
