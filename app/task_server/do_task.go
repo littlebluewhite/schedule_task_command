@@ -100,7 +100,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 		go func(stage e_task_template.TaskStage) {
 			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com,
+			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com,
 				tags: stage.Tags}
 		}(stage)
 	}
