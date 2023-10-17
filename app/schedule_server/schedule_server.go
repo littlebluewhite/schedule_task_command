@@ -55,7 +55,6 @@ func (s *ScheduleServer[T, U]) listen(ctx context.Context, duration time.Duratio
 		case t := <-ticker.C:
 			go s.checkSchedule(ctx, t)
 			fmt.Println("Invoked at ", t)
-		default:
 		}
 	}
 }
