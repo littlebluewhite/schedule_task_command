@@ -33,6 +33,7 @@ func newTaskStage(db *gorm.DB, opts ...gen.DOOption) taskStage {
 	_taskStage.Mode = field.NewString(tableName, "mode")
 	_taskStage.CommandTemplateID = field.NewInt32(tableName, "command_template_id")
 	_taskStage.Tags = field.NewBytes(tableName, "tags")
+	_taskStage.Variable = field.NewBytes(tableName, "variable")
 	_taskStage.CommandTemplate = taskStageBelongsToCommandTemplate{
 		db: db.Session(&gorm.Session{}),
 
@@ -87,6 +88,7 @@ type taskStage struct {
 	Mode              field.String
 	CommandTemplateID field.Int32
 	Tags              field.Bytes
+	Variable          field.Bytes
 	CommandTemplate   taskStageBelongsToCommandTemplate
 
 	fieldMap map[string]field.Expr
@@ -110,6 +112,7 @@ func (t *taskStage) updateTableName(table string) *taskStage {
 	t.Mode = field.NewString(table, "mode")
 	t.CommandTemplateID = field.NewInt32(table, "command_template_id")
 	t.Tags = field.NewBytes(table, "tags")
+	t.Variable = field.NewBytes(table, "variable")
 
 	t.fillFieldMap()
 
@@ -136,13 +139,14 @@ func (t *taskStage) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *taskStage) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 7)
+	t.fieldMap = make(map[string]field.Expr, 8)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["name"] = t.Name
 	t.fieldMap["stage_number"] = t.StageNumber
 	t.fieldMap["mode"] = t.Mode
 	t.fieldMap["command_template_id"] = t.CommandTemplateID
 	t.fieldMap["tags"] = t.Tags
+	t.fieldMap["variable"] = t.Variable
 
 }
 

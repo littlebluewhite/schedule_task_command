@@ -5,7 +5,7 @@ func ToPub(c Command) (cp CommandPub) {
 	if c.Message != nil {
 		m = c.Message.Error()
 	}
-	cp.CommandId = c.CommandId
+	cp.ID = c.ID
 	cp.Token = c.Token
 	cp.From = c.From
 	cp.To = c.To

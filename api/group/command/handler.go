@@ -10,8 +10,8 @@ import (
 
 type hOperate interface {
 	List() ([]e_command.Command, error)
-	Find(commandIds []string) ([]e_command.Command, error)
-	Cancel(commandId, message string) error
+	Find(ids []uint64) ([]e_command.Command, error)
+	Cancel(id uint64, message string) error
 	GetHistory(templateId, status, start, stop string) ([]e_command.CommandPub, error)
 }
 
@@ -42,24 +42,24 @@ func (h *Handler) GetCommands(c *fiber.Ctx) error {
 	return c.Status(200).JSON(e_command.ToPubSlice(commands))
 }
 
-// GetCommandByCommandId swagger
+// GetCommandById swagger
 // @Summary     Show Command
-// @Description Get Command by commandId
+// @Description Get Command by id
 // @Tags        Command
 // @Produce     json
-// @Param       commandId  path     string true "commandId"
+// @Param       id  path     string true "id"
 // @Success     200 {object} e_command.Command
-// @Router      /api/command/{commandId} [get]
-func (h *Handler) GetCommandByCommandId(c *fiber.Ctx) error {
-	commandId := c.Params("commandId")
-	if commandId == "" {
-		e := errors.New("commandId is error")
-		h.l.Error().Println("GetCommandByCommandId: ", e)
+// @Router      /api/command/{id} [get]
+func (h *Handler) GetCommandById(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetCommandById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]string{commandId})
+	ht, err := h.o.Find([]uint64{uint64(id)})
 	if err != nil {
-		h.l.Error().Println("GetCommandByCommandId: ", err)
+		h.l.Error().Println("GetCommandById: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_command.ToPub(ht[0]))
@@ -67,18 +67,18 @@ func (h *Handler) GetCommandByCommandId(c *fiber.Ctx) error {
 
 // CancelCommand swagger
 // @Summary     cancel Command
-// @Description Cancel Command by commandId
+// @Description Cancel Command by id
 // @Tags        Command
 // @Produce     json
-// @Param       commandId  path     string true "commandId"
+// @Param       id  path     string true "id"
 // @Param   message body     command.CancelBody true "cancel message"
 // @Success     200 {string} cancel successfully
-// @Router      /api/command/{commandId} [Delete]
+// @Router      /api/command/{id} [Delete]
 func (h *Handler) CancelCommand(c *fiber.Ctx) error {
-	commandId := c.Params("commandId")
-	if commandId == "" {
-		e := errors.New("commandId is error")
-		h.l.Error().Println("GetCommandByCommandId: ", e)
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetCommandById: ", e)
 		return util.Err(c, e, 0)
 	}
 	entry := CancelBody{}
@@ -86,7 +86,7 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 		h.l.Error().Println("CancelTask: ", err)
 		return util.Err(c, err, 0)
 	}
-	err := h.o.Cancel(commandId, entry.ClientMessage)
+	err = h.o.Cancel(uint64(id), entry.ClientMessage)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

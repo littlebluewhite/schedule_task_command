@@ -19,6 +19,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:                db,
 		CommandTemplate:   newCommandTemplate(db, opts...),
+		Counter:           newCounter(db, opts...),
 		HTTPSCommand:      newHTTPSCommand(db, opts...),
 		HeaderTemplate:    newHeaderTemplate(db, opts...),
 		MCondition:        newMCondition(db, opts...),
@@ -39,6 +40,7 @@ type Query struct {
 	db *gorm.DB
 
 	CommandTemplate   commandTemplate
+	Counter           counter
 	HTTPSCommand      hTTPSCommand
 	HeaderTemplate    headerTemplate
 	MCondition        mCondition
@@ -60,6 +62,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:                db,
 		CommandTemplate:   q.CommandTemplate.clone(db),
+		Counter:           q.Counter.clone(db),
 		HTTPSCommand:      q.HTTPSCommand.clone(db),
 		HeaderTemplate:    q.HeaderTemplate.clone(db),
 		MCondition:        q.MCondition.clone(db),
@@ -88,6 +91,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:                db,
 		CommandTemplate:   q.CommandTemplate.replaceDB(db),
+		Counter:           q.Counter.replaceDB(db),
 		HTTPSCommand:      q.HTTPSCommand.replaceDB(db),
 		HeaderTemplate:    q.HeaderTemplate.replaceDB(db),
 		MCondition:        q.MCondition.replaceDB(db),
@@ -106,6 +110,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 
 type queryCtx struct {
 	CommandTemplate   *commandTemplateDo
+	Counter           *counterDo
 	HTTPSCommand      *hTTPSCommandDo
 	HeaderTemplate    *headerTemplateDo
 	MCondition        *mConditionDo
@@ -124,6 +129,7 @@ type queryCtx struct {
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		CommandTemplate:   q.CommandTemplate.WithContext(ctx),
+		Counter:           q.Counter.WithContext(ctx),
 		HTTPSCommand:      q.HTTPSCommand.WithContext(ctx),
 		HeaderTemplate:    q.HeaderTemplate.WithContext(ctx),
 		MCondition:        q.MCondition.WithContext(ctx),

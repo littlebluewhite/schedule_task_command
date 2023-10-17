@@ -16,7 +16,7 @@ type hOperate interface {
 	Update([]*e_task_template.TaskTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
-	Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (taskId string, err error)
+	Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (id uint64, err error)
 }
 
 type Handler struct {
@@ -162,9 +162,9 @@ func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
 		Token:          entry.Token,
 		Variables:      entry.Variables,
 	}
-	taskId, err := h.o.Execute(c.UserContext(), st)
+	tid, err := h.o.Execute(c.UserContext(), st)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(taskId)
+	return c.Status(200).JSON(tid)
 }

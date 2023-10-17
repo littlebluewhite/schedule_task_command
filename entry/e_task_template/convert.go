@@ -21,6 +21,7 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 				Mode:              S2Mode(&m),
 				CommandTemplateID: s.CommandTemplateID,
 				Tags:              s.Tags,
+				Variable:          s.Variable,
 				CommandTemplate:   e_command_template.Format([]model.CommandTemplate{s.CommandTemplate})[0],
 			}
 			sResult = append(sResult, i)
@@ -28,7 +29,6 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 		i := TaskTemplate{
 			ID:        item.ID,
 			Name:      item.Name,
-			Variable:  item.Variable,
 			UpdatedAt: item.UpdatedAt,
 			CreatedAt: item.CreatedAt,
 			Stages:    sResult,
@@ -50,14 +50,14 @@ func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 				Mode:              s.Mode.String(),
 				CommandTemplateID: s.CommandTemplateID,
 				Tags:              s.Tags,
+				Variable:          s.Variable,
 			}
 			sResult = append(sResult, i)
 		}
 		i := model.TaskTemplate{
-			Name:     item.Name,
-			Variable: item.Variable,
-			Stages:   sResult,
-			Tags:     item.Tags,
+			Name:   item.Name,
+			Stages: sResult,
+			Tags:   item.Tags,
 		}
 		result = append(result, &i)
 	}
@@ -73,9 +73,6 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 		}
 		if u.Name != nil {
 			tt.Name = *u.Name
-		}
-		if u.Variable != nil {
-			tt.Variable = u.Variable
 		}
 		if u.Tags != nil {
 			tt.Tags = u.Tags
@@ -106,6 +103,9 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 				}
 				if s.Tags != nil {
 					ts.Tags = s.Tags
+				}
+				if s.Variable != nil {
+					ts.Variable = s.Variable
 				}
 				sResult = append(sResult, ts)
 			}

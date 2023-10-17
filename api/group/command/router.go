@@ -17,8 +17,8 @@ func RegisterRouter(g group) {
 	h := NewHandler(o, log)
 	c.Get("/", h.GetCommands)
 	c.Get("/history", h.GetHistory)
-	c.Get("/:commandId", h.GetCommandByCommandId)
-	c.Delete("/:commandId", h.CancelCommand)
+	c.Get("/:id", h.GetCommandById)
+	c.Delete("/:id", h.CancelCommand)
 }
 
 type group interface {

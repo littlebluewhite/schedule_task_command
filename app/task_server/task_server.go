@@ -6,10 +6,13 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
+	"schedule_task_command/dal/model"
+	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util/logFile"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -19,17 +22,17 @@ type commandServer interface {
 }
 
 type TaskServer[T any] struct {
-	dbs dbs.Dbs
-	l   logFile.LogFile
-	t   map[string]e_task.Task
-	cs  commandServer
-	chs chs
+	dbs   dbs.Dbs
+	l     logFile.LogFile
+	t     map[uint64]e_task.Task
+	cs    commandServer
+	count atomic.Uint64
+	chs   chs
 }
 
 func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
 	l := logFile.NewLogFile("app", "task_server")
-	t := make(map[string]e_task.Task)
-	rec := make(chan e_task.Task)
+	t := make(map[uint64]e_task.Task)
 	mu := new(sync.RWMutex)
 	return &TaskServer[T]{
 		dbs: dbs,
@@ -37,30 +40,50 @@ func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
 		t:   t,
 		cs:  cs,
 		chs: chs{
-			rec: rec,
-			mu:  mu,
+			mu: mu,
 		},
 	}
 }
 
 func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
+	t.initialCounter(ctx)
 	t.l.Info().Println("Task server started")
-	defer t.l.Error().Println("Task server stopped")
-	wg := &sync.WaitGroup{}
-	wg.Add(3)
-	go func(wg *sync.WaitGroup) {
+	go func() {
 		t.removeFinishedTask(ctx, removeTime)
-		wg.Done()
-	}(wg)
-	go func(wg *sync.WaitGroup) {
+	}()
+	go func() {
 		t.rdbSub(ctx)
-		wg.Done()
-	}(wg)
-	go func(wg *sync.WaitGroup) {
+	}()
+	go func() {
 		t.cs.Start(ctx, removeTime)
-		wg.Done()
-	}(wg)
-	wg.Wait()
+	}()
+	go func() {
+		_ = <-ctx.Done()
+		t.stopCounter()
+		t.l.Info().Println("task server stop gracefully")
+	}()
+}
+
+func (t *TaskServer[T]) initialCounter(ctx context.Context) {
+	qc := query.Use(t.dbs.GetSql()).Counter
+	tc, err := qc.WithContext(ctx).Where(qc.Name.In("task")).First()
+	if err != nil {
+		tc = &model.Counter{Name: "task", Value: 0}
+		e := qc.WithContext(ctx).Create(tc)
+		if e != nil {
+			t.l.Error().Println(e)
+		}
+	}
+	t.count.Store(uint64(tc.Value))
+}
+
+func (t *TaskServer[T]) stopCounter() {
+	ctx := context.Background()
+	qc := query.Use(t.dbs.GetSql()).Counter
+	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("task")).Update(qc.Value, t.count.Load())
+	if err != nil {
+		t.l.Error().Println(err)
+	}
 }
 
 func (t *TaskServer[T]) rdbSub(ctx context.Context) {
@@ -84,7 +107,7 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	}
 }
 
-func (t *TaskServer[T]) ReadMap() map[string]e_task.Task {
+func (t *TaskServer[T]) ReadMap() map[uint64]e_task.Task {
 	t.chs.mu.RLock()
 	defer t.chs.mu.RUnlock()
 	return t.t
@@ -99,7 +122,7 @@ func (t *TaskServer[T]) GetList() []e_task.Task {
 	return tl
 }
 
-func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error) {
+func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (id uint64, err error) {
 	task.Stages = map[int]e_task.TaskStageC{}
 	// pass the variables
 	task = t.getVariables(task)
@@ -112,8 +135,8 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	}
 	from := time.Now()
 	task.From = from
-	taskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.TaskData.Name, from.UnixMicro())
-	task.TaskId = taskId
+	task.ID = t.count.Add(1)
+	id = task.ID
 	go func() {
 		t.doTask(ctx, task)
 	}()
@@ -132,7 +155,7 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	}
 	from := time.Now()
 	task.From = from
-	task.TaskId = fmt.Sprintf("%v_%v_%v", task.TemplateId, task.TaskData.Name, from.UnixMicro())
+	task.ID = t.count.Add(1)
 	ch := make(chan e_task.Task)
 	go func() {
 		ch <- t.doTask(ctx, task)
@@ -141,9 +164,9 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	return task
 }
 
-func (t *TaskServer[T]) CancelTask(taskId, message string) error {
+func (t *TaskServer[T]) CancelTask(id uint64, message string) error {
 	m := t.ReadMap()
-	task, ok := m[taskId]
+	task, ok := m[id]
 	if !ok {
 		return TaskNotFind
 	}
@@ -233,7 +256,7 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status stri
 func (t *TaskServer[T]) writeTask(task e_task.Task) {
 	t.chs.mu.Lock()
 	defer t.chs.mu.Unlock()
-	t.t[task.TaskId] = task
+	t.t[task.ID] = task
 }
 
 func (t *TaskServer[T]) rdbPub(task e_task.Task) (e error) {
@@ -253,16 +276,9 @@ func (t *TaskServer[T]) GetCommandServer() T {
 
 func (t *TaskServer[T]) getVariables(task e_task.Task) e_task.Task {
 	if task.Variables == nil {
-		v := make(map[string]map[string]string)
+		v := make(map[int]map[string]string)
 		task.Variables = v
 		// template have variables
-		if task.TaskData.Variable != nil {
-			e := json.Unmarshal(task.TaskData.Variable, &v)
-			if e != nil {
-				task.Message = &TaskTemplateVariable
-				return task
-			}
-		}
 	}
 	return task
 }

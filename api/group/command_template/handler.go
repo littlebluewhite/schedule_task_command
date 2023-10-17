@@ -16,7 +16,7 @@ type hOperate interface {
 	Update([]*e_command_template.CommandTemplateUpdate) error
 	Delete([]int32) error
 	ReloadCache() error
-	Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (commandId string, err error)
+	Execute(ctx context.Context, sc e_command_template.SendCommandTemplate) (id uint64, err error)
 }
 
 type Handler struct {

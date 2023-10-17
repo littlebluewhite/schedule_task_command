@@ -79,7 +79,8 @@ func main() {
 			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
 			RelatePointer: false,
 		}),
-		gen.FieldType("tags", "json.RawMessage"))
+		gen.FieldType("tags", "json.RawMessage"),
+		gen.FieldType("variable", "json.RawMessage"))
 	taskTemplate := g.GenerateModel("task_template",
 		gen.FieldRelate(field.Many2Many, "Stages", taskStage, &field.RelateConfig{
 			GORMTag: map[string][]string{"many2many": {"task_template_stage"}},
@@ -97,9 +98,11 @@ func main() {
 			}),
 		gen.FieldType("tags", "json.RawMessage"))
 
+	counter := g.GenerateModel("counter")
+
 	g.ApplyBasic(timeData, timeTemplate, headerTemplate, httpsCommand, commandTemplate,
 		redisCommand, mqttCommand, websocketCommand, monitor, mCondition, taskTemplateStage,
-		taskStage, taskTemplate, schedule)
+		taskStage, taskTemplate, schedule, counter)
 
 	// execute the action of code generation
 	g.Execute()

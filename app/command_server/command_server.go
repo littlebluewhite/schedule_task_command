@@ -6,49 +6,73 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs"
+	"schedule_task_command/dal/model"
+	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util/logFile"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 type CommandServer struct {
-	dbs dbs.Dbs
-	l   logFile.LogFile
-	c   map[string]e_command.Command
-	chs chs
+	dbs   dbs.Dbs
+	l     logFile.LogFile
+	c     map[uint64]e_command.Command
+	count atomic.Uint64
+	chs   chs
 }
 
 func NewCommandServer(dbs dbs.Dbs) *CommandServer {
 	l := logFile.NewLogFile("app", "command_server")
-	c := make(map[string]e_command.Command)
-	rec := make(chan e_command.Command)
+	c := make(map[uint64]e_command.Command)
 	mu := new(sync.RWMutex)
 	return &CommandServer{
 		dbs: dbs,
 		l:   l,
 		c:   c,
 		chs: chs{
-			rec: rec,
-			mu:  mu,
+			mu: mu,
 		},
 	}
 }
 
 func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
+	c.initialCounter(ctx)
 	c.l.Info().Println("Command server started")
-	defer c.l.Info().Println("Command server stopped")
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-	go func(wg *sync.WaitGroup) {
+	go func() {
 		c.removeFinishedCommand(ctx, removeTime)
-		wg.Done()
-	}(wg)
-	go func(wg *sync.WaitGroup) {
+	}()
+	go func() {
 		c.rdbSub(ctx)
-		wg.Done()
-	}(wg)
-	wg.Wait()
+	}()
+	go func() {
+		_ = <-ctx.Done()
+		c.stopCounter()
+		c.l.Info().Println("command server stop gracefully")
+	}()
+}
+
+func (c *CommandServer) initialCounter(ctx context.Context) {
+	qc := query.Use(c.dbs.GetSql()).Counter
+	cc, err := qc.WithContext(ctx).Where(qc.Name.In("command")).First()
+	if err != nil {
+		cc = &model.Counter{Name: "command", Value: 0}
+		e := qc.WithContext(ctx).Create(cc)
+		if e != nil {
+			c.l.Error().Println(e)
+		}
+	}
+	c.count.Store(uint64(cc.Value))
+}
+
+func (c *CommandServer) stopCounter() {
+	ctx := context.Background()
+	qc := query.Use(c.dbs.GetSql()).Counter
+	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("command")).Update(qc.Value, c.count.Load())
+	if err != nil {
+		c.l.Error().Println(err)
+	}
 }
 
 func (c *CommandServer) rdbSub(ctx context.Context) {
@@ -73,7 +97,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	}
 }
 
-func (c *CommandServer) ReadMap() map[string]e_command.Command {
+func (c *CommandServer) ReadMap() map[uint64]e_command.Command {
 	c.chs.mu.RLock()
 	defer c.chs.mu.RUnlock()
 	return c.c
@@ -88,7 +112,7 @@ func (c *CommandServer) GetList() []e_command.Command {
 	return cl
 }
 
-func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (commandId string, err error) {
+func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (id uint64, err error) {
 	// pass the variables
 	com = c.getVariables(com)
 	// publish to redis
@@ -100,9 +124,8 @@ func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Comma
 	}
 	from := time.Now()
 	com.From = from
-	commandId = fmt.Sprintf("%v_%v_%v_%v",
-		com.TemplateId, com.CommandData.Name, com.CommandData.Protocol, from.UnixMicro())
-	com.CommandId = commandId
+	com.ID = c.count.Add(1)
+	id = com.ID
 	go func() {
 		c.doCommand(ctx, com)
 	}()
@@ -124,8 +147,7 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 	}
 	from := time.Now()
 	com.From = from
-	com.CommandId = fmt.Sprintf("%v_%v_%v_%v",
-		com.TemplateId, com.CommandData.Name, com.CommandData.Protocol, from.UnixMicro())
+	com.ID = c.count.Add(1)
 	ch := make(chan e_command.Command)
 	go func() {
 		ch <- c.doCommand(ctx, com)
@@ -148,6 +170,9 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	now := time.Now()
 	com.To = &now
 
+	// write client message
+	com.ClientMessage = c.ReadMap()[com.ID].ClientMessage
+
 	// write command
 	c.writeCommand(com)
 
@@ -160,9 +185,9 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	return com
 }
 
-func (c *CommandServer) CancelCommand(commandId, message string) error {
+func (c *CommandServer) CancelCommand(id uint64, message string) error {
 	m := c.ReadMap()
-	com, ok := m[commandId]
+	com, ok := m[id]
 	if !ok {
 		return CommandNotFind
 	}
@@ -265,7 +290,7 @@ func (c *CommandServer) rdbPub(com e_command.Command) (e error) {
 func (c *CommandServer) writeCommand(com e_command.Command) {
 	c.chs.mu.Lock()
 	defer c.chs.mu.Unlock()
-	c.c[com.CommandId] = com
+	c.c[com.ID] = com
 }
 
 func (c *CommandServer) getVariables(com e_command.Command) e_command.Command {

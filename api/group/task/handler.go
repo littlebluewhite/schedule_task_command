@@ -10,8 +10,8 @@ import (
 
 type hOperate interface {
 	List() ([]e_task.Task, error)
-	Find(taskIds []string) ([]e_task.Task, error)
-	Cancel(taskId, message string) error
+	Find(ids []uint64) ([]e_task.Task, error)
+	Cancel(id uint64, message string) error
 	GetHistory(templateId, start, stop, status string) ([]e_task.TaskPub, error)
 }
 
@@ -43,24 +43,24 @@ func (h *Handler) GetTasks(c *fiber.Ctx) error {
 	return c.Status(200).JSON(e_task.ToPubSlice(tasks))
 }
 
-// GetTaskByTaskId swagger
+// GetTaskById swagger
 // @Summary     Show task
-// @Description Get task by taskId
+// @Description Get task by id
 // @Tags        task
 // @Produce     json
-// @Param       taskId  path     string true "taskId"
+// @Param       id  path     string true "id"
 // @Success     200 {object} e_task.Task
-// @Router      /api/task/{taskId} [get]
-func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
-	taskId := c.Params("taskId")
-	if taskId == "" {
-		e := errors.New("taskId is error")
-		h.l.Error().Println("GetTaskByTaskId: ", e)
+// @Router      /api/task/{id} [get]
+func (h *Handler) GetTaskById(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]string{taskId})
+	ht, err := h.o.Find([]uint64{uint64(id)})
 	if err != nil {
-		h.l.Error().Println("GetTaskByTaskId: ", err)
+		h.l.Error().Println("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.ToPub(ht[0]))
@@ -68,18 +68,18 @@ func (h *Handler) GetTaskByTaskId(c *fiber.Ctx) error {
 
 // CancelTask swagger
 // @Summary     cancel task
-// @Description Cancel task by taskId
+// @Description Cancel task by id
 // @Tags        task
 // @Produce     json
-// @Param       taskId  path     string true "taskId"
+// @Param       id  path     string true "id"
 // @Param   message body     task.CancelBody true "cancel message"
 // @Success     200 {string} cancel successfully
-// @Router      /api/task/{taskId} [Delete]
+// @Router      /api/task/{id} [Delete]
 func (h *Handler) CancelTask(c *fiber.Ctx) error {
-	taskId := c.Params("taskId")
-	if taskId == "" {
-		e := errors.New("taskId is error")
-		h.l.Error().Println("GetTaskByTaskId: ", e)
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
 	entry := CancelBody{}
@@ -87,7 +87,7 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 		h.l.Error().Println("CancelTask: ", err)
 		return util.Err(c, err, 0)
 	}
-	err := h.o.Cancel(taskId, entry.ClientMessage)
+	err = h.o.Cancel(uint64(id), entry.ClientMessage)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

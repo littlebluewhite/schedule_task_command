@@ -1,17 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync/atomic"
+)
 
 func main() {
-	ch := make(chan int)
-
-	go func() {
-		ch <- 42
-		close(ch)
-	}()
-
-	// Assuming some work is being done here...
-
-	value := <-ch
-	fmt.Println(value)
+	a := atomic.Uint64{}
+	a.Store(10)
+	b := a.Add(1)
+	fmt.Println(b)
+	c := a.Load()
+	fmt.Println(c)
 }

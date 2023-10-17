@@ -28,10 +28,10 @@ definitions:
         type: string
       command_data:
         $ref: '#/definitions/e_command_template.CommandTemplate'
-      command_id:
-        type: string
       from:
         type: string
+      id:
+        type: integer
       message:
         type: string
       resp_data:
@@ -377,7 +377,7 @@ definitions:
   e_task.Status:
     properties:
       failed_command_id:
-        type: string
+        type: integer
       failed_command_template_id:
         type: integer
       failed_message:
@@ -393,6 +393,8 @@ definitions:
         type: string
       from:
         type: string
+      id:
+        type: integer
       message:
         type: string
       stages:
@@ -403,8 +405,6 @@ definitions:
         $ref: '#/definitions/e_task.Status'
       task_data:
         $ref: '#/definitions/e_task_template.TaskTemplate'
-      task_id:
-        type: string
       template_id:
         type: integer
       to:
@@ -427,7 +427,7 @@ definitions:
   e_task.TaskStage:
     properties:
       command_id:
-        type: string
+        type: integer
       from:
         type: string
       message:
@@ -444,6 +444,10 @@ definitions:
         type: integer
       to:
         type: string
+      variable:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   e_task.TaskStageC:
     properties:
@@ -474,6 +478,10 @@ definitions:
         items:
           type: integer
         type: array
+      variable:
+        items:
+          type: integer
+        type: array
     type: object
   e_task_template.TaskStageCreate:
     properties:
@@ -486,6 +494,10 @@ definitions:
       stage_number:
         type: integer
       tags:
+        items:
+          type: integer
+        type: array
+      variable:
         items:
           type: integer
         type: array
@@ -507,6 +519,10 @@ definitions:
       stage_number:
         type: integer
       tags:
+        items:
+          type: integer
+        type: array
+      variable:
         items:
           type: integer
         type: array
@@ -533,10 +549,6 @@ definitions:
         type: array
       updated_at:
         type: string
-      variable:
-        items:
-          type: integer
-        type: array
     type: object
   e_task_template.TaskTemplateCreate:
     properties:
@@ -547,10 +559,6 @@ definitions:
           $ref: '#/definitions/e_task_template.TaskStageCreate'
         type: array
       tags:
-        items:
-          type: integer
-        type: array
-      variable:
         items:
           type: integer
         type: array
@@ -568,10 +576,6 @@ definitions:
           $ref: '#/definitions/e_task_template.TaskStageUpdate'
         type: array
       tags:
-        items:
-          type: integer
-        type: array
-      variable:
         items:
           type: integer
         type: array
@@ -793,13 +797,13 @@ paths:
       summary: Show all commands
       tags:
       - Command
-  /api/command/{commandId}:
+  /api/command/{id}:
     delete:
-      description: Cancel Command by commandId
+      description: Cancel Command by id
       parameters:
-      - description: commandId
+      - description: id
         in: path
-        name: commandId
+        name: id
         required: true
         type: string
       - description: cancel message
@@ -819,11 +823,11 @@ paths:
       tags:
       - Command
     get:
-      description: Get Command by commandId
+      description: Get Command by id
       parameters:
-      - description: commandId
+      - description: id
         in: path
-        name: commandId
+        name: id
         required: true
         type: string
       produces:
@@ -1241,13 +1245,13 @@ paths:
       summary: Show all tasks
       tags:
       - task
-  /api/task/{taskId}:
+  /api/task/{id}:
     delete:
-      description: Cancel task by taskId
+      description: Cancel task by id
       parameters:
-      - description: taskId
+      - description: id
         in: path
-        name: taskId
+        name: id
         required: true
         type: string
       - description: cancel message
@@ -1267,11 +1271,11 @@ paths:
       tags:
       - task
     get:
-      description: Get task by taskId
+      description: Get task by id
       parameters:
-      - description: taskId
+      - description: id
         in: path
-        name: taskId
+        name: id
         required: true
         type: string
       produces:

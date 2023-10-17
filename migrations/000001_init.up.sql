@@ -22,15 +22,15 @@ CREATE TABLE `time_data`
 
 CREATE TABLE `schedule`
 (
-    `id`           int PRIMARY KEY AUTO_INCREMENT,
-    `name`         varchar(255) UNIQUE   NOT NULL,
-    `description`  varchar(255),
-    `time_data_id` int UNIQUE            NOT NULL,
-    `task_template_id`      int                   NOT NULL,
-    `enabled`      boolean DEFAULT false NOT NULL,
-    `updated_at`   datetime,
-    `created_at`   datetime,
-    `tags`         json    DEFAULT (JSON_ARRAY())
+    `id`               int PRIMARY KEY AUTO_INCREMENT,
+    `name`             varchar(255) UNIQUE   NOT NULL,
+    `description`      varchar(255),
+    `time_data_id`     int UNIQUE            NOT NULL,
+    `task_template_id` int                   NOT NULL,
+    `enabled`          boolean DEFAULT false NOT NULL,
+    `updated_at`       datetime,
+    `created_at`       datetime,
+    `tags`             json    DEFAULT (JSON_ARRAY())
 );
 
 CREATE TABLE `command_template`
@@ -45,7 +45,7 @@ CREATE TABLE `command_template`
     `updated_at`  datetime,
     `created_at`  datetime,
     `tags`        json DEFAULT (JSON_ARRAY()),
-    `variable`   json DEFAULT (JSON_OBJECT())
+    `variable`    json DEFAULT (JSON_OBJECT())
 );
 
 CREATE TABLE `https_command`
@@ -121,7 +121,6 @@ CREATE TABLE `task_template`
 (
     `id`         int PRIMARY KEY AUTO_INCREMENT,
     `name`       varchar(255) NOT NULL,
-    `variable`   json DEFAULT (JSON_OBJECT()),
     `updated_at` datetime,
     `created_at` datetime,
     `tags`       json DEFAULT (JSON_ARRAY())
@@ -141,7 +140,14 @@ CREATE TABLE `task_stage`
     `stage_number`        int                         NOT NULL,
     `mode`                ENUM ('monitor', 'execute') NOT NULL,
     `command_template_id` int                         NOT NULL,
-    `tags`                json DEFAULT (JSON_ARRAY())
+    `tags`                json DEFAULT (JSON_ARRAY()),
+    `variable`            json DEFAULT (JSON_OBJECT())
+);
+
+CREATE TABLE `counter`
+(
+    `name`  varchar(255) PRIMARY KEY,
+    `value` int DEFAULT 0 NOT NULL
 );
 
 ALTER TABLE `time_template`

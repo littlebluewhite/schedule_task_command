@@ -1,14 +1,12 @@
 package command_server
 
 import (
-	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util"
 	"sync"
 )
 
 type chs struct {
-	rec chan e_command.Command
-	mu  *sync.RWMutex
+	mu *sync.RWMutex
 }
 
 type httpHeader struct {

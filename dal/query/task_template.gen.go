@@ -29,7 +29,6 @@ func newTaskTemplate(db *gorm.DB, opts ...gen.DOOption) taskTemplate {
 	_taskTemplate.ALL = field.NewAsterisk(tableName)
 	_taskTemplate.ID = field.NewInt32(tableName, "id")
 	_taskTemplate.Name = field.NewString(tableName, "name")
-	_taskTemplate.Variable = field.NewBytes(tableName, "variable")
 	_taskTemplate.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_taskTemplate.CreatedAt = field.NewTime(tableName, "created_at")
 	_taskTemplate.Tags = field.NewBytes(tableName, "tags")
@@ -106,7 +105,6 @@ type taskTemplate struct {
 	ALL       field.Asterisk
 	ID        field.Int32
 	Name      field.String
-	Variable  field.Bytes
 	UpdatedAt field.Time
 	CreatedAt field.Time
 	Tags      field.Bytes
@@ -129,7 +127,6 @@ func (t *taskTemplate) updateTableName(table string) *taskTemplate {
 	t.ALL = field.NewAsterisk(table)
 	t.ID = field.NewInt32(table, "id")
 	t.Name = field.NewString(table, "name")
-	t.Variable = field.NewBytes(table, "variable")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.Tags = field.NewBytes(table, "tags")
@@ -161,10 +158,9 @@ func (t *taskTemplate) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (t *taskTemplate) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 7)
+	t.fieldMap = make(map[string]field.Expr, 6)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["name"] = t.Name
-	t.fieldMap["variable"] = t.Variable
 	t.fieldMap["updated_at"] = t.UpdatedAt
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["tags"] = t.Tags

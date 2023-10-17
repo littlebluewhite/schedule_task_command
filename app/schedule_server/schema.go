@@ -9,10 +9,10 @@ import (
 
 type taskServer interface {
 	Start(ctx context.Context, removeTime time.Duration)
-	ReadMap() map[string]e_task.Task
+	ReadMap() map[uint64]e_task.Task
 	GetList() []e_task.Task
 	ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task
-	ExecuteReturnId(ctx context.Context, task e_task.Task) (taskId string, err error)
+	ExecuteReturnId(ctx context.Context, task e_task.Task) (id uint64, err error)
 	ReadFromHistory(taskTemplateId, start, stop, status string) ([]e_task.TaskPub, error)
 }
 

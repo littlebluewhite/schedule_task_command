@@ -3,6 +3,7 @@ package task_server
 import (
 	"context"
 	"fmt"
+	"github.com/goccy/go-json"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
@@ -33,7 +34,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		s := gsr.stageMap[sn]
 		task = t.doOneStage(ctx, s, task)
 		if task.Status.FailedMessage != nil {
-			e := util.MyErr(fmt.Sprintf("task id: %s failed at stage %d\n", task.TaskId, sn))
+			e := util.MyErr(fmt.Sprintf("task id: %d failed at stage %d\n", task.ID, sn))
 			task.Message = &e
 			// cancel task
 			break
@@ -46,6 +47,9 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 
 	now := time.Now()
 	task.To = &now
+
+	// write client message
+	task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
 
 	// write task
 	t.writeTask(task)
@@ -91,23 +95,23 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 	comNumber := len(sv.monitor) + len(sv.execute)
 	ch := make(chan comBuilder, comNumber)
 
-	triggerFrom := append(task.TriggerFrom, "task", task.TaskId)
+	triggerFrom := append(task.TriggerFrom, fmt.Sprintf("task: %d", task.ID))
 	for _, stage := range sv.monitor {
 		go func(stage e_task_template.TaskStage) {
-			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
-				task.TriggerAccount, task.Variables[stage.Name])
+			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com, tags: stage.Tags}
+			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com,
+				tags: stage.Tags}
 		}(stage)
 	}
 	// wait 500 milliseconds to Execute executed command
 	time.Sleep(500 * time.Millisecond)
 	for _, stage := range sv.execute {
 		go func(stage e_task_template.TaskStage) {
-			com := t.ts2Com(stage, triggerFrom, task.TriggerAccount,
-				task.TriggerAccount, task.Variables[stage.Name])
+			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
-			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com, tags: stage.Tags}
+			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com,
+				tags: stage.Tags}
 		}(stage)
 	}
 	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
@@ -119,12 +123,13 @@ Loop:
 			com := comB.com
 			ts := e_task.TaskStage{
 				Name:       comB.name,
-				CommandId:  com.CommandId,
+				ID:         com.ID,
 				From:       com.From,
 				To:         com.To,
 				Status:     com.Status,
 				Message:    com.Message,
 				Tags:       comB.tags,
+				Variables:  com.Variables,
 				TemplateId: com.TemplateId,
 			}
 			switch comB.mode {
@@ -135,7 +140,7 @@ Loop:
 			}
 			if com.Status != e_command.Success {
 				task.Status.TStatus = e_task.TStatus(com.Status)
-				task.Status.FailedCommandId = com.CommandId
+				task.Status.FailedCommandId = com.ID
 				task.Status.FailedCommandTemplateId = com.TemplateId
 				task.Status.FailedMessage = com.Message
 				break Loop
@@ -147,12 +152,19 @@ Loop:
 }
 
 func (t *TaskServer[T]) ts2Com(stage e_task_template.TaskStage, triggerFrom []string,
-	triggerAccount string, token string, variables map[string]string) (c e_command.Command) {
+	task e_task.Task) (c e_command.Command) {
+	// get variables
+	var variables map[string]string
+	if v, ok := task.Variables[int(stage.ID)]; ok {
+		variables = v
+	} else {
+		_ = json.Unmarshal(stage.Variable, &variables)
+	}
 	c = e_command.Command{
 		TemplateId:     int(stage.CommandTemplateID),
 		TriggerFrom:    triggerFrom,
-		TriggerAccount: triggerAccount,
-		Token:          token,
+		TriggerAccount: task.TriggerAccount,
+		Token:          task.Token,
 		Variables:      variables,
 	}
 	// use command template id first
