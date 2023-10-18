@@ -127,7 +127,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	var resp *http.Response
 	resp1, e := client.Do(req)
 	if e != nil {
-		c.l.Error().Printf("id: %d request failed", com.ID)
+		c.l.Error().Printf("id: %d request failed, template id: %d", com.ID, com.TemplateId)
 		if resp1 == nil {
 			c.l.Error().Printf("request: %+v, and response is nil", req)
 			return com
