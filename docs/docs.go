@@ -1523,7 +1523,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "monitor": {
-                    "$ref": "#/definitions/e_command_template.Monitor"
+                    "$ref": "#/definitions/e_command_template.MonitorUpdate"
                 },
                 "mqtt": {
                     "$ref": "#/definitions/e_command_template.MqttCommand"
@@ -1619,6 +1619,27 @@ const docTemplate = `{
             }
         },
         "e_command_template.Monitor": {
+            "type": "object",
+            "required": [
+                "interval",
+                "status_code"
+            ],
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                },
+                "m_conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.MCondition"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_command_template.MonitorUpdate": {
             "type": "object",
             "required": [
                 "interval",
@@ -2466,8 +2487,8 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.0",
-	Host:             "192.168.1.10:5487",
+	Version:          "2.5.4",
+	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Schedule-Task-Command swagger API",

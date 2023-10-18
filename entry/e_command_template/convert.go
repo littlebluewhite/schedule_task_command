@@ -199,39 +199,31 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 				bt := u.Http.BodyType.String()
 				bodyType = &bt
 			}
-			ct.Http = &model.HTTPSCommand{
-				Method:            u.Http.Method.String(),
-				URL:               u.Http.URL,
-				AuthorizationType: u.Http.AuthorizationType,
-				Params:            u.Http.Params,
-				Header:            u.Http.Header,
-				BodyType:          bodyType,
-				Body:              u.Http.Body,
-			}
+			ct.Http.Method = u.Http.Method.String()
+			ct.Http.URL = u.Http.URL
+			ct.Http.AuthorizationType = u.Http.AuthorizationType
+			ct.Http.Params = u.Http.Params
+			ct.Http.Header = u.Http.Header
+			ct.Http.BodyType = bodyType
+			ct.Http.Body = u.Http.Body
 		}
 		if u.Mqtt != nil && ct.Mqtt != nil {
-			ct.Mqtt = &model.MqttCommand{
-				Topic:   u.Mqtt.Topic,
-				Header:  u.Mqtt.Header,
-				Message: u.Mqtt.Message,
-				Type:    u.Mqtt.Type,
-			}
+			ct.Mqtt.Topic = u.Mqtt.Topic
+			ct.Mqtt.Header = u.Mqtt.Header
+			ct.Mqtt.Message = u.Mqtt.Message
+			ct.Mqtt.Type = u.Mqtt.Type
 		}
 		if u.Websocket != nil && ct.Websocket != nil {
-			ct.Websocket = &model.WebsocketCommand{
-				URL:     u.Websocket.URL,
-				Header:  u.Websocket.Header,
-				Message: u.Websocket.Message,
-			}
+			ct.Websocket.URL = u.Websocket.URL
+			ct.Websocket.Header = u.Websocket.Header
+			ct.Websocket.Message = u.Websocket.Message
 		}
 		if u.Redis != nil && ct.Redis != nil {
-			ct.Redis = &model.RedisCommand{
-				Password: u.Redis.Password,
-				Db:       u.Redis.Db,
-				Topic:    u.Redis.Topic,
-				Message:  u.Redis.Message,
-				Type:     u.Redis.Type,
-			}
+			ct.Redis.Password = u.Redis.Password
+			ct.Redis.Db = u.Redis.Db
+			ct.Redis.Topic = u.Redis.Topic
+			ct.Redis.Message = u.Redis.Message
+			ct.Redis.Type = u.Redis.Type
 		}
 		if u.Monitor != nil && ct.Monitor != nil {
 			mResult := make([]model.MCondition, 0, len(u.Monitor.MConditions))
@@ -246,13 +238,7 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 				}
 				mResult = append(mResult, i)
 			}
-			ct.Monitor = &model.Monitor{
-				ID:                ct.Monitor.ID,
-				StatusCode:        ct.Monitor.StatusCode,
-				Interval:          ct.Monitor.Interval,
-				CommandTemplateID: ct.Monitor.CommandTemplateID,
-				MConditions:       mResult,
-			}
+			ct.Monitor.MConditions = mResult
 			if u.Monitor.StatusCode != nil {
 				ct.Monitor.StatusCode = *u.Monitor.StatusCode
 			}

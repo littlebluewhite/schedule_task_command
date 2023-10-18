@@ -12,7 +12,7 @@
     },
     "monitor": {
       "column": "data",
-      "interval": 0,
+      "interval": 1000,
       "m_conditions": [
         {
           "calculate_type": "=",
@@ -110,7 +110,7 @@
     },
     "monitor": {
       "column": "data",
-      "interval": 0,
+      "interval": 2000,
       "m_conditions": [
         {
           "calculate_type": "=",

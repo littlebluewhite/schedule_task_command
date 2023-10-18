@@ -13,9 +13,9 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.0"
+        "version": "2.5.4"
     },
-    "host": "192.168.1.10:5487",
+    "host": "127.0.0.1:5487",
     "paths": {
         "/api/command/": {
             "get": {
@@ -1515,7 +1515,7 @@
                     "type": "integer"
                 },
                 "monitor": {
-                    "$ref": "#/definitions/e_command_template.Monitor"
+                    "$ref": "#/definitions/e_command_template.MonitorUpdate"
                 },
                 "mqtt": {
                     "$ref": "#/definitions/e_command_template.MqttCommand"
@@ -1611,6 +1611,27 @@
             }
         },
         "e_command_template.Monitor": {
+            "type": "object",
+            "required": [
+                "interval",
+                "status_code"
+            ],
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                },
+                "m_conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.MCondition"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_command_template.MonitorUpdate": {
             "type": "object",
             "required": [
                 "interval",

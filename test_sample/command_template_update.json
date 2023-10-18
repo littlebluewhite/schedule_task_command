@@ -1,0 +1,42 @@
+[
+  {
+    "name": "get_id1_m1_long",
+    "description": "",
+    "protocol": "http",
+    "timeout": 140000,
+    "http": {
+      "authorization_type": "basic",
+      "body": "",
+      "body_type": "text",
+      "header": [],
+      "method": "GET",
+      "url": "http://192.168.1.10:9330/api/object/value/?id_list=1",
+      "params": [
+        {
+          "key": "id_list",
+          "value": "1",
+          "is_active": true,
+          "data_type": "text"
+        }
+      ]
+    },
+    "monitor": {
+      "status_code": 200,
+      "interval": 1000,
+      "m_conditions": [
+        {
+          "calculate_type": "",
+          "value": "",
+          "search_rule": "",
+          "order": -1,
+          "id": -11
+        }
+      ]
+    },
+    "variable": {},
+    "host": "192.168.1.10:9330",
+    "port": "9330",
+    "tags": [],
+    "id": 9
+  }
+]

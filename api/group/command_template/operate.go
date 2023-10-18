@@ -227,6 +227,8 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 			delete(t, "websocket")
 			delete(t, "redis")
 			delete(t, "monitor")
+			delete(t, "created_at")
+			delete(t, "updated_at")
 			if _, err := tx.CommandTemplate.WithContext(ctx).Where(tx.CommandTemplate.ID.Eq(
 				item.ID)).Updates(t); err != nil {
 				return err
