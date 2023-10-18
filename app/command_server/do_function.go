@@ -128,6 +128,10 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	resp1, e := client.Do(req)
 	if e != nil {
 		c.l.Error().Printf("id: %d request failed", com.ID)
+		if resp1 == nil {
+			c.l.Error().Printf("request: %+v, and response is nil", req)
+			return com
+		}
 	}
 	resp = resp1
 	com.StatusCode = resp.StatusCode
