@@ -1,0 +1,43 @@
+[
+  {
+    "source_id": 2,
+    "table_id": 3793,
+    "time_template_id": 1,
+    "alarm_group_id": 72,
+    "tags": [
+      "123"
+    ],
+    "action_name": null,
+    "location": "123213123123123",
+    "update_time": 1693292465,
+    "create_time": 1693205153,
+    "id": 80,
+    "rules": [
+      {
+        "base_id": 80,
+        "description": "",
+        "display_node_group_ids": [],
+        "id": 8,
+        "rule_name": "TEST",
+        "trigger_logic_id": 1,
+        "trigger_value": "123",
+        "alarm_level_id": 1,
+        "alarm_message": "123",
+        "alarm_status_id": 3,
+        "display_node_ids": [],
+        "task_template_id": null
+      },
+      {
+        "id": null,
+        "rule_name": "123123",
+        "trigger_logic_id": 2,
+        "trigger_value": "123123",
+        "alarm_level_id": 1,
+        "alarm_message": "123123",
+        "alarm_status_id": 12,
+        "display_node_ids": [],
+        "task_template_id": null
+      }
+    ]
+  }
+]

@@ -1,0 +1,57 @@
+package task
+
+import (
+	"errors"
+	"fmt"
+	"schedule_task_command/api"
+	"schedule_task_command/entry/e_task"
+)
+
+type Operate struct {
+	taskS api.TaskServer
+}
+
+func NewOperate(taskS api.TaskServer) *Operate {
+	o := &Operate{
+		taskS: taskS,
+	}
+	return o
+}
+
+func (o *Operate) List() ([]e_task.Task, error) {
+	tl := o.taskS.GetList()
+	return tl, nil
+}
+
+func (o *Operate) Find(ids []uint64) ([]e_task.Task, error) {
+	tm := o.taskS.ReadMap()
+	tl := make([]e_task.Task, 0, len(ids))
+	for _, id := range ids {
+		t, ok := tm[id]
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("cannot find id: %d", id))
+		} else {
+			tl = append(tl, t)
+		}
+	}
+	return tl, nil
+}
+
+func (o *Operate) Cancel(id uint64, message string) error {
+	if err := o.taskS.CancelTask(id, message); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *Operate) GetHistory(templateId, start, stop, status string) ([]e_task.TaskPub, error) {
+	s := e_task.S2Status(&status)
+	if s != e_task.Success && s != e_task.Failure && s != e_task.Cancel && status != "" {
+		return nil, HistoryStatusErr
+	}
+	ht, e := o.taskS.ReadFromHistory(templateId, start, stop, status)
+	if e != nil {
+		return nil, e
+	}
+	return ht, nil
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "name": "new task",
+    "stages": [
+      {
+        "name": "1F_FCU1_1.T_PV",
+        "stage_number": 1,
+        "command_template_id": 9,
+        "mode": "execute"
+      }
+    ],
+    "variable": "{\"id\":\"\",\"value\":\"True\"}",
+    "id": 2
+  }
+]

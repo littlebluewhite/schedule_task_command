@@ -1,0 +1,34 @@
+[
+  {
+    "name": "test",
+    "stages": [
+      {
+        "mode": "monitor",
+        "name": "test1",
+        "stage_number": 1,
+        "command_template_id": 1
+      },
+      {
+        "mode": "execute",
+        "name": "test2",
+        "stage_number": 1,
+        "command_template_id": 2
+      },
+      {
+        "mode": "execute",
+        "name": "test3",
+        "stage_number": 1,
+        "command_template_id": 3
+      },
+      {
+        "mode": "execute",
+        "name": "test4",
+        "stage_number": 2,
+        "command_template_id": 4
+      }
+    ],
+    "tags": {
+      "a": "b"
+    }
+  }
+]

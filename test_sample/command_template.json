@@ -1,0 +1,135 @@
+[
+  {
+    "description": "string",
+    "host": "127.0.0.1",
+    "http": {
+      "body": [],
+      "body_type": "json",
+      "header": [],
+      "method": "GET",
+      "params": [],
+      "url": "api"
+    },
+    "monitor": {
+      "column": "data",
+      "interval": 1000,
+      "m_conditions": [
+        {
+          "calculate_type": "=",
+          "order": 1,
+          "search_rule": "string",
+          "value": "string"
+        }
+      ],
+      "timeout": 10
+    },
+    "name": "command_1",
+    "port": "9999",
+    "protocol": "http"
+  },
+  {
+    "description": "string",
+    "host": "127.0.0.1",
+    "http": {
+      "body": [],
+      "body_type": "json",
+      "header": [],
+      "method": "DELETE",
+      "params": [],
+      "url": "api"
+    },
+    "monitor": {
+      "column": "data",
+      "interval": 1,
+      "m_conditions": [
+        {
+          "calculate_type": "<=",
+          "next_logic_type": "and",
+          "order": 1,
+          "search_rule": "string",
+          "value": "string"
+        },
+        {
+          "calculate_type": "!=",
+          "order": 2,
+          "search_rule": "string",
+          "value": "string"
+        }
+      ],
+      "timeout": 20
+    },
+    "name": "command_2",
+    "port": "9999",
+    "protocol": "http"
+  },
+  {
+    "description": "string",
+    "host": "127.0.0.1",
+    "http": {
+      "body": [],
+      "body_type": "json",
+      "header": [],
+      "method": "POST",
+      "params": [],
+      "url": "api/v1"
+    },
+    "monitor": {
+      "column": "data",
+      "interval": 3,
+      "m_conditions": [
+        {
+          "calculate_type": "include",
+          "next_logic_type": "or",
+          "order": 1,
+          "search_rule": "string",
+          "value": "string"
+        },
+        {
+          "calculate_type": "exclude",
+          "order": 2,
+          "search_rule": "string",
+          "value": "string"
+        }
+      ],
+      "timeout": 180
+    },
+    "name": "command_3",
+    "port": "9999",
+    "protocol": "http"
+  },
+  {
+    "description": "string",
+    "host": "127.0.0.1",
+    "http": {
+      "body": [],
+      "body_type": "json",
+      "header": [],
+      "method": "GET",
+      "params": [],
+      "url": "api/apple"
+    },
+    "monitor": {
+      "column": "data",
+      "interval": 2000,
+      "m_conditions": [
+        {
+          "calculate_type": "=",
+          "next_logic_type": "or",
+          "order": 1,
+          "search_rule": "string",
+          "value": "string"
+        },
+        {
+          "calculate_type": ">",
+          "order": 2,
+          "search_rule": "string",
+          "value": "string"
+        }
+      ],
+      "timeout": 10
+    },
+    "name": "command_4",
+    "port": "9999",
+    "protocol": "http"
+  }
+]

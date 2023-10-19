@@ -1,0 +1,1630 @@
+definitions:
+  command.CancelBody:
+    properties:
+      client_message:
+        type: string
+    type: object
+  command_template.SendCommand:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        example: Wilson
+        type: string
+      trigger_from:
+        example:
+        - '[task execute]'
+        items:
+          type: string
+        type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  e_command.Command:
+    properties:
+      client_message:
+        type: string
+      command_data:
+        $ref: '#/definitions/e_command_template.CommandTemplate'
+      from:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      resp_data:
+        items:
+          type: integer
+        type: array
+      status:
+        type: integer
+      status_code:
+        type: integer
+      template_id:
+        type: integer
+      to:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+      variables:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  e_command_template.CommandTemplate:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      host:
+        type: string
+      http:
+        $ref: '#/definitions/e_command_template.HTTPSCommand'
+      id:
+        type: integer
+      monitor:
+        $ref: '#/definitions/e_command_template.Monitor'
+      mqtt:
+        $ref: '#/definitions/e_command_template.MqttCommand'
+      name:
+        type: string
+      port:
+        type: string
+      protocol:
+        type: integer
+      redis:
+        $ref: '#/definitions/e_command_template.RedisCommand'
+      tags:
+        items:
+          type: integer
+        type: array
+      timeout:
+        type: integer
+      updated_at:
+        type: string
+      variable:
+        items:
+          type: integer
+        type: array
+      websocket:
+        $ref: '#/definitions/e_command_template.WebsocketCommand'
+    type: object
+  e_command_template.CommandTemplateCreate:
+    properties:
+      description:
+        type: string
+      host:
+        type: string
+      http:
+        $ref: '#/definitions/e_command_template.HTTPSCommand'
+      monitor:
+        $ref: '#/definitions/e_command_template.Monitor'
+      mqtt:
+        $ref: '#/definitions/e_command_template.MqttCommand'
+      name:
+        type: string
+      port:
+        type: string
+      protocol:
+        type: integer
+      redis:
+        $ref: '#/definitions/e_command_template.RedisCommand'
+      tags:
+        items:
+          type: integer
+        type: array
+      timeout:
+        type: integer
+      variable:
+        items:
+          type: integer
+        type: array
+      websocket:
+        $ref: '#/definitions/e_command_template.WebsocketCommand'
+    required:
+    - host
+    - name
+    - port
+    - protocol
+    - timeout
+    type: object
+  e_command_template.CommandTemplateUpdate:
+    properties:
+      description:
+        type: string
+      host:
+        type: string
+      http:
+        $ref: '#/definitions/e_command_template.HTTPSCommand'
+      id:
+        type: integer
+      monitor:
+        $ref: '#/definitions/e_command_template.MonitorUpdate'
+      mqtt:
+        $ref: '#/definitions/e_command_template.MqttCommand'
+      name:
+        type: string
+      port:
+        type: string
+      protocol:
+        type: integer
+      redis:
+        $ref: '#/definitions/e_command_template.RedisCommand'
+      tags:
+        items:
+          type: integer
+        type: array
+      timeout:
+        type: integer
+      variable:
+        items:
+          type: integer
+        type: array
+      websocket:
+        $ref: '#/definitions/e_command_template.WebsocketCommand'
+    type: object
+  e_command_template.HTTPSCommand:
+    properties:
+      authorization_type:
+        type: string
+      body:
+        items:
+          type: integer
+        type: array
+      body_type:
+        type: integer
+      header:
+        items:
+          type: integer
+        type: array
+      method:
+        type: integer
+      params:
+        items:
+          type: integer
+        type: array
+      url:
+        type: string
+    type: object
+  e_command_template.MCondition:
+    properties:
+      calculate_type:
+        type: string
+      id:
+        type: integer
+      order:
+        type: integer
+      pre_logic_type:
+        type: string
+      search_rule:
+        type: string
+      value:
+        type: string
+    type: object
+  e_command_template.Monitor:
+    properties:
+      interval:
+        type: integer
+      m_conditions:
+        items:
+          $ref: '#/definitions/e_command_template.MCondition'
+        type: array
+      status_code:
+        type: integer
+    required:
+    - interval
+    - status_code
+    type: object
+  e_command_template.MonitorUpdate:
+    properties:
+      interval:
+        type: integer
+      m_conditions:
+        items:
+          $ref: '#/definitions/e_command_template.MCondition'
+        type: array
+      status_code:
+        type: integer
+    required:
+    - interval
+    - status_code
+    type: object
+  e_command_template.MqttCommand:
+    properties:
+      header:
+        items:
+          type: integer
+        type: array
+      message:
+        items:
+          type: integer
+        type: array
+      topic:
+        type: string
+      type:
+        type: string
+    required:
+    - topic
+    - type
+    type: object
+  e_command_template.RedisCommand:
+    properties:
+      db:
+        type: integer
+      message:
+        items:
+          type: integer
+        type: array
+      password:
+        type: string
+      topic:
+        type: string
+      type:
+        type: string
+    required:
+    - type
+    type: object
+  e_command_template.WebsocketCommand:
+    properties:
+      header:
+        items:
+          type: integer
+        type: array
+      message:
+        type: string
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  e_header_template.HeaderTemplate:
+    properties:
+      data:
+        items:
+          type: integer
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  e_header_template.HeaderTemplateCreate:
+    properties:
+      data:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+    required:
+    - data
+    - name
+    type: object
+  e_header_template.HeaderTemplateUpdate:
+    properties:
+      data:
+        items:
+          type: integer
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    type: object
+  e_schedule.Schedule:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      task_id:
+        type: integer
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatum'
+      time_data_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  e_schedule.ScheduleCreate:
+    properties:
+      description:
+        type: string
+      enabled:
+        type: boolean
+      name:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      task_id:
+        type: integer
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
+    required:
+    - name
+    - time_data
+    type: object
+  e_schedule.ScheduleUpdate:
+    properties:
+      description:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      task_id:
+        type: integer
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
+    required:
+    - id
+    type: object
+  e_task.Status:
+    properties:
+      failed_command_id:
+        type: integer
+      failed_command_template_id:
+        type: integer
+      failed_message:
+        type: string
+      stages:
+        type: integer
+      task_status:
+        type: integer
+    type: object
+  e_task.Task:
+    properties:
+      client_message:
+        type: string
+      from:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      stages:
+        additionalProperties:
+          $ref: '#/definitions/e_task.TaskStageC'
+        type: object
+      status:
+        $ref: '#/definitions/e_task.Status'
+      task_data:
+        $ref: '#/definitions/e_task_template.TaskTemplate'
+      template_id:
+        type: integer
+      to:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+      variables:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+    type: object
+  e_task.TaskStage:
+    properties:
+      command_id:
+        type: integer
+      from:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      template_id:
+        type: integer
+      to:
+        type: string
+      variable:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  e_task.TaskStageC:
+    properties:
+      execute:
+        items:
+          $ref: '#/definitions/e_task.TaskStage'
+        type: array
+      monitor:
+        items:
+          $ref: '#/definitions/e_task.TaskStage'
+        type: array
+    type: object
+  e_task_template.TaskStage:
+    properties:
+      command_template:
+        $ref: '#/definitions/e_command_template.CommandTemplate'
+      command_template_id:
+        type: integer
+      id:
+        type: integer
+      mode:
+        type: integer
+      name:
+        type: string
+      stage_number:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      variable:
+        items:
+          type: integer
+        type: array
+    type: object
+  e_task_template.TaskStageCreate:
+    properties:
+      command_template_id:
+        type: integer
+      mode:
+        type: integer
+      name:
+        type: string
+      stage_number:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      variable:
+        items:
+          type: integer
+        type: array
+    required:
+    - mode
+    - name
+    - stage_number
+    type: object
+  e_task_template.TaskStageUpdate:
+    properties:
+      command_template_id:
+        type: integer
+      id:
+        type: integer
+      mode:
+        type: integer
+      name:
+        type: string
+      stage_number:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      variable:
+        items:
+          type: integer
+        type: array
+    required:
+    - mode
+    - name
+    - stage_number
+    type: object
+  e_task_template.TaskTemplate:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      stages:
+        items:
+          $ref: '#/definitions/e_task_template.TaskStage'
+        type: array
+      tags:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+    type: object
+  e_task_template.TaskTemplateCreate:
+    properties:
+      name:
+        type: string
+      stages:
+        items:
+          $ref: '#/definitions/e_task_template.TaskStageCreate'
+        type: array
+      tags:
+        items:
+          type: integer
+        type: array
+    required:
+    - name
+    type: object
+  e_task_template.TaskTemplateUpdate:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      stages:
+        items:
+          $ref: '#/definitions/e_task_template.TaskStageUpdate'
+        type: array
+      tags:
+        items:
+          type: integer
+        type: array
+    required:
+    - id
+    type: object
+  e_time.PublishTime:
+    properties:
+      is_time:
+        type: boolean
+      message:
+        type: string
+      status:
+        type: integer
+      template_id:
+        type: integer
+      time:
+        type: string
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatum'
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
+  e_time_data.TimeDatum:
+    properties:
+      condition_type:
+        type: integer
+      end_date:
+        type: string
+      end_time:
+        type: string
+      interval_seconds:
+        type: integer
+      repeat_type:
+        type: integer
+      start_date:
+        type: string
+      start_time:
+        type: string
+      t_condition:
+        items:
+          type: integer
+        type: array
+    type: object
+  e_time_data.TimeDatumCreate:
+    properties:
+      condition_type:
+        type: integer
+      end_date:
+        type: string
+      end_time:
+        type: string
+      interval_seconds:
+        type: integer
+      repeat_type:
+        type: integer
+      start_date:
+        type: string
+      start_time:
+        type: string
+      t_condition:
+        items:
+          type: integer
+        type: array
+    required:
+    - end_time
+    - start_date
+    - start_time
+    type: object
+  e_time_data.TimeDatumUpdate:
+    properties:
+      condition_type:
+        type: integer
+      end_date:
+        type: string
+      end_time:
+        type: string
+      interval_seconds:
+        type: integer
+      repeat_type:
+        type: integer
+      start_date:
+        type: string
+      start_time:
+        type: string
+      t_condition:
+        items:
+          type: integer
+        type: array
+    required:
+    - end_time
+    - repeat_type
+    - start_date
+    - start_time
+    - t_condition
+    type: object
+  e_time_template.TimeTemplate:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatum'
+      updated_at:
+        type: string
+    type: object
+  e_time_template.TimeTemplateCreate:
+    properties:
+      name:
+        type: string
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatumCreate'
+    required:
+    - name
+    - time_data
+    type: object
+  e_time_template.TimeTemplateUpdate:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      time_data:
+        $ref: '#/definitions/e_time_data.TimeDatumUpdate'
+    required:
+    - id
+    type: object
+  ping.SwaggerListPing:
+    properties:
+      age:
+        example: 20
+        type: integer
+      name:
+        example: wilson
+        type: string
+      time:
+        example: "2023-09-04T03:05:50.692675318+08:00"
+        type: string
+    type: object
+  ping.SwaggerPing:
+    properties:
+      example:
+        example: asdfasdf
+        type: string
+    type: object
+  task.CancelBody:
+    properties:
+      client_message:
+        type: string
+    type: object
+  task_template.SendTask:
+    properties:
+      token:
+        type: string
+      trigger_account:
+        example: Wilson
+        type: string
+      trigger_from:
+        example:
+        - '[task execute]'
+        items:
+          type: string
+        type: array
+      variables:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+    type: object
+  time_template.CheckTime:
+    properties:
+      time:
+        type: string
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
+          type: string
+        type: array
+    type: object
+host: 127.0.0.1:5487
+info:
+  contact:
+    email: wwilson008@gmail.com
+    name: Wilson
+    url: https://github.com/littlebluewhite
+  description: This is a schedule-command server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Schedule-Task-Command swagger API
+  version: 2.5.5
+paths:
+  /api/command/:
+    get:
+      description: Get all commands
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: Show all commands
+      tags:
+      - Command
+  /api/command/{id}:
+    delete:
+      description: Cancel Command by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: cancel message
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/command.CancelBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: cancel Command
+      tags:
+      - Command
+    get:
+      description: Get Command by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command.Command'
+      summary: Show Command
+      tags:
+      - Command
+  /api/command/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Command template id
+        in: query
+        name: template_id
+        type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command.Command'
+            type: array
+      summary: get Command history
+      tags:
+      - Command
+  /api/command_template/:
+    delete:
+      parameters:
+      - description: command_template id
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: delete successfully
+          schema:
+            type: string
+      summary: Delete command templates
+      tags:
+      - command_template
+    get:
+      description: Get all command templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command_template.CommandTemplate'
+            type: array
+      summary: Show all command templates
+      tags:
+      - command_template
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify command template body
+        in: body
+        name: command_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_command_template.CommandTemplateUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update command templates
+      tags:
+      - command_template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: command template body
+        in: body
+        name: command_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_command_template.CommandTemplateCreate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_command_template.CommandTemplate'
+            type: array
+      summary: Create command templates
+      tags:
+      - command_template
+  /api/command_template/{id}:
+    get:
+      description: Get command templates by id
+      parameters:
+      - description: command template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command_template.CommandTemplate'
+      summary: Show command templates
+      tags:
+      - command_template
+  /api/command_template/execute/{id}:
+    post:
+      parameters:
+      - description: command_template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: send command body
+        in: body
+        name: sendCommand
+        required: true
+        schema:
+          $ref: '#/definitions/command_template.SendCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: command id
+          schema:
+            type: string
+      summary: execute command templates
+      tags:
+      - command_template
+  /api/header_template/:
+    delete:
+      parameters:
+      - description: header_template id
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: delete successfully
+          schema:
+            type: string
+      summary: Delete header templates
+      tags:
+      - header_template
+    get:
+      description: Get all header templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_header_template.HeaderTemplate'
+            type: array
+      summary: Show all header templates
+      tags:
+      - header_template
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify header template body
+        in: body
+        name: header_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_header_template.HeaderTemplateUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update header templates
+      tags:
+      - header_template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: header template body
+        in: body
+        name: header_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_header_template.HeaderTemplateCreate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_header_template.HeaderTemplate'
+            type: array
+      summary: Create header templates
+      tags:
+      - header_template
+  /api/header_template/{id}:
+    get:
+      description: Get header templates by id
+      parameters:
+      - description: header template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_header_template.HeaderTemplate'
+      summary: Show header templates
+      tags:
+      - header_template
+  /api/ping/list:
+    get:
+      description: test list ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ping.SwaggerListPing'
+            type: array
+      summary: return list ping
+      tags:
+      - ping
+  /api/ping/test:
+    get:
+      description: test ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ping.SwaggerPing'
+      summary: test ping
+      tags:
+      - ping
+  /api/schedule/:
+    delete:
+      parameters:
+      - description: schedule id
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: delete successfully
+          schema:
+            type: string
+      summary: Delete schedules
+      tags:
+      - schedule
+    get:
+      description: Get all schedules
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_schedule.Schedule'
+            type: array
+      summary: Show all schedules
+      tags:
+      - schedule
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify schedule body
+        in: body
+        name: schedule
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_schedule.ScheduleUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update schedules
+      tags:
+      - schedule
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: schedule body
+        in: body
+        name: schedule
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_schedule.ScheduleCreate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_schedule.Schedule'
+            type: array
+      summary: Create schedules
+      tags:
+      - schedule
+  /api/schedule/{id}:
+    get:
+      description: Get schedules by id
+      parameters:
+      - description: schedule id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_schedule.Schedule'
+      summary: Show schedules
+      tags:
+      - schedule
+  /api/task/:
+    get:
+      description: Get all tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task.Task'
+            type: array
+      summary: Show all tasks
+      tags:
+      - task
+  /api/task/{id}:
+    delete:
+      description: Cancel task by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: cancel message
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/task.CancelBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: cancel task
+      tags:
+      - task
+    get:
+      description: Get task by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task.Task'
+      summary: Show task
+      tags:
+      - task
+  /api/task/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: task template id
+        in: query
+        name: template_id
+        type: integer
+      - description: status
+        enum:
+        - Success
+        - Failure
+        - Cancel
+        in: query
+        name: status
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task.Task'
+            type: array
+      summary: get task history
+      tags:
+      - task
+  /api/task_template/:
+    delete:
+      parameters:
+      - description: task_template id
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: delete successfully
+          schema:
+            type: string
+      summary: Delete task templates
+      tags:
+      - task_template
+    get:
+      description: Get all task templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task_template.TaskTemplate'
+            type: array
+      summary: Show all task templates
+      tags:
+      - task_template
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify task template body
+        in: body
+        name: task_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_task_template.TaskTemplateUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update task templates
+      tags:
+      - task_template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: task template body
+        in: body
+        name: task_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_task_template.TaskTemplateCreate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task_template.TaskTemplate'
+            type: array
+      summary: Create task templates
+      tags:
+      - task_template
+  /api/task_template/execute/{id}:
+    post:
+      parameters:
+      - description: task_template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: send task body
+        in: body
+        name: sendTask
+        required: true
+        schema:
+          $ref: '#/definitions/task_template.SendTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: task id
+          schema:
+            type: string
+      summary: execute task templates
+      tags:
+      - task_template
+  /api/time/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: query
+        name: template_id
+        type: integer
+      - description: is_time
+        enum:
+        - "false"
+        - "true"
+        in: query
+        name: is_time
+        type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_time.PublishTime'
+            type: array
+      summary: get time history
+      tags:
+      - time
+  /api/time_template/:
+    delete:
+      parameters:
+      - description: time_template id
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: delete successfully
+          schema:
+            type: string
+      summary: Delete time templates
+      tags:
+      - time_template
+    get:
+      description: Get all time templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_time_template.TimeTemplate'
+            type: array
+      summary: Show all time templates
+      tags:
+      - time_template
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: modify time template body
+        in: body
+        name: time_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_time_template.TimeTemplateUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: update successfully
+          schema:
+            type: string
+      summary: Update time templates
+      tags:
+      - time_template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template body
+        in: body
+        name: time_template
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/e_time_template.TimeTemplateCreate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_time_template.TimeTemplate'
+            type: array
+      summary: Create time templates
+      tags:
+      - time_template
+  /api/time_template/{id}:
+    get:
+      description: Get time templates by id
+      parameters:
+      - description: time template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_time_template.TimeTemplate'
+      summary: Show time templates
+      tags:
+      - time_template
+  /api/time_template/checkTime/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: time template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: check time body
+        in: body
+        name: checkTime
+        required: true
+        schema:
+          $ref: '#/definitions/time_template.CheckTime'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      summary: Check time templates
+      tags:
+      - time_template
+  /task_template/{id}:
+    get:
+      description: Get task templates by id
+      parameters:
+      - description: task template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task_template.TaskTemplate'
+      summary: Show task templates
+      tags:
+      - task_template
+swagger: "2.0"
