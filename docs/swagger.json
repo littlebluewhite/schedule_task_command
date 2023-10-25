@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.5.5"
+        "version": "2.5.6"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -1011,6 +1011,35 @@
                 }
             }
         },
+        "/api/task_template/{id}": {
+            "get": {
+                "description": "Get task templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Show task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task_template.TaskTemplate"
+                        }
+                    }
+                }
+            }
+        },
         "/api/time/history": {
             "get": {
                 "consumes": [
@@ -1256,35 +1285,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/e_time_template.TimeTemplate"
-                        }
-                    }
-                }
-            }
-        },
-        "/task_template/{id}": {
-            "get": {
-                "description": "Get task templates by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "task_template"
-                ],
-                "summary": "Show task templates",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "task template id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/e_task_template.TaskTemplate"
                         }
                     }
                 }

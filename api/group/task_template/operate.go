@@ -31,7 +31,7 @@ func NewOperate(dbs dbs.Dbs, taskS api.TaskServer) *Operate {
 		rdb:   dbs.GetRdb(),
 		taskS: taskS,
 	}
-	err := o.ReloadCache()
+	err := o.reloadCache()
 	if err != nil {
 		panic("initial time template Operate error")
 	}
@@ -55,8 +55,11 @@ func (o *Operate) setCacheMap(cacheMap map[int]model.TaskTemplate) {
 func (o *Operate) listDB() ([]*model.TaskTemplate, error) {
 	t := query.Use(o.db).TaskTemplate
 	ctx := context.Background()
-	tt, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Preload(
-		t.Stages.CommandTemplate.Monitor).Preload(t.Stages.CommandTemplate.Monitor.MConditions).Find()
+	tt, err := t.WithContext(ctx).Preload(field.Associations).Preload(
+		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
+		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
+		t.Stages.CommandTemplate.Redis).Preload(
+		t.Stages.CommandTemplate.Monitor.MConditions).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +80,7 @@ func (o *Operate) List() ([]model.TaskTemplate, error) {
 	return o.listCache()
 }
 
-func (o *Operate) ReloadCache() (e error) {
+func (o *Operate) reloadCache() (e error) {
 	tt, err := o.listDB()
 	if err != nil {
 		e = err
@@ -92,9 +95,27 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
+func (o *Operate) ReloadCache(ctx context.Context, q *query.Query, ids []int32) (e error) {
+	cacheMap := o.getCacheMap()
+	taskTemplates, err := o.findDB(ctx, q, ids)
+	if err != nil {
+		e = err
+		return
+	}
+	for _, taskTemplate := range taskTemplates {
+		cacheMap[int(taskTemplate.ID)] = *taskTemplate
+	}
+	o.setCacheMap(cacheMap)
+	return
+}
+
 func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TaskTemplate, error) {
 	t := q.TaskTemplate
-	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Where(t.ID.In(ids...)).Find()
+	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(
+		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
+		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
+		t.Stages.CommandTemplate.Redis).Preload(
+		t.Stages.CommandTemplate.Monitor.MConditions).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
 	}

@@ -794,7 +794,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.5.5
+  version: 2.5.6
 paths:
   /api/command/:
     get:
@@ -1421,6 +1421,25 @@ paths:
       summary: Create task templates
       tags:
       - task_template
+  /api/task_template/{id}:
+    get:
+      description: Get task templates by id
+      parameters:
+      - description: task template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task_template.TaskTemplate'
+      summary: Show task templates
+      tags:
+      - task_template
   /api/task_template/execute/{id}:
     post:
       parameters:
@@ -1608,23 +1627,4 @@ paths:
       summary: Check time templates
       tags:
       - time_template
-  /task_template/{id}:
-    get:
-      description: Get task templates by id
-      parameters:
-      - description: task template id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/e_task_template.TaskTemplate'
-      summary: Show task templates
-      tags:
-      - task_template
 swagger: "2.0"

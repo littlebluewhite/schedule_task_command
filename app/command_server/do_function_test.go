@@ -215,7 +215,7 @@ func TestAssertLogic(t *testing.T) {
 		result := assertLogic(asserts)
 		require.Equal(t, false, result)
 	})
-	t.Run("test2", func(t *testing.T) {
+	t.Run("test3", func(t *testing.T) {
 		and := "and"
 		or := "or"
 		asserts := []assertResult{
@@ -225,6 +225,11 @@ func TestAssertLogic(t *testing.T) {
 			{4, false, &or},
 			{3, false, &and},
 		}
+		result := assertLogic(asserts)
+		require.Equal(t, true, result)
+	})
+	t.Run("test4", func(t *testing.T) {
+		var asserts []assertResult
 		result := assertLogic(asserts)
 		require.Equal(t, true, result)
 	})

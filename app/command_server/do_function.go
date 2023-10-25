@@ -444,7 +444,7 @@ func assertLogic(asserts []assertResult) (result bool) {
 		return asserts[i].order < asserts[j].order
 	})
 	orSlice := make([]bool, 0, len(asserts))
-	pre := false
+	pre := true
 	for i, assert := range asserts {
 		if assert.preLogicType == nil && i == 0 {
 			pre = assert.assertSuccess

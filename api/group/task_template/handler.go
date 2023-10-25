@@ -15,7 +15,7 @@ type hOperate interface {
 	Create([]*e_task_template.TaskTemplateCreate) ([]model.TaskTemplate, error)
 	Update([]*e_task_template.TaskTemplateUpdate) error
 	Delete([]int32) error
-	ReloadCache() error
+	reloadCache() error
 	Execute(ctx context.Context, st e_task_template.SendTaskTemplate) (id uint64, err error)
 }
 
@@ -55,7 +55,7 @@ func (h *Handler) GetTaskTemplates(c *fiber.Ctx) error {
 // @Produce     json
 // @Param       id  path     int true "task template id"
 // @Success     200 {object} e_task_template.TaskTemplate
-// @Router      /task_template/{id} [get]
+// @Router      /api/task_template/{id} [get]
 func (h *Handler) GetTaskTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
