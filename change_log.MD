@@ -6,6 +6,7 @@
 - stages加上變數(Variable)
 - 刪除taskId
 - 新增ID
+- task stages中新增stage_id
 
 ### Command Server
 - Cancel command 增加 message

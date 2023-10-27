@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
-	"time"
 )
 
 func main() {
@@ -13,16 +13,16 @@ func main() {
 		Password: "", // no password set
 		DB:       5,  // use default DB
 	})
+	//groupSetID(rdb)
 	groupSetID(rdb)
-	go groupR(rdb)
-	//ctx := context.Background()
-	//groupR(rdb)
-	infoGroup(rdb)
-	time.Sleep(2 * time.Second)
-	add(rdb)
-	time.Sleep(2 * time.Second)
-	add(rdb)
-	time.Sleep(10 * time.Second)
+	groupR(rdb)
+	//go groupR(rdb)
+	//infoGroup(rdb)
+	//time.Sleep(2 * time.Second)
+	//add(rdb)
+	//time.Sleep(2 * time.Second)
+	//add(rdb)
+	//time.Sleep(10 * time.Second)
 }
 
 func add(rdb *redis.Client) {
@@ -30,8 +30,17 @@ func add(rdb *redis.Client) {
 	err := rdb.XAdd(ctx, &redis.XAddArgs{
 		Stream: "my-stream",
 		Values: map[string]interface{}{
-			"field1": "value1",
-			"field2": "value2",
+			"command":                  "check_time",
+			"timestamp":                "1695805466",
+			"data":                     "{\"source_id\": 3, \"table_id\": 10618, \"source_value\": \"701\", \"timestamp\": 1695805644.1069221}",
+			"callback_command":         "null",
+			"callback_channel":         "AlarmAPIModuleReceiver",
+			"is_wait_call_back":        "0",
+			"callback_token":           "null",
+			"callback_timeout":         "5",
+			"callback_until_feed_back": "null",
+			"command_sk":               "",
+			"status_code":              "null",
 		},
 	}).Err()
 	if err != nil {
@@ -49,7 +58,7 @@ func trim(rdb *redis.Client) {
 
 func createGroup(rdb *redis.Client) {
 	ctx := context.Background()
-	err := rdb.XGroupCreate(ctx, "my-stream", "dd", "0").Err()
+	err := rdb.XGroupCreate(ctx, "my-stream", "schedule", "0").Err()
 	if err != nil {
 		panic(err)
 	}
@@ -70,6 +79,14 @@ func groupR(rdb *redis.Client) {
 			panic(err)
 		}
 		fmt.Println(re)
+		s := re[0].Messages[0].Values["data"].(string)
+		var en Entry
+		fmt.Println(s)
+		e := json.Unmarshal([]byte(s), &en)
+		if e != nil {
+			panic(e)
+		}
+		fmt.Println(en)
 	}
 }
 
@@ -98,4 +115,11 @@ func infoGroup(rdb *redis.Client) {
 		panic(err)
 	}
 	fmt.Println(r)
+}
+
+type Entry struct {
+	SourceID    int    `json:"source_id"`
+	TableID     int    `json:"table_id"`
+	SourceValue string `json:"source_value"`
+	Timestamp   int64  `json:"timestamp"`
 }
