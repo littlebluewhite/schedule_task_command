@@ -95,7 +95,6 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 					task := s.generateTask(st)
 					_ = s.taskS.ExecuteWait(ctx, task)
 				}
-				wg.Done()
 			}(wg, sItem, t)
 		}
 		wg.Wait()

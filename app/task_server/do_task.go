@@ -99,7 +99,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com,
-				tags: stage.Tags}
+				tags: stage.Tags, stageID: stage.ID}
 		}(stage)
 	}
 	// wait 500 milliseconds to Execute executed command
@@ -109,7 +109,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com,
-				tags: stage.Tags}
+				tags: stage.Tags, stageID: stage.ID}
 		}(stage)
 	}
 	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
@@ -121,7 +121,8 @@ Loop:
 			com := comB.com
 			ts := e_task.TaskStage{
 				Name:       comB.name,
-				ID:         com.ID,
+				StageID:    comB.stageID,
+				CommandID:  com.ID,
 				From:       com.From,
 				To:         com.To,
 				Status:     com.Status,

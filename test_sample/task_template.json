@@ -3,6 +3,7 @@
     "name": "test",
     "stages": [
       {
+        "id": "1",
         "mode": "monitor",
         "name": "test1",
         "stage_number": 1,

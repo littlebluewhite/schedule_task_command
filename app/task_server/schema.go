@@ -23,10 +23,11 @@ type stageMapValue struct {
 }
 
 type comBuilder struct {
-	mode e_task_template.Mode
-	name string
-	com  e_command.Command
-	tags json.RawMessage
+	stageID int32
+	mode    e_task_template.Mode
+	name    string
+	com     e_command.Command
+	tags    json.RawMessage
 }
 
 var TaskCanceled = util.MyErr("Task has been canceled")

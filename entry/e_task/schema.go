@@ -35,7 +35,8 @@ type Status struct {
 
 type TaskStage struct {
 	Name       string            `json:"name"`
-	ID         uint64            `json:"command_id"`
+	StageID    int32             `json:"stage_id"`
+	CommandID  uint64            `json:"command_id"`
 	From       time.Time         `json:"from"`
 	To         *time.Time        `json:"to"`
 	Status     e_command.Status  `json:"status"`

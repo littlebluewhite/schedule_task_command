@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.5.6"
+        "version": "2.5.7"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -1810,9 +1810,6 @@
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
-                "time_data_id": {
-                    "type": "integer"
-                },
                 "updated_at": {
                     "type": "string"
                 }
@@ -1970,6 +1967,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer"
                 },
                 "status": {
                     "type": "integer"

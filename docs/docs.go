@@ -1818,9 +1818,6 @@ const docTemplate = `{
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
-                "time_data_id": {
-                    "type": "integer"
-                },
                 "updated_at": {
                     "type": "string"
                 }
@@ -1978,6 +1975,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer"
                 },
                 "status": {
                     "type": "integer"
@@ -2487,7 +2487,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.5.6",
+	Version:          "2.5.7",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

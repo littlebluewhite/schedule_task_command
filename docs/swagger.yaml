@@ -342,8 +342,6 @@ definitions:
         type: integer
       time_data:
         $ref: '#/definitions/e_time_data.TimeDatum'
-      time_data_id:
-        type: integer
       updated_at:
         type: string
     type: object
@@ -448,6 +446,8 @@ definitions:
         type: string
       name:
         type: string
+      stage_id:
+        type: integer
       status:
         type: integer
       tags:
@@ -794,7 +794,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.5.6
+  version: 2.5.7
 paths:
   /api/command/:
     get:

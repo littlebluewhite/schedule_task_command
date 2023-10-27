@@ -12,7 +12,6 @@ type Schedule struct {
 	ID             int32                 `json:"id"`
 	Name           string                `json:"name"`
 	Description    *string               `json:"description"`
-	TimeDataID     int32                 `json:"time_data_id"`
 	TaskTemplateID int32                 `json:"task_id"`
 	Enabled        bool                  `json:"enabled"`
 	UpdatedAt      *time.Time            `json:"updated_at"`
