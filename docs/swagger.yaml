@@ -342,8 +342,6 @@ definitions:
         type: integer
       time_data:
         $ref: '#/definitions/e_time_data.TimeDatum'
-      time_data_id:
-        type: integer
       updated_at:
         type: string
     type: object
@@ -448,6 +446,8 @@ definitions:
         type: string
       name:
         type: string
+      stage_id:
+        type: integer
       status:
         type: integer
       tags:
@@ -782,7 +782,7 @@ definitions:
           type: string
         type: array
     type: object
-host: 127.0.0.1:5487
+host: 192.168.1.10:5487
 info:
   contact:
     email: wwilson008@gmail.com
@@ -794,7 +794,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.5.5
+  version: 2.6.0
 paths:
   /api/command/:
     get:
@@ -1421,6 +1421,25 @@ paths:
       summary: Create task templates
       tags:
       - task_template
+  /api/task_template/{id}:
+    get:
+      description: Get task templates by id
+      parameters:
+      - description: task template id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task_template.TaskTemplate'
+      summary: Show task templates
+      tags:
+      - task_template
   /api/task_template/execute/{id}:
     post:
       parameters:
@@ -1608,23 +1627,4 @@ paths:
       summary: Check time templates
       tags:
       - time_template
-  /task_template/{id}:
-    get:
-      description: Get task templates by id
-      parameters:
-      - description: task template id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/e_task_template.TaskTemplate'
-      summary: Show task templates
-      tags:
-      - task_template
 swagger: "2.0"

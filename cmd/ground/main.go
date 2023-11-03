@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"sync/atomic"
+	"strconv"
+	"time"
 )
 
 func main() {
-	a := atomic.Uint64{}
-	a.Store(10)
-	b := a.Add(1)
-	fmt.Println(b)
-	c := a.Load()
-	fmt.Println(c)
+	i, err := strconv.ParseInt("1405544146", 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	tm := time.Unix(i, 0)
+	fmt.Println(tm)
 }

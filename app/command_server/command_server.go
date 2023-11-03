@@ -10,17 +10,19 @@ import (
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/redis_stream"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
 type CommandServer struct {
-	dbs   dbs.Dbs
-	l     logFile.LogFile
-	c     map[uint64]e_command.Command
-	count atomic.Uint64
-	chs   chs
+	dbs          dbs.Dbs
+	l            logFile.LogFile
+	c            map[uint64]e_command.Command
+	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
+	count        atomic.Uint64
+	chs          chs
 }
 
 func NewCommandServer(dbs dbs.Dbs) *CommandServer {
@@ -39,12 +41,17 @@ func NewCommandServer(dbs dbs.Dbs) *CommandServer {
 
 func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
 	c.initialCounter(ctx)
+	// stream command initial
+	c.initStreamComMap()
 	c.l.Info().Println("Command server started")
 	go func() {
 		c.removeFinishedCommand(ctx, removeTime)
 	}()
 	go func() {
 		c.rdbSub(ctx)
+	}()
+	go func() {
+		c.receiveStream(ctx)
 	}()
 	go func() {
 		_ = <-ctx.Done()
@@ -64,6 +71,10 @@ func (c *CommandServer) initialCounter(ctx context.Context) {
 		}
 	}
 	c.count.Store(uint64(cc.Value))
+}
+
+func (c *CommandServer) initStreamComMap() {
+	c.streamComMap = map[string]func(rsc map[string]interface{}) (string, error){}
 }
 
 func (c *CommandServer) stopCounter() {
@@ -97,6 +108,12 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	}
 }
 
+func (c *CommandServer) receiveStream(ctx context.Context) {
+	c.l.Info().Println("----------------------------------- start command receiveStream --------------------------------")
+	rs := redis_stream.NewStreamRead(c.dbs.GetRdb(), "Command", "server", c.l)
+	rs.Start(ctx, c.streamComMap)
+}
+
 func (c *CommandServer) ReadMap() map[uint64]e_command.Command {
 	c.chs.mu.RLock()
 	defer c.chs.mu.RUnlock()
@@ -115,8 +132,6 @@ func (c *CommandServer) GetList() []e_command.Command {
 func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Command) (id uint64, err error) {
 	// pass the variables
 	com = c.getVariables(com)
-	// publish to redis
-	_ = c.rdbPub(com)
 	if com.Message != nil {
 		err = com.Message
 		c.l.Error().Println(err)
@@ -139,8 +154,6 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 	if com.Variables == nil {
 		com.Variables = make(map[string]string)
 	}
-	// publish to redis
-	_ = c.rdbPub(com)
 	if com.Message != nil {
 		c.l.Error().Println(com.Message)
 		return com
@@ -178,10 +191,8 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 
 	// write to history in influxdb
 	c.writeToHistory(com)
-	// send to redis channel
-	if e := c.rdbPub(com); e != nil {
-		panic(e)
-	}
+	// publish to all channel
+	c.publishContainer(ctx, com)
 	return com
 }
 
@@ -223,7 +234,6 @@ Loop1:
 func (c *CommandServer) writeToHistory(com e_command.Command) {
 	ctx := context.Background()
 	tp := e_command.ToPub(com)
-	fmt.Println(string(tp.CommandData.Http.Body))
 	jCom, err := json.Marshal(tp)
 	if err != nil {
 		panic(err)
@@ -276,11 +286,16 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 	return
 }
 
-func (c *CommandServer) rdbPub(com e_command.Command) (e error) {
-	ctx := context.Background()
+func (c *CommandServer) publishContainer(ctx context.Context, com e_command.Command) {
+	go func() {
+		_ = c.rdbPub(ctx, com)
+	}()
+}
+
+func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err error) {
 	cb, _ := json.Marshal(e_command.ToPub(com))
-	e = c.dbs.GetRdb().Publish(ctx, "CommandRec", cb).Err()
-	if e != nil {
+	err = c.dbs.GetRdb().Publish(ctx, "CommandRec", cb).Err()
+	if err != nil {
 		c.l.Error().Println("redis publish error")
 		return
 	}

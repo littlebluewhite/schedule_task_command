@@ -20,6 +20,10 @@ func RegisterRouter(g group) {
 		rdbSub(o, log)
 	}()
 
+	go func() {
+		receiveStream(o, log)
+	}()
+
 	h := NewHandler(o, log)
 	tt.Get("/", h.GetTaskTemplates)
 	tt.Get("/:id", h.GetTaskTemplateById)

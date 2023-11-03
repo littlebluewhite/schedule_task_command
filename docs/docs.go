@@ -1019,6 +1019,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/task_template/{id}": {
+            "get": {
+                "description": "Get task templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Show task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task_template.TaskTemplate"
+                        }
+                    }
+                }
+            }
+        },
         "/api/time/history": {
             "get": {
                 "consumes": [
@@ -1264,35 +1293,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/e_time_template.TimeTemplate"
-                        }
-                    }
-                }
-            }
-        },
-        "/task_template/{id}": {
-            "get": {
-                "description": "Get task templates by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "task_template"
-                ],
-                "summary": "Show task templates",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "task template id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/e_task_template.TaskTemplate"
                         }
                     }
                 }
@@ -1818,9 +1818,6 @@ const docTemplate = `{
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatum"
                 },
-                "time_data_id": {
-                    "type": "integer"
-                },
                 "updated_at": {
                     "type": "string"
                 }
@@ -1978,6 +1975,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer"
                 },
                 "status": {
                     "type": "integer"
@@ -2487,8 +2487,8 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.5.5",
-	Host:             "127.0.0.1:5487",
+	Version:          "2.6.0",
+	Host:             "192.168.1.10:5487",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Schedule-Task-Command swagger API",

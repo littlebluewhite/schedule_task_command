@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/goccy/go-json"
-	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -30,6 +28,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		task.Status.Stages = int(sn)
 		// write task
 		t.writeTask(task)
+		t.publishContainer(ctx, task)
 
 		s := gsr.stageMap[sn]
 		task = t.doOneStage(ctx, s, task)
@@ -53,14 +52,12 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 
 	// write task
 	t.writeTask(task)
+	//publish
+	t.publishContainer(ctx, task)
 
 	// write to history in influxdb
 	t.writeToHistory(task)
 
-	//send to redis channel
-	if e := t.rdbPub(task); e != nil {
-		panic(e)
-	}
 	return task
 }
 
@@ -101,7 +98,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Monitor, name: stage.Name, com: com,
-				tags: stage.Tags}
+				tags: stage.Tags, stageID: stage.ID}
 		}(stage)
 	}
 	// wait 500 milliseconds to Execute executed command
@@ -111,7 +108,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, sv stageMapValue, task e
 			com := t.ts2Com(stage, triggerFrom, task)
 			com = t.cs.ExecuteWait(ctx, com)
 			ch <- comBuilder{mode: e_task_template.Execute, name: stage.Name, com: com,
-				tags: stage.Tags}
+				tags: stage.Tags, stageID: stage.ID}
 		}(stage)
 	}
 	mts := make([]e_task.TaskStage, 0, len(sv.monitor))
@@ -123,7 +120,8 @@ Loop:
 			com := comB.com
 			ts := e_task.TaskStage{
 				Name:       comB.name,
-				ID:         com.ID,
+				StageID:    comB.stageID,
+				CommandID:  com.ID,
 				From:       com.From,
 				To:         com.To,
 				Status:     com.Status,
@@ -167,20 +165,8 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.TaskStage, triggerFrom []st
 		Token:          task.Token,
 		Variables:      variables,
 	}
-	// use command template id first
-	if stage.CommandTemplateID != 0 {
-		var cacheMap map[int]model.CommandTemplate
-		if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
-			cacheMap = x.(map[int]model.CommandTemplate)
-			c.CommandData = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
-		} else {
-			t.l.Info().Printf("Cannot find command template id %v, so use template to execute command",
-				stage.CommandTemplateID)
-			c.CommandData = stage.CommandTemplate
-		}
-	} else {
-		c.CommandData = stage.CommandTemplate
-	}
+	// use command template as command data
+	c.CommandData = stage.CommandTemplate
 
 	return
 }

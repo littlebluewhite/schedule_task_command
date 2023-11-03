@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
@@ -15,6 +16,7 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
+	"strconv"
 )
 
 type Operate struct {
@@ -31,7 +33,7 @@ func NewOperate(dbs dbs.Dbs, taskS api.TaskServer) *Operate {
 		rdb:   dbs.GetRdb(),
 		taskS: taskS,
 	}
-	err := o.ReloadCache()
+	err := o.reloadCache()
 	if err != nil {
 		panic("initial time template Operate error")
 	}
@@ -55,8 +57,11 @@ func (o *Operate) setCacheMap(cacheMap map[int]model.TaskTemplate) {
 func (o *Operate) listDB() ([]*model.TaskTemplate, error) {
 	t := query.Use(o.db).TaskTemplate
 	ctx := context.Background()
-	tt, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Preload(
-		t.Stages.CommandTemplate.Monitor).Preload(t.Stages.CommandTemplate.Monitor.MConditions).Find()
+	tt, err := t.WithContext(ctx).Preload(field.Associations).Preload(
+		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
+		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
+		t.Stages.CommandTemplate.Redis).Preload(
+		t.Stages.CommandTemplate.Monitor.MConditions).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +82,7 @@ func (o *Operate) List() ([]model.TaskTemplate, error) {
 	return o.listCache()
 }
 
-func (o *Operate) ReloadCache() (e error) {
+func (o *Operate) reloadCache() (e error) {
 	tt, err := o.listDB()
 	if err != nil {
 		e = err
@@ -92,9 +97,27 @@ func (o *Operate) ReloadCache() (e error) {
 	return
 }
 
+func (o *Operate) ReloadCache(ctx context.Context, q *query.Query, ids []int32) (e error) {
+	cacheMap := o.getCacheMap()
+	taskTemplates, err := o.findDB(ctx, q, ids)
+	if err != nil {
+		e = err
+		return
+	}
+	for _, taskTemplate := range taskTemplates {
+		cacheMap[int(taskTemplate.ID)] = *taskTemplate
+	}
+	o.setCacheMap(cacheMap)
+	return
+}
+
 func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TaskTemplate, error) {
 	t := q.TaskTemplate
-	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(t.Stages.CommandTemplate).Where(t.ID.In(ids...)).Find()
+	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(
+		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
+		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
+		t.Stages.CommandTemplate.Redis).Preload(
+		t.Stages.CommandTemplate.Monitor.MConditions).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -276,5 +299,28 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		return
 	}
 	task.TaskData = e_task_template.Format(ttList)[0]
+	return
+}
+
+var StreamComMap = make(map[string]func(rsc map[string]interface{}) (string, error))
+
+func (o *Operate) getStreamComMap() map[string]func(rsc map[string]interface{}) (string, error) {
+	StreamComMap["execute_task_template"] = o.streamExecuteTaskTemplate
+	return StreamComMap
+}
+
+func (o *Operate) streamExecuteTaskTemplate(rsc map[string]interface{}) (result string, err error) {
+	var entry e_task_template.SendTaskTemplate
+	err = json.Unmarshal([]byte(rsc["data"].(string)), &entry)
+	if err != nil {
+		return
+	}
+	entry.Token = rsc["callback_token"].(string)
+	entry.TriggerFrom = append(entry.TriggerFrom, "stream execute taskTemplate")
+	id, err := o.Execute(context.Background(), entry)
+	if err != nil {
+		return
+	}
+	result = strconv.FormatUint(id, 10)
 	return
 }

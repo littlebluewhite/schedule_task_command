@@ -1,4 +1,19 @@
-# Schedule_Task_Command_Time  version 2.5.5
+# Schedule_Task_Command_Time  version 2.6.0
+
+### Task Server
+- redis stream read
+- redis stream add
+
+### Command Server
+- redis stream read
+- redis stream add
+------------------------------------------------------------------
+## 下一個版本預計完成
+- command parser
+- task change variable
+
+
+# Schedule_Task_Command_Time  version 2.5.7
 
 ### Task Server
 - Cancel task 增加 message
@@ -6,6 +21,7 @@
 - stages加上變數(Variable)
 - 刪除taskId
 - 新增ID
+- task stages中新增stage_id
 
 ### Command Server
 - Cancel command 增加 message

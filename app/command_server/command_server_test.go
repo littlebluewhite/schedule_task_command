@@ -34,7 +34,7 @@ func TestExecuteReturnId(t *testing.T) {
 		commandId, err := cs.ExecuteReturnId(ctx, com)
 		require.NotEqual(t, commandId, "")
 		require.NoError(t, err)
-		fmt.Printf("commandId: %s\n", commandId)
+		fmt.Printf("commandId: %d\n", commandId)
 		time.Sleep(1 * time.Second)
 		sl, _ := o.List()
 		fmt.Printf("data: %+v\n", sl)

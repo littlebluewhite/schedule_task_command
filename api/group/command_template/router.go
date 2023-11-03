@@ -3,13 +3,16 @@ package command_template
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
+	"schedule_task_command/api/group/task_template"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/util/logFile"
 )
 
 func RegisterRouter(g group) {
-	commandS := g.GetScheduleServer().GetTaskServer().GetCommandServer()
-	o := NewOperate(g.GetDbs(), commandS)
+	taskS := g.GetScheduleServer().GetTaskServer()
+	commandS := taskS.GetCommandServer()
+	taskTemplateO := task_template.NewOperate(g.GetDbs(), taskS)
+	o := NewOperate(g.GetDbs(), commandS, taskTemplateO)
 	log := logFile.NewLogFile("router", "command_template.log")
 	app := g.GetApp()
 

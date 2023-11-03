@@ -31,7 +31,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.5.5
+// @version         2.6.0
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -42,7 +42,7 @@ func init() {
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      127.0.0.1:5487
+// @host      192.168.1.10:5487
 
 func main() {
 	// Create context that listens for the interrupt signal from the OS.

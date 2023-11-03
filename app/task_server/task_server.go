@@ -11,6 +11,7 @@ import (
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/redis_stream"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -22,12 +23,13 @@ type commandServer interface {
 }
 
 type TaskServer[T any] struct {
-	dbs   dbs.Dbs
-	l     logFile.LogFile
-	t     map[uint64]e_task.Task
-	cs    commandServer
-	count atomic.Uint64
-	chs   chs
+	dbs          dbs.Dbs
+	l            logFile.LogFile
+	t            map[uint64]e_task.Task
+	cs           commandServer
+	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
+	count        atomic.Uint64
+	chs          chs
 }
 
 func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
@@ -47,12 +49,17 @@ func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
 
 func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	t.initialCounter(ctx)
+	// stream command initial
+	t.initStreamComMap()
 	t.l.Info().Println("Task server started")
 	go func() {
 		t.removeFinishedTask(ctx, removeTime)
 	}()
 	go func() {
 		t.rdbSub(ctx)
+	}()
+	go func() {
+		t.receiveStream(ctx)
 	}()
 	go func() {
 		t.cs.Start(ctx, removeTime)
@@ -75,6 +82,12 @@ func (t *TaskServer[T]) initialCounter(ctx context.Context) {
 		}
 	}
 	t.count.Store(uint64(tc.Value))
+}
+
+func (t *TaskServer[T]) initStreamComMap() {
+	t.streamComMap = map[string]func(rsc map[string]interface{}) (string, error){
+		"cancel_task": t.streamCancelTask,
+	}
 }
 
 func (t *TaskServer[T]) stopCounter() {
@@ -107,6 +120,25 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	}
 }
 
+func (t *TaskServer[T]) receiveStream(ctx context.Context) {
+	t.l.Info().Println("----------------------------------- start task receiveStream --------------------------------")
+	rs := redis_stream.NewStreamRead(t.dbs.GetRdb(), "Task", "server", t.l)
+	rs.Start(ctx, t.streamComMap)
+}
+
+func (t *TaskServer[T]) streamCancelTask(rsc map[string]interface{}) (result string, err error) {
+	var entry StreamCancel
+	err = json.Unmarshal([]byte(rsc["data"].(string)), &entry)
+	if err != nil {
+		return
+	}
+	err = t.CancelTask(entry.ID, entry.Message)
+	if err == nil {
+		result = "ok"
+	}
+	return
+}
+
 func (t *TaskServer[T]) ReadMap() map[uint64]e_task.Task {
 	t.chs.mu.RLock()
 	defer t.chs.mu.RUnlock()
@@ -126,8 +158,6 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	task.Stages = map[int]e_task.TaskStageC{}
 	// pass the variables
 	task = t.getVariables(task)
-	// publish to redis
-	_ = t.rdbPub(task)
 	if task.Message != nil {
 		err = task.Message
 		t.l.Error().Println(err)
@@ -147,8 +177,6 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	task.Stages = map[int]e_task.TaskStageC{}
 	// pass the variables
 	task = t.getVariables(task)
-	// publish to redis
-	_ = t.rdbPub(task)
 	if task.Message != nil {
 		t.l.Error().Println(task.Message)
 		return task
@@ -259,14 +287,50 @@ func (t *TaskServer[T]) writeTask(task e_task.Task) {
 	t.t[task.ID] = task
 }
 
-func (t *TaskServer[T]) rdbPub(task e_task.Task) (e error) {
-	ctx := context.Background()
+func (t *TaskServer[T]) publishContainer(ctx context.Context, task e_task.Task) {
+	go func() {
+		_ = t.rdbPub(ctx, task)
+	}()
+	go func() {
+		_ = t.StreamPub(ctx, task)
+	}()
+}
+
+func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error) {
 	trb, _ := json.Marshal(e_task.ToPub(task))
-	e = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
-	if e != nil {
+	err = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
+	if err != nil {
 		t.l.Error().Println("redis publish error")
 		return
 	}
+	return
+}
+
+func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err error) {
+	data := map[string]interface{}{
+		"id":      task.ID,
+		"stages":  task.Status.Stages,
+		"status":  task.Status.TStatus,
+		"message": task.Message,
+	}
+	jd, _ := json.Marshal(data)
+	values := redis_stream.CreateRedisStreamCom()
+	values["command"] = "track_task"
+	values["timestamp"] = time.Now().Unix()
+	values["data"] = jd
+	values["is_wait_call_back"] = 0
+	values["callback_token"] = task.Token
+	values["send_pattern"] = "1"
+	values["callback_timeout"] = 5
+	values["status_code"] = 1
+	values["callback_until_feed_back"] = 0
+
+	err = redis_stream.StreamAdd(ctx, t.dbs.GetRdb(), "AlarmAPIModuleReceiver", values)
+	if err != nil {
+		t.l.Error().Println(err)
+		return
+	}
+	t.l.Info().Println("stream publish success")
 	return
 }
 

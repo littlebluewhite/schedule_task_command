@@ -18,18 +18,24 @@ import (
 )
 
 type Operate struct {
-	db       *gorm.DB
-	cache    *cache.Cache
-	rdb      *redis.Client
-	commandS api.CommandServer
+	db            *gorm.DB
+	cache         *cache.Cache
+	rdb           *redis.Client
+	commandS      api.CommandServer
+	taskTemplateO taskTemplateOperate
 }
 
-func NewOperate(dbs dbs.Dbs, commandS api.CommandServer) *Operate {
+type taskTemplateOperate interface {
+	ReloadCache(ctx context.Context, q *query.Query, ids []int32) error
+}
+
+func NewOperate(dbs dbs.Dbs, commandS api.CommandServer, taskTemplateO taskTemplateOperate) *Operate {
 	o := &Operate{
-		db:       dbs.GetSql(),
-		cache:    dbs.GetCache(),
-		rdb:      dbs.GetRdb(),
-		commandS: commandS,
+		db:            dbs.GetSql(),
+		cache:         dbs.GetCache(),
+		rdb:           dbs.GetRdb(),
+		commandS:      commandS,
+		taskTemplateO: taskTemplateO,
 	}
 	err := o.ReloadCache()
 	if err != nil {
@@ -242,6 +248,11 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 			cacheMap[int(c.ID)] = *c
 		}
 		o.setCacheMap(cacheMap)
+		// reload task template
+		err = o.reloadTaskTemplate(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
 		return nil
 	})
 	if err != nil {
@@ -295,4 +306,30 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 	c.CommandData = ct
 
 	return
+}
+
+func (o *Operate) reloadTaskTemplate(ctx context.Context, q *query.Query, commandTemplateIds []int32) error {
+	qts := q.TaskStage
+	qt := q.TaskTemplateStage
+	stages, err := qts.WithContext(ctx).Select(qts.ID).Where(qts.CommandTemplateID.In(commandTemplateIds...)).Find()
+	if err != nil {
+		return err
+	}
+	stageIds := make([]int32, 0, len(stages))
+	for _, stage := range stages {
+		stageIds = append(stageIds, stage.ID)
+	}
+	tts, err := qt.WithContext(ctx).Select(qt.TaskTemplateID).Where(qt.TaskStageID.In(stageIds...)).Find()
+	if err != nil {
+		return err
+	}
+	templateIds := make([]int32, 0, len(tts))
+	for _, tt := range tts {
+		templateIds = append(templateIds, tt.TaskTemplateID)
+	}
+	err = o.taskTemplateO.ReloadCache(ctx, q, templateIds)
+	if err != nil {
+		return err
+	}
+	return nil
 }
