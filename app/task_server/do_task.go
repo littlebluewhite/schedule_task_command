@@ -28,6 +28,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 		task.Status.Stages = int(sn)
 		// write task
 		t.writeTask(task)
+		t.publishContainer(ctx, task)
 
 		s := gsr.stageMap[sn]
 		task = t.doOneStage(ctx, s, task)
@@ -51,14 +52,12 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 
 	// write task
 	t.writeTask(task)
+	//publish
+	t.publishContainer(ctx, task)
 
 	// write to history in influxdb
 	t.writeToHistory(task)
 
-	//send to redis channel
-	if e := t.rdbPub(task); e != nil {
-		panic(e)
-	}
 	return task
 }
 

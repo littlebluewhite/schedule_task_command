@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
@@ -15,6 +16,7 @@ import (
 	"schedule_task_command/entry/e_time"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
+	"strconv"
 	"time"
 )
 
@@ -257,5 +259,37 @@ func (o *Operate) generatePublishTime(st SendTime) (pt e_time.PublishTime) {
 		return
 	}
 	pt.TimeData = e_time_template.Format(ttList)[0].TimeData
+	return
+}
+
+var StreamComMap = make(map[string]func(rsc map[string]interface{}) (string, error))
+
+func (o *Operate) getStreamComMap() map[string]func(rsc map[string]interface{}) (string, error) {
+	StreamComMap["check_time"] = o.streamCheckTime
+	return StreamComMap
+}
+
+func (o *Operate) streamCheckTime(rsc map[string]interface{}) (result string, err error) {
+	var entry SendTime
+	err = json.Unmarshal([]byte(rsc["data"].(string)), &entry)
+	if err != nil {
+		return
+	}
+	timestamp, err := strconv.ParseInt(rsc["timestamp"].(string), 10, 64)
+	if err != nil {
+		return
+	}
+	t := time.Unix(timestamp, 0)
+	ct := CheckTime{
+		TriggerAccount: entry.TriggerAccount,
+		Token:          rsc["callback_token"].(string),
+		Time:           &t,
+	}
+	ct.TriggerFrom = append(entry.TriggerFrom, "stream execute timeTemplate")
+	isTime, err := o.CheckTime(entry.TemplateId, ct)
+	if err != nil {
+		return
+	}
+	result = strconv.FormatBool(isTime)
 	return
 }

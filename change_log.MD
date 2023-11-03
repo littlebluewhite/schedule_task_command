@@ -1,3 +1,18 @@
+# Schedule_Task_Command_Time  version 2.6.0
+
+### Task Server
+- redis stream read
+- redis stream add
+
+### Command Server
+- redis stream read
+- redis stream add
+------------------------------------------------------------------
+## 下一個版本預計完成
+- command parser
+- task change variable
+
+
 # Schedule_Task_Command_Time  version 2.5.7
 
 ### Task Server

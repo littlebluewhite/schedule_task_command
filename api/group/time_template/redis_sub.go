@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/goccy/go-json"
 	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/redis_stream"
 )
 
 func rdbSub(o *Operate, l logFile.LogFile) {
@@ -29,4 +30,12 @@ func rdbSub(o *Operate, l logFile.LogFile) {
 			l.Error().Println("Error executing time from timeTemplate")
 		}
 	}
+}
+
+func receiveStream(o *Operate, l logFile.LogFile) {
+	l.Info().Println("----------------------------------- start timeTemplate receiveStream --------------------------------")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	rs := redis_stream.NewStreamRead(o.rdb, "TimeTemplate", "server", l)
+	rs.Start(ctx, o.getStreamComMap())
 }

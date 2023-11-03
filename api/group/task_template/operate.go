@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gen/field"
@@ -15,6 +16,7 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
+	"strconv"
 )
 
 type Operate struct {
@@ -297,5 +299,28 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		return
 	}
 	task.TaskData = e_task_template.Format(ttList)[0]
+	return
+}
+
+var StreamComMap = make(map[string]func(rsc map[string]interface{}) (string, error))
+
+func (o *Operate) getStreamComMap() map[string]func(rsc map[string]interface{}) (string, error) {
+	StreamComMap["execute_task_template"] = o.streamExecuteTaskTemplate
+	return StreamComMap
+}
+
+func (o *Operate) streamExecuteTaskTemplate(rsc map[string]interface{}) (result string, err error) {
+	var entry e_task_template.SendTaskTemplate
+	err = json.Unmarshal([]byte(rsc["data"].(string)), &entry)
+	if err != nil {
+		return
+	}
+	entry.Token = rsc["callback_token"].(string)
+	entry.TriggerFrom = append(entry.TriggerFrom, "stream execute taskTemplate")
+	id, err := o.Execute(context.Background(), entry)
+	if err != nil {
+		return
+	}
+	result = strconv.FormatUint(id, 10)
 	return
 }

@@ -30,6 +30,11 @@ type comBuilder struct {
 	tags    json.RawMessage
 }
 
+type StreamCancel struct {
+	ID      uint64 `json:"id"`
+	Message string `json:"message"`
+}
+
 var TaskCanceled = util.MyErr("Task has been canceled")
 var SendToRedisErr = util.MyErr("send task to redis cannot format")
 var TaskNotFind = util.MyErr("can not find task")

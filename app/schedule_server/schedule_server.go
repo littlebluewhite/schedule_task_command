@@ -73,9 +73,9 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				if !schedule.Enabled {
 					return
 				}
-				scheduleId := fmt.Sprintf("%d", schedule.ID)
+				scheduleId := fmt.Sprintf("Schedule ID: %d", schedule.ID)
 				token := fmt.Sprintf("schedule-%s-%s", scheduleId, t)
-				triggerFrom := []string{"schedule", scheduleId}
+				triggerFrom := []string{"Schedule", scheduleId}
 				// Check time
 				pt := e_time.PublishTime{
 					TriggerFrom: triggerFrom,
