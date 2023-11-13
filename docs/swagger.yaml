@@ -38,6 +38,10 @@ definitions:
         items:
           type: integer
         type: array
+      return:
+        additionalProperties:
+          type: string
+        type: object
       status:
         type: integer
       status_code:
@@ -77,6 +81,10 @@ definitions:
         $ref: '#/definitions/e_command_template.MqttCommand'
       name:
         type: string
+      parser_return:
+        items:
+          $ref: '#/definitions/e_command_template.ParserReturn'
+        type: array
       port:
         type: string
       protocol:
@@ -112,6 +120,10 @@ definitions:
         $ref: '#/definitions/e_command_template.MqttCommand'
       name:
         type: string
+      parser_return:
+        items:
+          $ref: '#/definitions/e_command_template.ParserReturn'
+        type: array
       port:
         type: string
       protocol:
@@ -153,6 +165,10 @@ definitions:
         $ref: '#/definitions/e_command_template.MqttCommand'
       name:
         type: string
+      parser_return:
+        items:
+          $ref: '#/definitions/e_command_template.ParserReturn'
+        type: array
       port:
         type: string
       protocol:
@@ -255,6 +271,17 @@ definitions:
     required:
     - topic
     - type
+    type: object
+  e_command_template.ParserReturn:
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      search_rule:
+        type: string
     type: object
   e_command_template.RedisCommand:
     properties:
@@ -386,35 +413,94 @@ definitions:
     required:
     - id
     type: object
-  e_task.Status:
+  e_task.FailedCommand:
     properties:
-      failed_command_id:
+      command_id:
         type: integer
-      failed_command_template_id:
+      command_template_id:
         type: integer
-      failed_message:
+      message:
         type: string
-      stages:
+      status:
         type: integer
-      task_status:
+    type: object
+  e_task.SimpleTask:
+    properties:
+      id:
         type: integer
+      stage_items:
+        items:
+          $ref: '#/definitions/e_task.StageItem'
+        type: array
+      stage_number:
+        type: integer
+      status:
+        type: integer
+    type: object
+  e_task.Stage:
+    properties:
+      execute:
+        items:
+          $ref: '#/definitions/e_task.StageItem'
+        type: array
+      monitor:
+        items:
+          $ref: '#/definitions/e_task.StageItem'
+        type: array
+    type: object
+  e_task.StageItem:
+    properties:
+      command_id:
+        type: integer
+      command_template_id:
+        type: integer
+      from:
+        type: string
+      message:
+        type: string
+      mode:
+        type: integer
+      name:
+        type: string
+      stage_id:
+        type: integer
+      stage_number:
+        type: integer
+      status:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      to:
+        type: string
+      variable:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   e_task.Task:
     properties:
       client_message:
         type: string
+      failed_command:
+        items:
+          $ref: '#/definitions/e_task.FailedCommand'
+        type: array
       from:
         type: string
       id:
         type: integer
       message:
         type: string
+      stage_number:
+        type: integer
       stages:
         additionalProperties:
-          $ref: '#/definitions/e_task.TaskStageC'
+          $ref: '#/definitions/e_task.Stage'
         type: object
       status:
-        $ref: '#/definitions/e_task.Status'
+        type: integer
       task_data:
         $ref: '#/definitions/e_task_template.TaskTemplate'
       template_id:
@@ -436,45 +522,59 @@ definitions:
           type: object
         type: object
     type: object
-  e_task.TaskStage:
+  e_task.TaskPub:
     properties:
-      command_id:
-        type: integer
+      client_message:
+        type: string
+      failed_command:
+        items:
+          $ref: '#/definitions/e_task.FailedCommand'
+        type: array
       from:
         type: string
+      id:
+        type: integer
       message:
         type: string
-      name:
-        type: string
-      stage_id:
+      stage_number:
         type: integer
+      stages:
+        additionalProperties:
+          $ref: '#/definitions/e_task.Stage'
+        type: object
       status:
         type: integer
-      tags:
-        items:
-          type: integer
-        type: array
+      task_data:
+        $ref: '#/definitions/e_task_template.TaskTemplate'
       template_id:
         type: integer
       to:
         type: string
-      variable:
-        additionalProperties:
+      token:
+        type: string
+      trigger_account:
+        type: string
+      trigger_from:
+        items:
           type: string
+        type: array
+      variables:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
         type: object
     type: object
-  e_task.TaskStageC:
+  e_task_template.ParserItem:
     properties:
-      execute:
+      from_key:
+        type: string
+      to:
         items:
-          $ref: '#/definitions/e_task.TaskStage'
-        type: array
-      monitor:
-        items:
-          $ref: '#/definitions/e_task.TaskStage'
+          $ref: '#/definitions/e_task_template.To'
         type: array
     type: object
-  e_task_template.TaskStage:
+  e_task_template.StageItem:
     properties:
       command_template:
         $ref: '#/definitions/e_command_template.CommandTemplate'
@@ -486,6 +586,10 @@ definitions:
         type: integer
       name:
         type: string
+      parser:
+        items:
+          $ref: '#/definitions/e_task_template.ParserItem'
+        type: array
       stage_number:
         type: integer
       tags:
@@ -497,7 +601,7 @@ definitions:
           type: integer
         type: array
     type: object
-  e_task_template.TaskStageCreate:
+  e_task_template.StageItemCreate:
     properties:
       command_template_id:
         type: integer
@@ -520,7 +624,7 @@ definitions:
     - name
     - stage_number
     type: object
-  e_task_template.TaskStageUpdate:
+  e_task_template.StageItemUpdate:
     properties:
       command_template_id:
         type: integer
@@ -530,6 +634,10 @@ definitions:
         type: integer
       name:
         type: string
+      parser:
+        items:
+          type: integer
+        type: array
       stage_number:
         type: integer
       tags:
@@ -553,9 +661,9 @@ definitions:
         type: integer
       name:
         type: string
-      stages:
+      stage_items:
         items:
-          $ref: '#/definitions/e_task_template.TaskStage'
+          $ref: '#/definitions/e_task_template.StageItem'
         type: array
       tags:
         items:
@@ -570,7 +678,7 @@ definitions:
         type: string
       stages:
         items:
-          $ref: '#/definitions/e_task_template.TaskStageCreate'
+          $ref: '#/definitions/e_task_template.StageItemCreate'
         type: array
       tags:
         items:
@@ -587,7 +695,7 @@ definitions:
         type: string
       stages:
         items:
-          $ref: '#/definitions/e_task_template.TaskStageUpdate'
+          $ref: '#/definitions/e_task_template.StageItemUpdate'
         type: array
       tags:
         items:
@@ -595,6 +703,13 @@ definitions:
         type: array
     required:
     - id
+    type: object
+  e_task_template.To:
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
     type: object
   e_time.PublishTime:
     properties:
@@ -794,7 +909,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.6.0
+  version: 2.7.0
 paths:
   /api/command/:
     get:
@@ -1254,7 +1369,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/e_task.Task'
+              $ref: '#/definitions/e_task.TaskPub'
             type: array
       summary: Show all tasks
       tags:
@@ -1338,6 +1453,61 @@ paths:
               $ref: '#/definitions/e_task.Task'
             type: array
       summary: get task history
+      tags:
+      - task
+  /api/task/simple/:
+    get:
+      description: Get all simple tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_task.SimpleTask'
+            type: array
+      summary: Show all simple tasks
+      tags:
+      - task
+  /api/task/simple/{id}:
+    get:
+      description: Get simple task by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_task.SimpleTask'
+      summary: Show task
+      tags:
+      - task
+  /api/task/stage_item/status/{id}:
+    get:
+      description: Get stage item Status by task id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: Show stage item Status
       tags:
       - task
   /api/task_template/:

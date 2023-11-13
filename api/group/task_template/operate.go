@@ -58,10 +58,10 @@ func (o *Operate) listDB() ([]*model.TaskTemplate, error) {
 	t := query.Use(o.db).TaskTemplate
 	ctx := context.Background()
 	tt, err := t.WithContext(ctx).Preload(field.Associations).Preload(
-		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
-		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
-		t.Stages.CommandTemplate.Redis).Preload(
-		t.Stages.CommandTemplate.Monitor.MConditions).Find()
+		t.StageItems.CommandTemplate).Preload(t.StageItems.CommandTemplate.Http).Preload(
+		t.StageItems.CommandTemplate.Mqtt).Preload(t.StageItems.CommandTemplate.Websocket).Preload(
+		t.StageItems.CommandTemplate.Redis).Preload(
+		t.StageItems.CommandTemplate.Monitor.MConditions).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -114,10 +114,10 @@ func (o *Operate) ReloadCache(ctx context.Context, q *query.Query, ids []int32) 
 func (o *Operate) findDB(ctx context.Context, q *query.Query, ids []int32) ([]*model.TaskTemplate, error) {
 	t := q.TaskTemplate
 	TaskTemplates, err := t.WithContext(ctx).Preload(field.Associations).Preload(
-		t.Stages.CommandTemplate).Preload(t.Stages.CommandTemplate.Http).Preload(
-		t.Stages.CommandTemplate.Mqtt).Preload(t.Stages.CommandTemplate.Websocket).Preload(
-		t.Stages.CommandTemplate.Redis).Preload(
-		t.Stages.CommandTemplate.Monitor.MConditions).Where(t.ID.In(ids...)).Find()
+		t.StageItems.CommandTemplate).Preload(t.StageItems.CommandTemplate.Http).Preload(
+		t.StageItems.CommandTemplate.Mqtt).Preload(t.StageItems.CommandTemplate.Websocket).Preload(
+		t.StageItems.CommandTemplate.Redis).Preload(
+		t.StageItems.CommandTemplate.Monitor.MConditions).Where(t.ID.In(ids...)).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -182,9 +182,9 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 		for _, item := range tt {
 			ids = append(ids, item.ID)
 			sUpdate := make([]map[string]interface{}, 0, 10)
-			sCreate := make([]*model.TaskStage, 0, 10)
+			sCreate := make([]*model.StageItem, 0, 10)
 			sDelete := make([]int32, 0, 10)
-			for _, stage := range item.Stages {
+			for _, stage := range item.StageItems {
 				s := stage
 				switch {
 				case s.ID < 0:
@@ -196,8 +196,8 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 				}
 			}
 			t := util.StructToMap(item)
-			t["stages"] = sUpdate
-			delete(t, "stages")
+			t["stage_items"] = sUpdate
+			delete(t, "stage_items")
 			delete(t, "updated_at")
 			delete(t, "created_at")
 			if _, err := tx.TaskTemplate.WithContext(ctx).Where(tx.TaskTemplate.ID.Eq(
@@ -206,23 +206,23 @@ func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 			}
 			for _, si := range sUpdate {
 				delete(si, "command_template")
-				if _, err := tx.TaskStage.WithContext(ctx).Where(tx.TaskStage.ID.Eq(
+				if _, err := tx.StageItem.WithContext(ctx).Where(tx.StageItem.ID.Eq(
 					(si["id"]).(int32))).Updates(si); err != nil {
 					return err
 				}
 			}
-			if err := tx.TaskStage.WithContext(ctx).CreateInBatches(sCreate, 100); err != nil {
+			if err := tx.StageItem.WithContext(ctx).CreateInBatches(sCreate, 100); err != nil {
 				return err
 			}
 			tts := make([]*model.TaskTemplateStage, 0, len(sCreate))
 			for _, ts := range sCreate {
 				tts = append(tts, &model.TaskTemplateStage{
-					TaskStageID: ts.ID, TaskTemplateID: item.ID})
+					StageItemID: ts.ID, TaskTemplateID: item.ID})
 			}
 			if err := tx.TaskTemplateStage.WithContext(ctx).CreateInBatches(tts, 100); err != nil {
 				return err
 			}
-			if _, err := tx.TaskStage.WithContext(ctx).Where(tx.TaskStage.ID.In(
+			if _, err := tx.StageItem.WithContext(ctx).Where(tx.StageItem.ID.In(
 				sDelete...)).Delete(); err != nil {
 				return err
 			}
@@ -251,7 +251,7 @@ func (o *Operate) Delete(ids []int32) error {
 		if !ok {
 			return errors.New(fmt.Sprintf("id: %d not found", i))
 		}
-		for _, s := range tt.Stages {
+		for _, s := range tt.StageItems {
 			sIds = append(sIds, s.ID)
 		}
 	}
@@ -262,8 +262,8 @@ func (o *Operate) Delete(ids []int32) error {
 			tx.TaskTemplate.ID.In(ids...)).Delete(); err != nil {
 			return err
 		}
-		if _, err := tx.TaskStage.WithContext(ctx).Where(
-			tx.TaskStage.ID.In(sIds...)).Delete(); err != nil {
+		if _, err := tx.StageItem.WithContext(ctx).Where(
+			tx.StageItem.ID.In(sIds...)).Delete(); err != nil {
 			return err
 		}
 		for _, id := range ids {
@@ -294,7 +294,7 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 	}
 	ttList, err := o.findCache([]int32{int32(st.TemplateId)})
 	if err != nil {
-		task.Status = e_task.Status{TStatus: e_task.Failure}
+		task.Status = e_task.Failure
 		task.Message = &CannotFindTemplate
 		return
 	}

@@ -117,6 +117,15 @@ CREATE TABLE `m_condition`
     `monitor_id`     int
 );
 
+CREATE TABLE `parser_return`
+(
+    `id`                  int PRIMARY KEY AUTO_INCREMENT,
+    `name`                varchar(255) NOT NULL,
+    `key`                 varchar(255) NOT NULL,
+    `search_rule`         varchar(255) NOT NULL,
+    `command_template_id` int          NOT NULL
+);
+
 CREATE TABLE `task_template`
 (
     `id`         int PRIMARY KEY AUTO_INCREMENT,
@@ -129,11 +138,11 @@ CREATE TABLE `task_template`
 CREATE TABLE `task_template_stage`
 (
     `task_template_id` int,
-    `task_stage_id`    int,
-    PRIMARY KEY (`task_template_id`, `task_stage_id`)
+    `stage_item_id`    int,
+    PRIMARY KEY (`task_template_id`, `stage_item_id`)
 );
 
-CREATE TABLE `task_stage`
+CREATE TABLE `stage_item`
 (
     `id`                  int PRIMARY KEY AUTO_INCREMENT,
     `name`                varchar(255)                NOT NULL,
@@ -141,7 +150,8 @@ CREATE TABLE `task_stage`
     `mode`                ENUM ('monitor', 'execute') NOT NULL,
     `command_template_id` int                         NOT NULL,
     `tags`                json DEFAULT (JSON_ARRAY()),
-    `variable`            json DEFAULT (JSON_OBJECT())
+    `variable`            json DEFAULT (JSON_OBJECT()),
+    `parser`              json DEFAULT (json_object())
 );
 
 CREATE TABLE `counter`
@@ -177,11 +187,14 @@ ALTER TABLE `monitor`
 ALTER TABLE `m_condition`
     ADD FOREIGN KEY (`monitor_id`) REFERENCES `monitor` (`id`) ON DELETE CASCADE;
 
+ALTER TABLE `parser_return`
+    ADD FOREIGN KEY (`command_template_id`) REFERENCES `command_template` (`id`) ON DELETE CASCADE;
+
 ALTER TABLE `task_template_stage`
     ADD FOREIGN KEY (`task_template_id`) REFERENCES `task_template` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `task_template_stage`
-    ADD FOREIGN KEY (`task_stage_id`) REFERENCES `task_stage` (`id`) ON DELETE CASCADE;
+    ADD FOREIGN KEY (`stage_item_id`) REFERENCES `stage_item` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `task_stage`
+ALTER TABLE `stage_item`
     ADD FOREIGN KEY (`command_template_id`) REFERENCES `command_template` (`id`);

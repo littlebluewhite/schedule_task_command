@@ -15,18 +15,28 @@ func Format(ct []model.CommandTemplate) []CommandTemplate {
 
 func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 	p := mct.Protocol
+	parserReturn := make([]ParserReturn, 0, len(mct.ParserReturn))
+	for _, pr := range mct.ParserReturn {
+		parserReturn = append(parserReturn, ParserReturn{
+			ID:         pr.ID,
+			Name:       pr.Name,
+			Key:        pr.Key,
+			SearchRule: pr.SearchRule,
+		})
+	}
 	ct = CommandTemplate{
-		ID:          mct.ID,
-		Name:        mct.Name,
-		Protocol:    S2Protocol(&p),
-		Timeout:     mct.Timeout,
-		Description: mct.Description,
-		Host:        mct.Host,
-		Port:        mct.Port,
-		UpdatedAt:   mct.UpdatedAt,
-		CreatedAt:   mct.CreatedAt,
-		Tags:        mct.Tags,
-		Variable:    mct.Variable,
+		ID:           mct.ID,
+		Name:         mct.Name,
+		Protocol:     S2Protocol(&p),
+		Timeout:      mct.Timeout,
+		Description:  mct.Description,
+		Host:         mct.Host,
+		Port:         mct.Port,
+		UpdatedAt:    mct.UpdatedAt,
+		CreatedAt:    mct.CreatedAt,
+		Tags:         mct.Tags,
+		Variable:     mct.Variable,
+		ParserReturn: parserReturn,
 	}
 	if mct.Http != nil {
 		method := mct.Http.Method
@@ -89,15 +99,25 @@ func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 	result := make([]*model.CommandTemplate, 0, len(c))
 	for _, item := range c {
+		parserReturn := make([]model.ParserReturn, 0, len(item.ParserReturn))
+		for _, pr := range item.ParserReturn {
+			parserReturn = append(parserReturn, model.ParserReturn{
+				ID:         pr.ID,
+				Name:       pr.Name,
+				Key:        pr.Key,
+				SearchRule: pr.SearchRule,
+			})
+		}
 		i := model.CommandTemplate{
-			Name:        item.Name,
-			Protocol:    item.Protocol.String(),
-			Timeout:     item.Timeout,
-			Description: item.Description,
-			Host:        item.Host,
-			Port:        item.Port,
-			Tags:        item.Tags,
-			Variable:    item.Variable,
+			Name:         item.Name,
+			Protocol:     item.Protocol.String(),
+			Timeout:      item.Timeout,
+			Description:  item.Description,
+			Host:         item.Host,
+			Port:         item.Port,
+			Tags:         item.Tags,
+			Variable:     item.Variable,
+			ParserReturn: parserReturn,
 		}
 		if item.Http != nil {
 			var bodyType *string
@@ -225,6 +245,16 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 			ct.Redis.Message = u.Redis.Message
 			ct.Redis.Type = u.Redis.Type
 		}
+		parserReturn := make([]model.ParserReturn, 0, len(u.ParserReturn))
+		for _, pr := range u.ParserReturn {
+			parserReturn = append(parserReturn, model.ParserReturn{
+				ID:         pr.ID,
+				Name:       pr.Name,
+				Key:        pr.Key,
+				SearchRule: pr.SearchRule,
+			})
+		}
+		ct.ParserReturn = parserReturn
 		if u.Monitor != nil && ct.Monitor != nil {
 			mResult := make([]model.MCondition, 0, len(u.Monitor.MConditions))
 			for _, m := range u.Monitor.MConditions {

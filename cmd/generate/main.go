@@ -50,6 +50,8 @@ func main() {
 		mCondition, &field.RelateConfig{
 			GORMTag: map[string][]string{"foreignKey": {"monitor_id"}},
 		}))
+	parserReturn := g.GenerateModel("parser_return",
+		gen.FieldType("t_condition", "json.RawMessage"))
 	commandTemplate := g.GenerateModel("command_template",
 		gen.FieldRelate(field.HasOne, "Http", httpsCommand, &field.RelateConfig{
 			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
@@ -71,18 +73,23 @@ func main() {
 			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
 			RelatePointer: true,
 		}),
+		gen.FieldRelate(field.HasMany, "ParserReturn", parserReturn, &field.RelateConfig{
+			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
+			RelatePointer: false,
+		}),
 		gen.FieldType("tags", "json.RawMessage"),
 		gen.FieldType("variable", "json.RawMessage"),
 	)
-	taskStage := g.GenerateModel("task_stage",
+	stageItem := g.GenerateModel("stage_item",
 		gen.FieldRelate(field.BelongsTo, "CommandTemplate", commandTemplate, &field.RelateConfig{
 			GORMTag:       map[string][]string{"foreignKey": {"command_template_id"}},
 			RelatePointer: false,
 		}),
 		gen.FieldType("tags", "json.RawMessage"),
-		gen.FieldType("variable", "json.RawMessage"))
+		gen.FieldType("variable", "json.RawMessage"),
+		gen.FieldType("parser", "json.RawMessage"))
 	taskTemplate := g.GenerateModel("task_template",
-		gen.FieldRelate(field.Many2Many, "Stages", taskStage, &field.RelateConfig{
+		gen.FieldRelate(field.Many2Many, "StageItems", stageItem, &field.RelateConfig{
 			GORMTag: map[string][]string{"many2many": {"task_template_stage"}},
 		}),
 		gen.FieldType("variable", "json.RawMessage"),
@@ -101,8 +108,8 @@ func main() {
 	counter := g.GenerateModel("counter")
 
 	g.ApplyBasic(timeData, timeTemplate, headerTemplate, httpsCommand, commandTemplate,
-		redisCommand, mqttCommand, websocketCommand, monitor, mCondition, taskTemplateStage,
-		taskStage, taskTemplate, schedule, counter)
+		redisCommand, mqttCommand, websocketCommand, monitor, mCondition, parserReturn,
+		taskTemplateStage, stageItem, taskTemplate, schedule, counter)
 
 	// execute the action of code generation
 	g.Execute()

@@ -32,7 +32,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Description Get all tasks
 // @Tags        task
 // @Produce     json
-// @Success     200 {array} e_task.Task
+// @Success     200 {array} e_task.TaskPub
 // @Router      /api/task/ [get]
 func (h *Handler) GetTasks(c *fiber.Ctx) error {
 	tasks, err := h.o.List()
@@ -66,32 +66,66 @@ func (h *Handler) GetTaskById(c *fiber.Ctx) error {
 	return c.Status(200).JSON(e_task.ToPub(ht[0]))
 }
 
-// CancelTask swagger
-// @Summary     cancel task
-// @Description Cancel task by id
+// GetSimpleTasks swagger
+// @Summary     Show all simple tasks
+// @Description Get all simple tasks
+// @Tags        task
+// @Produce     json
+// @Success     200 {array} e_task.SimpleTask
+// @Router      /api/task/simple/ [get]
+func (h *Handler) GetSimpleTasks(c *fiber.Ctx) error {
+	tasks, err := h.o.List()
+	if err != nil {
+		h.l.Error().Println("Error getting tasks")
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(e_task.ToSimpleTaskSlice(tasks))
+}
+
+// GetSimpleTasksById swagger
+// @Summary     Show task
+// @Description Get simple task by id
 // @Tags        task
 // @Produce     json
 // @Param       id  path     string true "id"
-// @Param   message body     task.CancelBody true "cancel message"
-// @Success     200 {string} cancel successfully
-// @Router      /api/task/{id} [Delete]
-func (h *Handler) CancelTask(c *fiber.Ctx) error {
+// @Success     200 {object} e_task.SimpleTask
+// @Router      /api/task/simple/{id} [get]
+func (h *Handler) GetSimpleTasksById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
 		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
-	entry := CancelBody{}
-	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("CancelTask: ", err)
-		return util.Err(c, err, 0)
-	}
-	err = h.o.Cancel(uint64(id), entry.ClientMessage)
+	ht, err := h.o.Find([]uint64{uint64(id)})
 	if err != nil {
+		h.l.Error().Println("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON("cancel successful")
+	return c.Status(200).JSON(e_task.ToSimpleTask(ht[0]))
+}
+
+// GetStageItemStatus swagger
+// @Summary     Show stage item Status
+// @Description Get stage item Status by task id
+// @Tags        task
+// @Produce     json
+// @Param       id  path     string true "id"
+// @Success     200 {array} int
+// @Router      /api/task/stage_item/status/{id} [get]
+func (h *Handler) GetStageItemStatus(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetTaskById: ", e)
+		return util.Err(c, e, 0)
+	}
+	ht, err := h.o.Find([]uint64{uint64(id)})
+	if err != nil {
+		h.l.Error().Println("GetTaskById: ", err)
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON(e_task.ToStageItemStatus(ht[0]))
 }
 
 // GetHistory swagger
@@ -118,4 +152,32 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(data)
+}
+
+// CancelTask swagger
+// @Summary     cancel task
+// @Description Cancel task by id
+// @Tags        task
+// @Produce     json
+// @Param       id  path     string true "id"
+// @Param   message body     task.CancelBody true "cancel message"
+// @Success     200 {string} cancel successfully
+// @Router      /api/task/{id} [Delete]
+func (h *Handler) CancelTask(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		e := errors.New("id is error")
+		h.l.Error().Println("GetTaskById: ", e)
+		return util.Err(c, e, 0)
+	}
+	entry := CancelBody{}
+	if err := c.BodyParser(&entry); err != nil {
+		h.l.Error().Println("CancelTask: ", err)
+		return util.Err(c, err, 0)
+	}
+	err = h.o.Cancel(uint64(id), entry.ClientMessage)
+	if err != nil {
+		return util.Err(c, err, 0)
+	}
+	return c.Status(200).JSON("cancel successful")
 }

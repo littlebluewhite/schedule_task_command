@@ -199,6 +199,35 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 					return err
 				}
 			}
+			prUpdate := make([]map[string]interface{}, 0, 10)
+			prCreate := make([]*model.ParserReturn, 0, 10)
+			prDelete := make([]int32, 0, 10)
+			for _, parserReturn := range item.ParserReturn {
+				pr := parserReturn
+				switch {
+				case pr.ID < 0:
+					prDelete = append(prDelete, -pr.ID)
+				case pr.ID == 0:
+					pr.CommandTemplateID = item.ID
+					prCreate = append(prCreate, &pr)
+				case pr.ID > 0:
+					pr.CommandTemplateID = item.ID
+					prUpdate = append(prUpdate, util.StructToMap(pr))
+				}
+			}
+			for _, prs := range prUpdate {
+				if _, err := tx.ParserReturn.WithContext(ctx).Where(tx.ParserReturn.ID.Eq(
+					(prs["id"]).(int32))).Updates(prs); err != nil {
+					return err
+				}
+			}
+			if err := tx.ParserReturn.WithContext(ctx).CreateInBatches(prCreate, 100); err != nil {
+				return err
+			}
+			if _, err := tx.ParserReturn.WithContext(ctx).Where(tx.ParserReturn.ID.In(prDelete...)).Delete(); err != nil {
+				return err
+			}
+
 			if item.Http != nil {
 				h := util.StructToMap(item.Http)
 				if _, err := tx.HTTPSCommand.WithContext(ctx).Where(tx.HTTPSCommand.ID.Eq(
@@ -233,6 +262,7 @@ func (o *Operate) Update(u []*e_command_template.CommandTemplateUpdate) error {
 			delete(t, "websocket")
 			delete(t, "redis")
 			delete(t, "monitor")
+			delete(t, "parser_return")
 			delete(t, "created_at")
 			delete(t, "updated_at")
 			if _, err := tx.CommandTemplate.WithContext(ctx).Where(tx.CommandTemplate.ID.Eq(
@@ -296,7 +326,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		Token:          sc.Token,
 		Variables:      sc.Variables,
 	}
-	cList, err := o.findCache([]int32{int32(sc.TemplateId)})
+	cList, err := o.findCache([]int32{sc.TemplateId})
 	if err != nil {
 		c.Status = e_command.Failure
 		c.Message = &e_command_template.CannotFindTemplate
@@ -309,7 +339,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 }
 
 func (o *Operate) reloadTaskTemplate(ctx context.Context, q *query.Query, commandTemplateIds []int32) error {
-	qts := q.TaskStage
+	qts := q.StageItem
 	qt := q.TaskTemplateStage
 	stages, err := qts.WithContext(ctx).Select(qts.ID).Where(qts.CommandTemplateID.In(commandTemplateIds...)).Find()
 	if err != nil {
@@ -319,7 +349,7 @@ func (o *Operate) reloadTaskTemplate(ctx context.Context, q *query.Query, comman
 	for _, stage := range stages {
 		stageIds = append(stageIds, stage.ID)
 	}
-	tts, err := qt.WithContext(ctx).Select(qt.TaskTemplateID).Where(qt.TaskStageID.In(stageIds...)).Find()
+	tts, err := qt.WithContext(ctx).Select(qt.TaskTemplateID).Where(qt.StageItemID.In(stageIds...)).Find()
 	if err != nil {
 		return err
 	}

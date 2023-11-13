@@ -54,7 +54,7 @@ func (s *ScheduleServer[T, U]) listen(ctx context.Context, duration time.Duratio
 			return
 		case t := <-ticker.C:
 			go s.checkSchedule(ctx, t)
-			fmt.Println("Invoked at ", t)
+			//fmt.Println("Invoked at ", t)
 		}
 	}
 }
@@ -125,7 +125,7 @@ func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate)
 	}
 	mt, ok := cacheMap[st.TemplateId]
 	if !ok {
-		task.Status = e_task.Status{TStatus: e_task.Failure}
+		task.Status = e_task.Failure
 		task.Message = &e_command_template.CannotFindTemplate
 		return
 	}

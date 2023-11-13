@@ -1,8 +1,8 @@
 package task_server
 
 import (
-	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
 	"sync"
@@ -14,20 +14,23 @@ type chs struct {
 
 type getStagesResult struct {
 	sns      []int32
-	stageMap map[int32]stageMapValue
+	stageMap map[int32]stageMap
 }
 
-type stageMapValue struct {
-	monitor []e_task_template.TaskStage
-	execute []e_task_template.TaskStage
+type stageMap struct {
+	monitor map[int32]stageItem
+	execute map[int32]stageItem
+}
+
+type stageItem struct {
+	templateStageItem e_task_template.StageItem
+	taskStageItem     e_task.StageItem
 }
 
 type comBuilder struct {
 	stageID int32
-	mode    e_task_template.Mode
-	name    string
+	parser  []e_task_template.ParserItem
 	com     e_command.Command
-	tags    json.RawMessage
 }
 
 type StreamCancel struct {
@@ -35,8 +38,6 @@ type StreamCancel struct {
 	Message string `json:"message"`
 }
 
-var TaskCanceled = util.MyErr("Task has been canceled")
 var SendToRedisErr = util.MyErr("send task to redis cannot format")
 var TaskNotFind = util.MyErr("can not find task")
 var TaskCannotCancel = util.MyErr("task cannot be canceled")
-var TaskTemplateVariable = util.MyErr("task template variable failed to format")

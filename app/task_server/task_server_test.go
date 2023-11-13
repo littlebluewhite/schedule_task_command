@@ -110,7 +110,7 @@ func TestDoTask(t *testing.T) {
 			},
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
-				Stages: []e_task_template.TaskStage{
+				StageItems: []e_task_template.StageItem{
 					{
 						ID:          3,
 						Name:        "c3",
@@ -187,7 +187,7 @@ func TestDoTask(t *testing.T) {
 			Token: "test2",
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test2_name",
-				Stages: []e_task_template.TaskStage{
+				StageItems: []e_task_template.StageItem{
 					{
 						Name:        "c3",
 						StageNumber: 2,
@@ -248,7 +248,7 @@ func TestDoTask(t *testing.T) {
 			Token: "test2",
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test2_name",
-				Stages: []e_task_template.TaskStage{
+				StageItems: []e_task_template.StageItem{
 					{
 						Name:        "c3",
 						StageNumber: 2,
@@ -293,7 +293,7 @@ func TestDoTask(t *testing.T) {
 		comM := ts.GetCommandServer().ReadMap()
 		fmt.Printf("tasks: %+v\n", task)
 		fmt.Printf("coms: %+v\n", comM)
-		require.Equal(t, e_task.Cancel, task.Status.TStatus)
+		require.Equal(t, e_task.Cancel, task.Status)
 	})
 	t.Run("test variable error", func(t *testing.T) {
 		h1 := e_command_template.HTTPSCommand{
@@ -335,7 +335,7 @@ func TestDoTask(t *testing.T) {
 			},
 			TaskData: e_task_template.TaskTemplate{
 				Name: "test1_name",
-				Stages: []e_task_template.TaskStage{
+				StageItems: []e_task_template.StageItem{
 					{
 						Name:        "c3",
 						StageNumber: 2,
@@ -392,7 +392,7 @@ func TestReadHistory(t *testing.T) {
 		hc, err := ts.ReadFromHistory("", "-50d", "", "Failure")
 		require.NoError(t, err)
 		for _, task := range hc {
-			require.Equal(t, e_task.Failure, task.Status.TStatus)
+			require.Equal(t, e_task.Failure, task.Status)
 		}
 		fmt.Printf("%+v\n", hc)
 	})

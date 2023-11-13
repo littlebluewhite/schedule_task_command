@@ -16,7 +16,10 @@ func RegisterRouter(g group) {
 
 	h := NewHandler(o, log)
 	tt.Get("/", h.GetTasks)
+	tt.Get("/simple/", h.GetSimpleTasks)
 	tt.Get("/history", h.GetHistory)
+	tt.Get("/stage_item/status/:id", h.GetStageItemStatus)
+	tt.Get("/simple/:id", h.GetSimpleTasksById)
 	tt.Get("/:id", h.GetTaskById)
 	tt.Delete("/:id", h.CancelTask)
 }

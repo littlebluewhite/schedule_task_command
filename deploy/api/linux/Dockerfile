@@ -14,5 +14,9 @@ WORKDIR /app
 COPY --from=builder /app/main /app/cmd/api/
 COPY env env
 
+RUN apk update
+RUN apk add -U tzdata
+
+ENV TZ=Asia/Taipei
 EXPOSE 5487
 CMD ["/app/cmd/api/main"]

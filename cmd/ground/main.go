@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"time"
+	"github.com/goccy/go-json"
 )
 
 func main() {
-	i, err := strconv.ParseInt("1405544146", 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	tm := time.Unix(i, 0)
-	fmt.Println(tm)
+	var a []int32
+	b := []byte("[1, 2, 3, 4]")
+	e := json.Unmarshal(b, &a)
+
+	fmt.Println(e)
+	fmt.Println(a)
+}
+
+type stageMapValue2 struct {
+	a map[string]int
 }

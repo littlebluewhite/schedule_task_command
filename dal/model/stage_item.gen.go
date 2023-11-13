@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 )
 
-const TableNameTaskStage = "task_stage"
+const TableNameStageItem = "stage_item"
 
-// TaskStage mapped from table <task_stage>
-type TaskStage struct {
+// StageItem mapped from table <stage_item>
+type StageItem struct {
 	ID                int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name              string          `gorm:"column:name;not null" json:"name"`
 	StageNumber       int32           `gorm:"column:stage_number;not null" json:"stage_number"`
@@ -19,10 +19,11 @@ type TaskStage struct {
 	CommandTemplateID int32           `gorm:"column:command_template_id;not null" json:"command_template_id"`
 	Tags              json.RawMessage `gorm:"column:tags;default:json_array()" json:"tags"`
 	Variable          json.RawMessage `gorm:"column:variable;default:json_object()" json:"variable"`
+	Parser            json.RawMessage `gorm:"column:parser;default:json_object()" json:"parser"`
 	CommandTemplate   CommandTemplate `gorm:"foreignKey:command_template_id" json:"command_template"`
 }
 
-// TableName TaskStage's table name
-func (*TaskStage) TableName() string {
-	return TableNameTaskStage
+// TableName StageItem's table name
+func (*StageItem) TableName() string {
+	return TableNameStageItem
 }

@@ -9,7 +9,7 @@ const TableNameTaskTemplateStage = "task_template_stage"
 // TaskTemplateStage mapped from table <task_template_stage>
 type TaskTemplateStage struct {
 	TaskTemplateID int32 `gorm:"column:task_template_id;primaryKey" json:"task_template_id"`
-	TaskStageID    int32 `gorm:"column:task_stage_id;primaryKey" json:"task_stage_id"`
+	StageItemID    int32 `gorm:"column:stage_item_id;primaryKey" json:"stage_item_id"`
 }
 
 // TableName TaskTemplateStage's table name

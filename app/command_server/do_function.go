@@ -53,15 +53,20 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 				if com.CommandData.Monitor == nil {
 					// mode execute
 					com.Status = e_command.Success
-					c.l.Info().Printf("id: %d \ncommand status: %v\nrequest result: %s\n", com.ID, com.Status, com.RespData)
-					return com
 				} else {
 					// mode monitor
-					com = monitorData(com, *com.CommandData.Monitor)
-					if com.Status == e_command.Success {
-						return com
+					myErr := monitorData(com, *com.CommandData.Monitor)
+					com.Message = myErr
+					if myErr == nil {
+						com.Status = e_command.Success
 					}
-					c.l.Info().Printf("id: %d \ncommand status: %v\nrequest result: %s\n", com.ID, com.Status, com.RespData)
+				}
+				c.l.Info().Printf("id: %d \ncommand status: %v\nrequest result: %s\n", com.ID, com.Status, com.RespData)
+				if com.Status == e_command.Success {
+					// get return parser
+					com.Return = parserData(com)
+					return com
+				} else {
 					time.Sleep(time.Duration(com.CommandData.Monitor.Interval) * time.Millisecond)
 				}
 			}
@@ -151,10 +156,10 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	return com
 }
 
-func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.Command {
+func monitorData(com e_command.Command, m e_command_template.Monitor) (err *util.MyErr) {
 	if com.StatusCode != int(m.StatusCode) {
-		com.Message = &HttpCodeErr
-		return com
+		err = &HttpCodeErr
+		return
 	}
 	asserts := make([]assertResult, 0, len(m.MConditions))
 	for _, condition := range m.MConditions {
@@ -166,12 +171,20 @@ func monitorData(com e_command.Command, m e_command_template.Monitor) e_command.
 		asserts = append(asserts, assert)
 	}
 	logicResult := assertLogic(asserts)
-	if logicResult {
-		com.Status = e_command.Success
-	} else {
-		com.Message = &ConditionFailed
+	if !logicResult {
+		err = &ConditionFailed
 	}
-	return com
+	return
+}
+
+func parserData(com e_command.Command) map[string]string {
+	result := make(map[string]string)
+	for _, pr := range com.CommandData.ParserReturn {
+		key, _ := util.ChangeStringVariables(pr.Key, com.Variables)
+		searchRule, _ := util.ChangeStringVariables(pr.SearchRule, com.Variables)
+		result[key] = fmt.Sprintf("%v", stringAnalyze(com.RespData, searchRule).valueResult)
+	}
+	return result
 }
 
 func stringAnalyze(data []byte, rule string) (result analyzeResult) {

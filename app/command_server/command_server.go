@@ -172,7 +172,6 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
 	ctx, cancel := context.WithTimeout(ctx,
 		time.Duration(com.CommandData.Timeout)*time.Millisecond)
-	defer cancel()
 
 	com.Status = e_command.Process
 	com.CancelFunc = cancel
@@ -192,7 +191,7 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	// write to history in influxdb
 	c.writeToHistory(com)
 	// publish to all channel
-	c.publishContainer(ctx, com)
+	c.publishContainer(context.Background(), com)
 	return com
 }
 
@@ -296,7 +295,7 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err 
 	cb, _ := json.Marshal(e_command.ToPub(com))
 	err = c.dbs.GetRdb().Publish(ctx, "CommandRec", cb).Err()
 	if err != nil {
-		c.l.Error().Println("redis publish error")
+		c.l.Error().Println("redis publish error: ", err)
 		return
 	}
 	return
@@ -309,17 +308,21 @@ func (c *CommandServer) writeCommand(com e_command.Command) {
 }
 
 func (c *CommandServer) getVariables(com e_command.Command) e_command.Command {
-	if com.Variables == nil {
-		v := make(map[string]string)
-		com.Variables = v
-		// template have variables
-		if com.CommandData.Variable != nil {
-			e := json.Unmarshal(com.CommandData.Variable, &v)
-			if e != nil {
-				com.Message = &CommandTemplateVariable
-				return com
-			}
+	v := make(map[string]string)
+	// template 有變數
+	if com.CommandData.Variable != nil {
+		e := json.Unmarshal(com.CommandData.Variable, &v)
+		if e != nil {
+			com.Message = &CommandTemplateVariable
+			return com
 		}
 	}
+	// 傳進來有變數
+	if com.Variables != nil {
+		for key, value := range com.Variables {
+			v[key] = value
+		}
+	}
+	com.Variables = v
 	return com
 }

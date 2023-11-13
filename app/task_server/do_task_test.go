@@ -9,7 +9,7 @@ import (
 
 func TestGetStages(t *testing.T) {
 	t.Run("test1", func(t *testing.T) {
-		ts := []e_task_template.TaskStage{
+		ts := []e_task_template.StageItem{
 			{StageNumber: 2, Name: "a", Mode: e_task_template.Execute},
 			{StageNumber: 5, Name: "b", Mode: e_task_template.Execute},
 			{StageNumber: 1, Name: "c", Mode: e_task_template.Monitor},
@@ -21,7 +21,7 @@ func TestGetStages(t *testing.T) {
 			{StageNumber: 1, Name: "i", Mode: e_task_template.Execute},
 			{StageNumber: 6, Name: "j", Mode: e_task_template.Monitor},
 		}
-		gsr := getStages(ts)
+		gsr := getTaskStage(ts)
 		fmt.Println(gsr.stageMap)
 		//fmt.Printf("gsr: %+v", gsr)
 		require.Contains(t, gsr.sns, int32(1))
