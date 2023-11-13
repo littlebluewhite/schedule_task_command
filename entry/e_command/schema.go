@@ -48,7 +48,8 @@ type Command struct {
 	Status         Status                             `json:"status"`
 	ClientMessage  string                             `json:"client_message"`
 	Message        *util.MyErr                        `json:"message"`
-	TemplateId     int                                `json:"template_id"`
+	TemplateId     int32                              `json:"template_id"`
+	Return         map[string]string                  `json:"return"`
 	CommandData    e_command_template.CommandTemplate `json:"command_data"`
 	CancelFunc     func()
 }
@@ -66,6 +67,7 @@ type CommandPub struct {
 	Status         Status                             `json:"status"`
 	ClientMessage  string                             `json:"client_message"`
 	Message        string                             `json:"message"`
-	TemplateID     int                                `json:"template_id"`
+	TemplateID     int32                              `json:"template_id"`
+	Return         map[string]string                  `json:"return"`
 	CommandData    e_command_template.CommandTemplate `json:"command_data"`
 }

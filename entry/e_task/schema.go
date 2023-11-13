@@ -17,7 +17,9 @@ type Task struct {
 	TriggerFrom    []string                     `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
-	Stages         map[int]TaskStageC           `json:"stages"`
+	StageNumber    int32                        `json:"stage_number"`
+	Stages         map[int32]Stage              `json:"stages"`
+	FailedCommands []FailedCommand              `json:"failed_command"`
 	ClientMessage  string                       `json:"client_message"`
 	Message        *util.MyErr                  `json:"message"`
 	TemplateId     int                          `json:"template_id"`
@@ -25,23 +27,31 @@ type Task struct {
 	CancelFunc     func()
 }
 
-type Status struct {
-	TStatus                 TStatus     `json:"task_status"`
-	Stages                  int         `json:"stages"`
-	FailedCommandId         uint64      `json:"failed_command_id"`
-	FailedCommandTemplateId int         `json:"failed_command_template_id"`
-	FailedMessage           *util.MyErr `json:"failed_message"`
+type FailedCommand struct {
+	CommandID         uint64           `json:"command_id"`
+	CommandTemplateID int32            `json:"command_template_id"`
+	Message           *util.MyErr      `json:"message"`
+	Status            e_command.Status `json:"status"`
 }
 
-type TaskStage struct {
-	Name       string            `json:"name"`
-	StageID    int32             `json:"stage_id"`
-	CommandID  uint64            `json:"command_id"`
-	From       time.Time         `json:"from"`
-	To         *time.Time        `json:"to"`
-	Status     e_command.Status  `json:"status"`
-	Message    *util.MyErr       `json:"message"`
-	Tags       json.RawMessage   `json:"tags"`
-	Variables  map[string]string `json:"variable"`
-	TemplateId int               `json:"template_id"`
+type StageItem struct {
+	Name              string               `json:"name"`
+	StageID           int32                `json:"stage_id"`
+	CommandID         uint64               `json:"command_id"`
+	StageNumber       int32                `json:"stage_number"`
+	Mode              e_task_template.Mode `json:"mode"`
+	From              *time.Time           `json:"from"`
+	To                *time.Time           `json:"to"`
+	Status            e_command.Status     `json:"status"`
+	Message           *util.MyErr          `json:"message"`
+	Tags              json.RawMessage      `json:"tags"`
+	Variables         map[string]string    `json:"variable"`
+	CommandTemplateId int32                `json:"command_template_id"`
+}
+
+type SimpleTask struct {
+	ID          uint64      `json:"id"`
+	Status      int         `json:"status"`
+	StageNumber int32       `json:"stage_number"`
+	StageItems  []StageItem `json:"stage_items"`
 }

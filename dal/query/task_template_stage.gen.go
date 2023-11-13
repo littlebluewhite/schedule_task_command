@@ -28,7 +28,7 @@ func newTaskTemplateStage(db *gorm.DB, opts ...gen.DOOption) taskTemplateStage {
 	tableName := _taskTemplateStage.taskTemplateStageDo.TableName()
 	_taskTemplateStage.ALL = field.NewAsterisk(tableName)
 	_taskTemplateStage.TaskTemplateID = field.NewInt32(tableName, "task_template_id")
-	_taskTemplateStage.TaskStageID = field.NewInt32(tableName, "task_stage_id")
+	_taskTemplateStage.StageItemID = field.NewInt32(tableName, "stage_item_id")
 
 	_taskTemplateStage.fillFieldMap()
 
@@ -40,7 +40,7 @@ type taskTemplateStage struct {
 
 	ALL            field.Asterisk
 	TaskTemplateID field.Int32
-	TaskStageID    field.Int32
+	StageItemID    field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -58,7 +58,7 @@ func (t taskTemplateStage) As(alias string) *taskTemplateStage {
 func (t *taskTemplateStage) updateTableName(table string) *taskTemplateStage {
 	t.ALL = field.NewAsterisk(table)
 	t.TaskTemplateID = field.NewInt32(table, "task_template_id")
-	t.TaskStageID = field.NewInt32(table, "task_stage_id")
+	t.StageItemID = field.NewInt32(table, "stage_item_id")
 
 	t.fillFieldMap()
 
@@ -89,7 +89,7 @@ func (t *taskTemplateStage) GetFieldByName(fieldName string) (field.OrderExpr, b
 func (t *taskTemplateStage) fillFieldMap() {
 	t.fieldMap = make(map[string]field.Expr, 2)
 	t.fieldMap["task_template_id"] = t.TaskTemplateID
-	t.fieldMap["task_stage_id"] = t.TaskStageID
+	t.fieldMap["stage_item_id"] = t.StageItemID
 }
 
 func (t taskTemplateStage) clone(db *gorm.DB) taskTemplateStage {

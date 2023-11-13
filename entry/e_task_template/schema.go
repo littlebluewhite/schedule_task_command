@@ -1,23 +1,21 @@
 package e_task_template
 
 import (
-	"fmt"
 	"github.com/goccy/go-json"
 	"schedule_task_command/entry/e_command_template"
-	"schedule_task_command/util"
 	"time"
 )
 
 type TaskTemplate struct {
-	ID        int32           `json:"id"`
-	Name      string          `json:"name"`
-	UpdatedAt *time.Time      `json:"updated_at"`
-	CreatedAt *time.Time      `json:"created_at"`
-	Stages    []TaskStage     `json:"stages"`
-	Tags      json.RawMessage `json:"tags"`
+	ID         int32           `json:"id"`
+	Name       string          `json:"name"`
+	UpdatedAt  *time.Time      `json:"updated_at"`
+	CreatedAt  *time.Time      `json:"created_at"`
+	StageItems []StageItem     `json:"stage_items"`
+	Tags       json.RawMessage `json:"tags"`
 }
 
-type TaskStage struct {
+type StageItem struct {
 	ID                int32                              `json:"id"`
 	Name              string                             `json:"name"`
 	StageNumber       int32                              `json:"stage_number"`
@@ -25,16 +23,27 @@ type TaskStage struct {
 	CommandTemplateID int32                              `json:"command_template_id,omitempty"`
 	Tags              json.RawMessage                    `json:"tags"`
 	Variable          json.RawMessage                    `json:"variable"`
+	Parser            []ParserItem                       `json:"parser"`
 	CommandTemplate   e_command_template.CommandTemplate `json:"command_template,omitempty"`
 }
 
-type TaskTemplateCreate struct {
-	Name   string            `json:"name" binding:"required"`
-	Stages []TaskStageCreate `json:"stages"`
-	Tags   json.RawMessage   `json:"tags"`
+type ParserItem struct {
+	FromKey string `json:"from_key"`
+	To      []To   `json:"to"`
 }
 
-type TaskStageCreate struct {
+type To struct {
+	Key string `json:"key"`
+	ID  int    `json:"id"`
+}
+
+type TaskTemplateCreate struct {
+	Name       string            `json:"name" binding:"required"`
+	StageItems []StageItemCreate `json:"stages"`
+	Tags       json.RawMessage   `json:"tags"`
+}
+
+type StageItemCreate struct {
 	Name              string          `json:"name" binding:"required"`
 	StageNumber       int32           `json:"stage_number" binding:"required"`
 	Mode              Mode            `json:"mode" binding:"required"`
@@ -44,13 +53,13 @@ type TaskStageCreate struct {
 }
 
 type TaskTemplateUpdate struct {
-	ID     int32             `json:"id" binding:"required"`
-	Name   *string           `json:"name"`
-	Stages []TaskStageUpdate `json:"stages"`
-	Tags   json.RawMessage   `json:"tags"`
+	ID         int32             `json:"id" binding:"required"`
+	Name       *string           `json:"name"`
+	StageItems []StageItemUpdate `json:"stages"`
+	Tags       json.RawMessage   `json:"tags"`
 }
 
-type TaskStageUpdate struct {
+type StageItemUpdate struct {
 	ID                int32           `json:"id"`
 	Name              *string         `json:"name" binding:"required"`
 	StageNumber       *int32          `json:"stage_number" binding:"required"`
@@ -58,37 +67,7 @@ type TaskStageUpdate struct {
 	CommandTemplateID *int32          `json:"command_template_id"`
 	Tags              json.RawMessage `json:"tags"`
 	Variable          json.RawMessage `json:"variable"`
-}
-
-type Mode int
-
-const (
-	NoneMode Mode = iota
-	Monitor
-	Execute
-)
-
-func (m Mode) String() string {
-	return [...]string{"", "monitor", "execute"}[m]
-}
-
-func (m Mode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.String())
-}
-
-func (m *Mode) UnmarshalJSON(data []byte) error {
-	var tStatus string
-	err := json.Unmarshal(data, &tStatus)
-	if err != nil {
-		return err
-	}
-	*m = S2Mode(&tStatus)
-	return nil
-}
-
-func TaskTemplateNotFound(id int) util.MyErr {
-	e := fmt.Sprintf("task template id: %d not found", id)
-	return util.MyErr(e)
+	Parser            json.RawMessage `json:"parser"`
 }
 
 type SendTaskTemplate struct {

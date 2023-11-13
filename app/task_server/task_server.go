@@ -155,7 +155,7 @@ func (t *TaskServer[T]) GetList() []e_task.Task {
 }
 
 func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (id uint64, err error) {
-	task.Stages = map[int]e_task.TaskStageC{}
+	task.Stages = map[int32]e_task.Stage{}
 	// pass the variables
 	task = t.getVariables(task)
 	if task.Message != nil {
@@ -174,7 +174,7 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 }
 
 func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task {
-	task.Stages = map[int]e_task.TaskStageC{}
+	task.Stages = map[int32]e_task.Stage{}
 	// pass the variables
 	task = t.getVariables(task)
 	if task.Message != nil {
@@ -198,7 +198,7 @@ func (t *TaskServer[T]) CancelTask(id uint64, message string) error {
 	if !ok {
 		return TaskNotFind
 	}
-	if task.Status.TStatus != e_task.Process {
+	if task.Status != e_task.Process {
 		return TaskCannotCancel
 	}
 	task.ClientMessage = message
@@ -217,7 +217,7 @@ Loop1:
 			t.chs.mu.Lock()
 			now := time.Now()
 			for tId, item := range t.t {
-				if item.Status.TStatus != e_task.Process && item.To.Add(s).After(now) {
+				if item.Status != e_task.Process && item.To.Add(s).After(now) {
 					delete(t.t, tId)
 				}
 			}
@@ -235,7 +235,7 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	}
 	templateId := fmt.Sprintf("%d", task.TemplateId)
 	p := influxdb2.NewPoint("task_history",
-		map[string]string{"task_template_id": templateId, "status": task.Status.TStatus.String()},
+		map[string]string{"task_template_id": templateId, "status": task.Status.String()},
 		map[string]interface{}{"data": jTask},
 		task.From,
 	)
@@ -300,7 +300,7 @@ func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error
 	trb, _ := json.Marshal(e_task.ToPub(task))
 	err = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
 	if err != nil {
-		t.l.Error().Println("redis publish error")
+		t.l.Error().Println("redis publish error: ", err)
 		return
 	}
 	return
@@ -309,8 +309,8 @@ func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error
 func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err error) {
 	data := map[string]interface{}{
 		"id":      task.ID,
-		"stages":  task.Status.Stages,
-		"status":  task.Status.TStatus,
+		"stages":  task.StageNumber,
+		"status":  task.Status,
 		"message": task.Message,
 	}
 	jd, _ := json.Marshal(data)

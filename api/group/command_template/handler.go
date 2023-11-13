@@ -157,7 +157,7 @@ func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 		return util.Err(c, err, 0)
 	}
 	st := e_command_template.SendCommandTemplate{
-		TemplateId:     id,
+		TemplateId:     int32(id),
 		TriggerFrom:    entry.TriggerFrom,
 		TriggerAccount: entry.TriggerAccount,
 		Token:          entry.Token,

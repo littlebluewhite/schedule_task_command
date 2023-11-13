@@ -1,3 +1,19 @@
+# Schedule_Task_Command_Time  version 2.7.0
+
+### Task Server
+- command parser to variables
+
+### Task API
+- add simple task api
+- add simple stages status api
+
+### Command Server
+- parser return data
+
+------------------------------------------------------------------
+## 下一個版本預計完成
+
+
 # Schedule_Task_Command_Time  version 2.6.0
 
 ### Task Server

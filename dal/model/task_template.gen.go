@@ -13,12 +13,12 @@ const TableNameTaskTemplate = "task_template"
 
 // TaskTemplate mapped from table <task_template>
 type TaskTemplate struct {
-	ID        int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name      string          `gorm:"column:name;not null" json:"name"`
-	UpdatedAt *time.Time      `gorm:"column:updated_at" json:"updated_at"`
-	CreatedAt *time.Time      `gorm:"column:created_at" json:"created_at"`
-	Tags      json.RawMessage `gorm:"column:tags;default:json_array()" json:"tags"`
-	Stages    []TaskStage     `gorm:"many2many:task_template_stage" json:"stages"`
+	ID         int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Name       string          `gorm:"column:name;not null" json:"name"`
+	UpdatedAt  *time.Time      `gorm:"column:updated_at" json:"updated_at"`
+	CreatedAt  *time.Time      `gorm:"column:created_at" json:"created_at"`
+	Tags       json.RawMessage `gorm:"column:tags;default:json_array()" json:"tags"`
+	StageItems []StageItem     `gorm:"many2many:task_template_stage" json:"stage_items"`
 }
 
 // TableName TaskTemplate's table name

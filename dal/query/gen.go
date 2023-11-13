@@ -25,9 +25,10 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		MCondition:        newMCondition(db, opts...),
 		Monitor:           newMonitor(db, opts...),
 		MqttCommand:       newMqttCommand(db, opts...),
+		ParserReturn:      newParserReturn(db, opts...),
 		RedisCommand:      newRedisCommand(db, opts...),
 		Schedule:          newSchedule(db, opts...),
-		TaskStage:         newTaskStage(db, opts...),
+		StageItem:         newStageItem(db, opts...),
 		TaskTemplate:      newTaskTemplate(db, opts...),
 		TaskTemplateStage: newTaskTemplateStage(db, opts...),
 		TimeDatum:         newTimeDatum(db, opts...),
@@ -46,9 +47,10 @@ type Query struct {
 	MCondition        mCondition
 	Monitor           monitor
 	MqttCommand       mqttCommand
+	ParserReturn      parserReturn
 	RedisCommand      redisCommand
 	Schedule          schedule
-	TaskStage         taskStage
+	StageItem         stageItem
 	TaskTemplate      taskTemplate
 	TaskTemplateStage taskTemplateStage
 	TimeDatum         timeDatum
@@ -68,9 +70,10 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		MCondition:        q.MCondition.clone(db),
 		Monitor:           q.Monitor.clone(db),
 		MqttCommand:       q.MqttCommand.clone(db),
+		ParserReturn:      q.ParserReturn.clone(db),
 		RedisCommand:      q.RedisCommand.clone(db),
 		Schedule:          q.Schedule.clone(db),
-		TaskStage:         q.TaskStage.clone(db),
+		StageItem:         q.StageItem.clone(db),
 		TaskTemplate:      q.TaskTemplate.clone(db),
 		TaskTemplateStage: q.TaskTemplateStage.clone(db),
 		TimeDatum:         q.TimeDatum.clone(db),
@@ -97,9 +100,10 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		MCondition:        q.MCondition.replaceDB(db),
 		Monitor:           q.Monitor.replaceDB(db),
 		MqttCommand:       q.MqttCommand.replaceDB(db),
+		ParserReturn:      q.ParserReturn.replaceDB(db),
 		RedisCommand:      q.RedisCommand.replaceDB(db),
 		Schedule:          q.Schedule.replaceDB(db),
-		TaskStage:         q.TaskStage.replaceDB(db),
+		StageItem:         q.StageItem.replaceDB(db),
 		TaskTemplate:      q.TaskTemplate.replaceDB(db),
 		TaskTemplateStage: q.TaskTemplateStage.replaceDB(db),
 		TimeDatum:         q.TimeDatum.replaceDB(db),
@@ -116,9 +120,10 @@ type queryCtx struct {
 	MCondition        *mConditionDo
 	Monitor           *monitorDo
 	MqttCommand       *mqttCommandDo
+	ParserReturn      *parserReturnDo
 	RedisCommand      *redisCommandDo
 	Schedule          *scheduleDo
-	TaskStage         *taskStageDo
+	StageItem         *stageItemDo
 	TaskTemplate      *taskTemplateDo
 	TaskTemplateStage *taskTemplateStageDo
 	TimeDatum         *timeDatumDo
@@ -135,9 +140,10 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		MCondition:        q.MCondition.WithContext(ctx),
 		Monitor:           q.Monitor.WithContext(ctx),
 		MqttCommand:       q.MqttCommand.WithContext(ctx),
+		ParserReturn:      q.ParserReturn.WithContext(ctx),
 		RedisCommand:      q.RedisCommand.WithContext(ctx),
 		Schedule:          q.Schedule.WithContext(ctx),
-		TaskStage:         q.TaskStage.WithContext(ctx),
+		StageItem:         q.StageItem.WithContext(ctx),
 		TaskTemplate:      q.TaskTemplate.WithContext(ctx),
 		TaskTemplateStage: q.TaskTemplateStage.WithContext(ctx),
 		TimeDatum:         q.TimeDatum.WithContext(ctx),

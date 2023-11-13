@@ -1,5 +1,7 @@
 package e_task
 
+import "slices"
+
 func ToPub(t Task) (tp TaskPub) {
 	m := ""
 	if t.Message != nil {
@@ -13,11 +15,48 @@ func ToPub(t Task) (tp TaskPub) {
 	tp.TriggerFrom = t.TriggerFrom
 	tp.TriggerAccount = t.TriggerAccount
 	tp.Status = t.Status
+	tp.StageNumber = t.StageNumber
 	tp.Stages = t.Stages
+	tp.FailedCommands = t.FailedCommands
 	tp.ClientMessage = t.ClientMessage
 	tp.Message = m
 	tp.TemplateID = t.TemplateId
 	tp.TaskData = t.TaskData
+	return
+}
+
+func ToSimpleTask(t Task) (ts SimpleTask) {
+	var si []StageItem
+	var sns []int32
+	for sn := range t.Stages {
+		sns = append(sns, sn)
+	}
+	slices.Sort(sns)
+	for _, stageNumber := range sns {
+		si = append(si, t.Stages[stageNumber].Monitor...)
+		si = append(si, t.Stages[stageNumber].Execute...)
+	}
+	ts.ID = t.ID
+	ts.Status = int(t.Status)
+	ts.StageNumber = t.StageNumber
+	ts.StageItems = si
+	return
+}
+
+func ToStageItemStatus(t Task) (r []int) {
+	var si []StageItem
+	var sns []int32
+	for sn := range t.Stages {
+		sns = append(sns, sn)
+	}
+	slices.Sort(sns)
+	for _, stageNumber := range sns {
+		si = append(si, t.Stages[stageNumber].Monitor...)
+		si = append(si, t.Stages[stageNumber].Execute...)
+	}
+	for _, s := range si {
+		r = append(r, int(s.Status))
+	}
 	return
 }
 
@@ -29,7 +68,15 @@ func ToPubSlice(ts []Task) []TaskPub {
 	return tps
 }
 
-func S2Status(s *string) TStatus {
+func ToSimpleTaskSlice(ts []Task) []SimpleTask {
+	tss := make([]SimpleTask, 0, len(ts))
+	for _, t := range ts {
+		tss = append(tss, ToSimpleTask(t))
+	}
+	return tss
+}
+
+func S2Status(s *string) Status {
 	if s == nil {
 		return Prepared
 	}

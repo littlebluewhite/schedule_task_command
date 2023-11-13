@@ -73,6 +73,12 @@ func newCommandTemplate(db *gorm.DB, opts ...gen.DOOption) commandTemplate {
 		},
 	}
 
+	_commandTemplate.ParserReturn = commandTemplateHasManyParserReturn{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("ParserReturn", "model.ParserReturn"),
+	}
+
 	_commandTemplate.fillFieldMap()
 
 	return _commandTemplate
@@ -102,6 +108,8 @@ type commandTemplate struct {
 	Redis commandTemplateHasOneRedis
 
 	Monitor commandTemplateHasOneMonitor
+
+	ParserReturn commandTemplateHasManyParserReturn
 
 	fieldMap map[string]field.Expr
 }
@@ -157,7 +165,7 @@ func (c *commandTemplate) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (c *commandTemplate) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 16)
+	c.fieldMap = make(map[string]field.Expr, 17)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["protocol"] = c.Protocol
@@ -538,6 +546,77 @@ func (a commandTemplateHasOneMonitorTx) Clear() error {
 }
 
 func (a commandTemplateHasOneMonitorTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type commandTemplateHasManyParserReturn struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a commandTemplateHasManyParserReturn) Where(conds ...field.Expr) *commandTemplateHasManyParserReturn {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a commandTemplateHasManyParserReturn) WithContext(ctx context.Context) *commandTemplateHasManyParserReturn {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a commandTemplateHasManyParserReturn) Session(session *gorm.Session) *commandTemplateHasManyParserReturn {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a commandTemplateHasManyParserReturn) Model(m *model.CommandTemplate) *commandTemplateHasManyParserReturnTx {
+	return &commandTemplateHasManyParserReturnTx{a.db.Model(m).Association(a.Name())}
+}
+
+type commandTemplateHasManyParserReturnTx struct{ tx *gorm.Association }
+
+func (a commandTemplateHasManyParserReturnTx) Find() (result []*model.ParserReturn, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a commandTemplateHasManyParserReturnTx) Append(values ...*model.ParserReturn) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a commandTemplateHasManyParserReturnTx) Replace(values ...*model.ParserReturn) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a commandTemplateHasManyParserReturnTx) Delete(values ...*model.ParserReturn) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a commandTemplateHasManyParserReturnTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a commandTemplateHasManyParserReturnTx) Count() int64 {
 	return a.tx.Count()
 }
 

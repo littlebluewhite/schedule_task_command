@@ -6,25 +6,25 @@ import (
 	"time"
 )
 
-type TStatus int
+type Status int
 
 const (
-	Prepared TStatus = iota
+	Prepared Status = iota
 	Process
 	Success
 	Failure
 	Cancel
 )
 
-func (s TStatus) String() string {
+func (s Status) String() string {
 	return [...]string{"Prepared", "Process", "Success", "Failure", "Cancel"}[s]
 }
 
-func (s TStatus) MarshalJSON() ([]byte, error) {
+func (s Status) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }
 
-func (s *TStatus) UnmarshalJSON(data []byte) error {
+func (s *Status) UnmarshalJSON(data []byte) error {
 	var tStatus string
 	err := json.Unmarshal(data, &tStatus)
 	if err != nil {
@@ -34,9 +34,9 @@ func (s *TStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type TaskStageC struct {
-	Monitor []TaskStage `json:"monitor"`
-	Execute []TaskStage `json:"execute"`
+type Stage struct {
+	Monitor []StageItem `json:"monitor"`
+	Execute []StageItem `json:"execute"`
 }
 
 type TaskPub struct {
@@ -48,7 +48,9 @@ type TaskPub struct {
 	TriggerFrom    []string                     `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
-	Stages         map[int]TaskStageC           `json:"stages"`
+	StageNumber    int32                        `json:"stage_number"`
+	Stages         map[int32]Stage              `json:"stages"`
+	FailedCommands []FailedCommand              `json:"failed_command"`
 	ClientMessage  string                       `json:"client_message"`
 	Message        string                       `json:"message"`
 	TemplateID     int                          `json:"template_id"`

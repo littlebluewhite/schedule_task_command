@@ -32,10 +32,10 @@ func newTaskTemplate(db *gorm.DB, opts ...gen.DOOption) taskTemplate {
 	_taskTemplate.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_taskTemplate.CreatedAt = field.NewTime(tableName, "created_at")
 	_taskTemplate.Tags = field.NewBytes(tableName, "tags")
-	_taskTemplate.Stages = taskTemplateManyToManyStages{
+	_taskTemplate.StageItems = taskTemplateManyToManyStageItems{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("Stages", "model.TaskStage"),
+		RelationField: field.NewRelation("StageItems", "model.StageItem"),
 		CommandTemplate: struct {
 			field.RelationField
 			Http struct {
@@ -56,27 +56,30 @@ func newTaskTemplate(db *gorm.DB, opts ...gen.DOOption) taskTemplate {
 					field.RelationField
 				}
 			}
+			ParserReturn struct {
+				field.RelationField
+			}
 		}{
-			RelationField: field.NewRelation("Stages.CommandTemplate", "model.CommandTemplate"),
+			RelationField: field.NewRelation("StageItems.CommandTemplate", "model.CommandTemplate"),
 			Http: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Stages.CommandTemplate.Http", "model.HTTPSCommand"),
+				RelationField: field.NewRelation("StageItems.CommandTemplate.Http", "model.HTTPSCommand"),
 			},
 			Mqtt: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Stages.CommandTemplate.Mqtt", "model.MqttCommand"),
+				RelationField: field.NewRelation("StageItems.CommandTemplate.Mqtt", "model.MqttCommand"),
 			},
 			Websocket: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Stages.CommandTemplate.Websocket", "model.WebsocketCommand"),
+				RelationField: field.NewRelation("StageItems.CommandTemplate.Websocket", "model.WebsocketCommand"),
 			},
 			Redis: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Stages.CommandTemplate.Redis", "model.RedisCommand"),
+				RelationField: field.NewRelation("StageItems.CommandTemplate.Redis", "model.RedisCommand"),
 			},
 			Monitor: struct {
 				field.RelationField
@@ -84,12 +87,17 @@ func newTaskTemplate(db *gorm.DB, opts ...gen.DOOption) taskTemplate {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("Stages.CommandTemplate.Monitor", "model.Monitor"),
+				RelationField: field.NewRelation("StageItems.CommandTemplate.Monitor", "model.Monitor"),
 				MConditions: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("Stages.CommandTemplate.Monitor.MConditions", "model.MCondition"),
+					RelationField: field.NewRelation("StageItems.CommandTemplate.Monitor.MConditions", "model.MCondition"),
 				},
+			},
+			ParserReturn: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("StageItems.CommandTemplate.ParserReturn", "model.ParserReturn"),
 			},
 		},
 	}
@@ -102,13 +110,13 @@ func newTaskTemplate(db *gorm.DB, opts ...gen.DOOption) taskTemplate {
 type taskTemplate struct {
 	taskTemplateDo taskTemplateDo
 
-	ALL       field.Asterisk
-	ID        field.Int32
-	Name      field.String
-	UpdatedAt field.Time
-	CreatedAt field.Time
-	Tags      field.Bytes
-	Stages    taskTemplateManyToManyStages
+	ALL        field.Asterisk
+	ID         field.Int32
+	Name       field.String
+	UpdatedAt  field.Time
+	CreatedAt  field.Time
+	Tags       field.Bytes
+	StageItems taskTemplateManyToManyStageItems
 
 	fieldMap map[string]field.Expr
 }
@@ -177,7 +185,7 @@ func (t taskTemplate) replaceDB(db *gorm.DB) taskTemplate {
 	return t
 }
 
-type taskTemplateManyToManyStages struct {
+type taskTemplateManyToManyStageItems struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -202,10 +210,13 @@ type taskTemplateManyToManyStages struct {
 				field.RelationField
 			}
 		}
+		ParserReturn struct {
+			field.RelationField
+		}
 	}
 }
 
-func (a taskTemplateManyToManyStages) Where(conds ...field.Expr) *taskTemplateManyToManyStages {
+func (a taskTemplateManyToManyStageItems) Where(conds ...field.Expr) *taskTemplateManyToManyStageItems {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -218,27 +229,27 @@ func (a taskTemplateManyToManyStages) Where(conds ...field.Expr) *taskTemplateMa
 	return &a
 }
 
-func (a taskTemplateManyToManyStages) WithContext(ctx context.Context) *taskTemplateManyToManyStages {
+func (a taskTemplateManyToManyStageItems) WithContext(ctx context.Context) *taskTemplateManyToManyStageItems {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a taskTemplateManyToManyStages) Session(session *gorm.Session) *taskTemplateManyToManyStages {
+func (a taskTemplateManyToManyStageItems) Session(session *gorm.Session) *taskTemplateManyToManyStageItems {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a taskTemplateManyToManyStages) Model(m *model.TaskTemplate) *taskTemplateManyToManyStagesTx {
-	return &taskTemplateManyToManyStagesTx{a.db.Model(m).Association(a.Name())}
+func (a taskTemplateManyToManyStageItems) Model(m *model.TaskTemplate) *taskTemplateManyToManyStageItemsTx {
+	return &taskTemplateManyToManyStageItemsTx{a.db.Model(m).Association(a.Name())}
 }
 
-type taskTemplateManyToManyStagesTx struct{ tx *gorm.Association }
+type taskTemplateManyToManyStageItemsTx struct{ tx *gorm.Association }
 
-func (a taskTemplateManyToManyStagesTx) Find() (result []*model.TaskStage, err error) {
+func (a taskTemplateManyToManyStageItemsTx) Find() (result []*model.StageItem, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a taskTemplateManyToManyStagesTx) Append(values ...*model.TaskStage) (err error) {
+func (a taskTemplateManyToManyStageItemsTx) Append(values ...*model.StageItem) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -246,7 +257,7 @@ func (a taskTemplateManyToManyStagesTx) Append(values ...*model.TaskStage) (err 
 	return a.tx.Append(targetValues...)
 }
 
-func (a taskTemplateManyToManyStagesTx) Replace(values ...*model.TaskStage) (err error) {
+func (a taskTemplateManyToManyStageItemsTx) Replace(values ...*model.StageItem) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -254,7 +265,7 @@ func (a taskTemplateManyToManyStagesTx) Replace(values ...*model.TaskStage) (err
 	return a.tx.Replace(targetValues...)
 }
 
-func (a taskTemplateManyToManyStagesTx) Delete(values ...*model.TaskStage) (err error) {
+func (a taskTemplateManyToManyStageItemsTx) Delete(values ...*model.StageItem) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -262,11 +273,11 @@ func (a taskTemplateManyToManyStagesTx) Delete(values ...*model.TaskStage) (err 
 	return a.tx.Delete(targetValues...)
 }
 
-func (a taskTemplateManyToManyStagesTx) Clear() error {
+func (a taskTemplateManyToManyStageItemsTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a taskTemplateManyToManyStagesTx) Count() int64 {
+func (a taskTemplateManyToManyStageItemsTx) Count() int64 {
 	return a.tx.Count()
 }
 

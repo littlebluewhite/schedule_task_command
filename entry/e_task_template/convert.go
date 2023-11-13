@@ -2,6 +2,7 @@ package e_task_template
 
 import (
 	"fmt"
+	"github.com/goccy/go-json"
 	"math"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command_template"
@@ -11,10 +12,12 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 	result := make([]TaskTemplate, 0, len(ct))
 	for _, item := range ct {
 		fmt.Printf("%+v\n", item)
-		sResult := make([]TaskStage, 0, len(item.Stages))
-		for _, s := range item.Stages {
+		sResult := make([]StageItem, 0, len(item.StageItems))
+		for _, s := range item.StageItems {
 			m := s.Mode
-			i := TaskStage{
+			var parser []ParserItem
+			_ = json.Unmarshal(s.Parser, &parser)
+			i := StageItem{
 				ID:                s.ID,
 				Name:              s.Name,
 				StageNumber:       s.StageNumber,
@@ -22,17 +25,18 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 				CommandTemplateID: s.CommandTemplateID,
 				Tags:              s.Tags,
 				Variable:          s.Variable,
+				Parser:            parser,
 				CommandTemplate:   e_command_template.Format([]model.CommandTemplate{s.CommandTemplate})[0],
 			}
 			sResult = append(sResult, i)
 		}
 		i := TaskTemplate{
-			ID:        item.ID,
-			Name:      item.Name,
-			UpdatedAt: item.UpdatedAt,
-			CreatedAt: item.CreatedAt,
-			Stages:    sResult,
-			Tags:      item.Tags,
+			ID:         item.ID,
+			Name:       item.Name,
+			UpdatedAt:  item.UpdatedAt,
+			CreatedAt:  item.CreatedAt,
+			StageItems: sResult,
+			Tags:       item.Tags,
 		}
 		result = append(result, i)
 	}
@@ -42,9 +46,9 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 	result := make([]*model.TaskTemplate, 0, len(c))
 	for _, item := range c {
-		sResult := make([]model.TaskStage, 0, len(item.Stages))
-		for _, s := range item.Stages {
-			i := model.TaskStage{
+		sResult := make([]model.StageItem, 0, len(item.StageItems))
+		for _, s := range item.StageItems {
+			i := model.StageItem{
 				Name:              s.Name,
 				StageNumber:       s.StageNumber,
 				Mode:              s.Mode.String(),
@@ -55,9 +59,9 @@ func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 			sResult = append(sResult, i)
 		}
 		i := model.TaskTemplate{
-			Name:   item.Name,
-			Stages: sResult,
-			Tags:   item.Tags,
+			Name:       item.Name,
+			StageItems: sResult,
+			Tags:       item.Tags,
 		}
 		result = append(result, &i)
 	}
@@ -77,13 +81,13 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 		if u.Tags != nil {
 			tt.Tags = u.Tags
 		}
-		sId := make(map[int32]model.TaskStage)
-		for _, s := range tt.Stages {
+		sId := make(map[int32]model.StageItem)
+		for _, s := range tt.StageItems {
 			sId[s.ID] = s
 		}
-		sResult := make([]model.TaskStage, 0, len(u.Stages))
-		if u.Stages != nil {
-			for _, s := range u.Stages {
+		sResult := make([]model.StageItem, 0, len(u.StageItems))
+		if u.StageItems != nil {
+			for _, s := range u.StageItems {
 				ts, ok := sId[int32(math.Abs(float64(s.ID)))]
 				if !ok && s.ID != 0 {
 					continue
@@ -107,10 +111,13 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 				if s.Variable != nil {
 					ts.Variable = s.Variable
 				}
+				if s.Parser != nil {
+					ts.Parser = s.Parser
+				}
 				sResult = append(sResult, ts)
 			}
 		}
-		tt.Stages = sResult
+		tt.StageItems = sResult
 		result = append(result, &tt)
 	}
 	return
