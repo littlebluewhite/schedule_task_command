@@ -52,11 +52,6 @@ type StageItemCreate struct {
 	Variable          json.RawMessage `json:"variable"`
 }
 
-type ToCreate struct {
-	Key   string `json:"key"`
-	Index int    `json:"index"`
-}
-
 type TaskTemplateUpdate struct {
 	ID         int32             `json:"id" binding:"required"`
 	Name       *string           `json:"name"`
