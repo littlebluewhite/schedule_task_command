@@ -50,8 +50,16 @@ type StageItem struct {
 }
 
 type SimpleTask struct {
-	ID          uint64      `json:"id"`
-	Status      int         `json:"status"`
-	StageNumber int32       `json:"stage_number"`
-	StageItems  []StageItem `json:"stage_items"`
+	ID          uint64            `json:"id"`
+	Status      int               `json:"status"`
+	StageNumber int32             `json:"stage_number"`
+	StageItems  []SimpleStageItem `json:"stage_items"`
+}
+
+type SimpleStageItem struct {
+	Name   string          `json:"name"`
+	From   *time.Time      `json:"from"`
+	To     *time.Time      `json:"to"`
+	Status int             `json:"status"`
+	Tags   json.RawMessage `json:"tags"`
 }

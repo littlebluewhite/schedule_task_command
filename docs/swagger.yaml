@@ -424,13 +424,28 @@ definitions:
       status:
         type: integer
     type: object
+  e_task.SimpleStageItem:
+    properties:
+      from:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+      tags:
+        items:
+          type: integer
+        type: array
+      to:
+        type: string
+    type: object
   e_task.SimpleTask:
     properties:
       id:
         type: integer
       stage_items:
         items:
-          $ref: '#/definitions/e_task.StageItem'
+          $ref: '#/definitions/e_task.SimpleStageItem'
         type: array
       stage_number:
         type: integer
@@ -909,7 +924,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.7.0
+  version: 2.7.1
 paths:
   /api/command/:
     get:

@@ -36,11 +36,29 @@ func ToSimpleTask(t Task) (ts SimpleTask) {
 		si = append(si, t.Stages[stageNumber].Monitor...)
 		si = append(si, t.Stages[stageNumber].Execute...)
 	}
+	SimpleStageItemSlice := ToSimpleStageItemSlice(si)
 	ts.ID = t.ID
 	ts.Status = int(t.Status)
 	ts.StageNumber = t.StageNumber
-	ts.StageItems = si
+	ts.StageItems = SimpleStageItemSlice
 	return
+}
+
+func ToSimpleStageItem(s StageItem) (ssi SimpleStageItem) {
+	ssi.Name = s.Name
+	ssi.From = s.From
+	ssi.To = s.To
+	ssi.Status = int(s.Status)
+	ssi.Tags = s.Tags
+	return
+}
+
+func ToSimpleStageItemSlice(si []StageItem) []SimpleStageItem {
+	SimpleStageItemSlice := make([]SimpleStageItem, 0, len(si))
+	for _, s := range si {
+		SimpleStageItemSlice = append(SimpleStageItemSlice, ToSimpleStageItem(s))
+	}
+	return SimpleStageItemSlice
 }
 
 func ToStageItemStatus(t Task) (r []int) {
