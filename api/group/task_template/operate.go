@@ -150,6 +150,7 @@ func (o *Operate) Create(c []*e_task_template.TaskTemplateCreate) ([]model.TaskT
 	q := query.Use(o.db)
 	ctx := context.Background()
 	cacheMap := o.getCacheMap()
+	ids := make([]int32, 0, len(c))
 	taskTemplates := e_task_template.CreateConvert(c)
 	result := make([]model.TaskTemplate, 0, len(taskTemplates))
 	err := q.Transaction(func(tx *query.Query) error {
@@ -157,6 +158,13 @@ func (o *Operate) Create(c []*e_task_template.TaskTemplateCreate) ([]model.TaskT
 			return err
 		}
 		for _, t := range taskTemplates {
+			ids = append(ids, t.ID)
+		}
+		newTaskTemplate, err := o.findDB(ctx, tx, ids)
+		if err != nil {
+			return err
+		}
+		for _, t := range newTaskTemplate {
 			cacheMap[int(t.ID)] = *t
 			result = append(result, *t)
 		}

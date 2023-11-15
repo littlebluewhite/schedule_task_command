@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/goccy/go-json"
+	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -206,7 +208,16 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []st
 		Variables:      variables,
 	}
 	// use command template as command data
-	c.CommandData = stage.CommandTemplate
+	if stage.CommandTemplate.ID != 0 {
+		c.CommandData = stage.CommandTemplate
+		// fetch command template as command data
+	} else if stage.CommandTemplateID != 0 {
+		var cacheMap map[int]model.CommandTemplate
+		if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
+			cacheMap = x.(map[int]model.CommandTemplate)
+		}
+		c.CommandData = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
+	}
 
 	return
 }

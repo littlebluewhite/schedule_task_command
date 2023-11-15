@@ -1,17 +1,19 @@
 package main
 
-import (
-	"fmt"
-	"github.com/goccy/go-json"
-)
+import "fmt"
 
 func main() {
-	var a []int32
-	b := []byte("[1, 2, 3, 4]")
-	e := json.Unmarshal(b, &a)
-
-	fmt.Println(e)
-	fmt.Println(a)
+	a := 1
+	b := 2
+	c := 3
+	switch {
+	case a == 1:
+		fmt.Println("a ok")
+	case b == 2:
+		fmt.Println("b ok")
+	default:
+		fmt.Println("c ok", c)
+	}
 }
 
 type stageMapValue2 struct {
