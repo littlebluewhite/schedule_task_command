@@ -13,9 +13,9 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.7.1"
+        "version": "2.7.2"
     },
-    "host": "192.168.1.10:5487",
+    "host": "127.0.0.1:5487",
     "paths": {
         "/api/command/": {
             "get": {
@@ -2059,6 +2059,9 @@
                 },
                 "status": {
                     "type": "integer"
+                },
+                "template_name": {
+                    "type": "string"
                 }
             }
         },
