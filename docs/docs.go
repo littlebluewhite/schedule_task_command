@@ -2067,6 +2067,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                },
+                "template_name": {
+                    "type": "string"
                 }
             }
         },
@@ -2769,7 +2772,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.7.1",
+	Version:          "2.7.2",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

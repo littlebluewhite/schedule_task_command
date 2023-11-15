@@ -38,6 +38,7 @@ func ToSimpleTask(t Task) (ts SimpleTask) {
 	}
 	SimpleStageItemSlice := ToSimpleStageItemSlice(si)
 	ts.ID = t.ID
+	ts.TemplateName = t.TaskData.Name
 	ts.Status = int(t.Status)
 	ts.StageNumber = t.StageNumber
 	ts.StageItems = SimpleStageItemSlice

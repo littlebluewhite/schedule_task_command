@@ -451,6 +451,8 @@ definitions:
         type: integer
       status:
         type: integer
+      template_name:
+        type: string
     type: object
   e_task.Stage:
     properties:
@@ -924,7 +926,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.7.1
+  version: 2.7.2
 paths:
   /api/command/:
     get:
