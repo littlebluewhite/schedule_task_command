@@ -2027,6 +2027,29 @@ const docTemplate = `{
                 }
             }
         },
+        "e_task.SimpleStageItem": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "e_task.SimpleTask": {
             "type": "object",
             "properties": {
@@ -2036,7 +2059,7 @@ const docTemplate = `{
                 "stage_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/e_task.StageItem"
+                        "$ref": "#/definitions/e_task.SimpleStageItem"
                     }
                 },
                 "stage_number": {
@@ -2746,7 +2769,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.7.0",
+	Version:          "2.7.1",
 	Host:             "192.168.1.10:5487",
 	BasePath:         "",
 	Schemes:          []string{},
