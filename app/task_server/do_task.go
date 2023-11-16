@@ -45,7 +45,6 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 			break
 		}
 	}
-	task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
 	// no wrong, is success
 	if task.Message == nil {
 		task.Status = e_task.Success
@@ -53,9 +52,6 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 
 	now := time.Now()
 	task.To = &now
-
-	// write client message
-	task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
 
 	// write task
 	t.writeTask(task)
@@ -174,6 +170,11 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 		task.Stages = stageMap2taskStage(s)
 		// command return parser to variables
 		task.Variables = commandReturn2Variables(task.Variables, comB)
+		// command status is Cancel and task client message is empty
+		if comB.com.Status == e_command.Cancel && task.ClientMessage == "" {
+			// write client message
+			task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
+		}
 		// write task
 		t.writeTask(task)
 		// publish
