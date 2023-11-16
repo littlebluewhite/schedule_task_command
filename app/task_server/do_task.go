@@ -23,7 +23,6 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 	t.writeTask(task)
 
 	stages := task.TaskData.StageItems
-	//gsr := getStages(stages)
 	gsr := getTaskStage(stages)
 	task.Stages = stageMap2taskStage(gsr.stageMap)
 	// write task
@@ -46,6 +45,7 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 			break
 		}
 	}
+	task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
 	// no wrong, is success
 	if task.Message == nil {
 		task.Status = e_task.Success

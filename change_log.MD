@@ -1,4 +1,4 @@
-# Schedule_Task_Command_Time  version 2.7.3
+# Schedule_Task_Command_Time  version 2.7.4
 
 ### Task Server
 - command parser to variables
