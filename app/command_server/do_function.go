@@ -67,7 +67,7 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 					com.Return = parserData(com)
 					return com
 				} else {
-					time.Sleep(time.Duration(com.CommandData.Monitor.Interval) * time.Millisecond)
+					_ = util.SleepWithContext(ctx, time.Duration(com.CommandData.Timeout)*time.Millisecond)
 				}
 			}
 		}
