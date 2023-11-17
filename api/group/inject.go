@@ -18,11 +18,12 @@ import (
 	"schedule_task_command/api/group/task_template"
 	"schedule_task_command/api/group/time"
 	"schedule_task_command/api/group/time_template"
+	"schedule_task_command/api/group/ws"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/util/logFile"
 )
 
-func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
+func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketManager) {
 	// Middleware
 	log := logFile.NewLogFile("api", "inject.log")
 	fiberLog := getFiberLogFile(log)
@@ -38,7 +39,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
 	Api := app.Group("/api", cors.New())
 
 	// create new group
-	g := NewAPIGroup(Api, dbs, ss)
+	g := NewAPIGroup(Api, dbs, ss, wm)
 
 	// model registration
 	ping.RegisterRouter(g)
@@ -50,6 +51,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer) {
 	task.RegisterRouter(g)
 	time_template.RegisterRouter(g)
 	time.RegisterRouter(g)
+	ws.RegisterRouter(g)
 }
 
 func getFiberLogFile(log logFile.LogFile) io.Writer {

@@ -12,6 +12,7 @@ import (
 	"schedule_task_command/app/schedule_server"
 	"schedule_task_command/app/task_server"
 	"schedule_task_command/app/time_server"
+	"schedule_task_command/app/websocket_manager"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
@@ -58,10 +59,14 @@ func main() {
 		mainLog.Info().Println("influxDB Disconnect")
 	}()
 
+	// create websocket manager
+	wm := websocket_manager.NewWebsocketManager()
+	// run websocket manager
+	go wm.Run()
 	// create servers
-	commandServer := command_server.NewCommandServer(DBS)
+	commandServer := command_server.NewCommandServer(DBS, wm)
 	// task server need commandServer
-	taskServer := task_server.NewTaskServer[api.CommandServer](DBS, commandServer)
+	taskServer := task_server.NewTaskServer[api.CommandServer](DBS, commandServer, wm)
 	timeServer := time_server.NewTimeServer(DBS)
 	// schedule server need task server and time server
 	scheduleServer := schedule_server.NewScheduleServer[api.TaskServer, api.TimeServer](DBS, taskServer, timeServer)
@@ -87,7 +92,7 @@ func main() {
 		},
 	)
 
-	group.Inject(apiServer, DBS, scheduleServer)
+	group.Inject(apiServer, DBS, scheduleServer, wm)
 
 	// for api server shout down gracefully
 	serverShutdown := make(chan struct{})

@@ -24,6 +24,7 @@ type commandServer interface {
 
 type TaskServer[T any] struct {
 	dbs          dbs.Dbs
+	wm           websocketManager
 	l            logFile.LogFile
 	t            map[uint64]e_task.Task
 	cs           commandServer
@@ -32,12 +33,13 @@ type TaskServer[T any] struct {
 	chs          chs
 }
 
-func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer) *TaskServer[T] {
+func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer, wm websocketManager) *TaskServer[T] {
 	l := logFile.NewLogFile("app", "task_server")
 	t := make(map[uint64]e_task.Task)
 	mu := new(sync.RWMutex)
 	return &TaskServer[T]{
 		dbs: dbs,
+		wm:  wm,
 		l:   l,
 		t:   t,
 		cs:  cs,
@@ -294,6 +296,9 @@ func (t *TaskServer[T]) publishContainer(ctx context.Context, task e_task.Task) 
 	go func() {
 		_ = t.StreamPub(ctx, task)
 	}()
+	go func() {
+		t.sendWebsocket(task)
+	}()
 }
 
 func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error) {
@@ -332,6 +337,11 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 	}
 	t.l.Info().Println("stream publish success")
 	return
+}
+
+func (t *TaskServer[T]) sendWebsocket(task e_task.Task) {
+	tb, _ := json.Marshal(e_task.ToPub(task))
+	t.wm.Broadcast(2, tb)
 }
 
 func (t *TaskServer[T]) GetCommandServer() T {

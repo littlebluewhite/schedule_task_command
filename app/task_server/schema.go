@@ -12,6 +12,10 @@ type chs struct {
 	mu *sync.RWMutex
 }
 
+type websocketManager interface {
+	Broadcast(d int, message []byte)
+}
+
 type getStagesResult struct {
 	sns      []int32
 	stageMap map[int32]stageMap
