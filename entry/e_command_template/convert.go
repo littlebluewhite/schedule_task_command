@@ -27,6 +27,7 @@ func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 	ct = CommandTemplate{
 		ID:           mct.ID,
 		Name:         mct.Name,
+		Visible:      mct.Visible,
 		Protocol:     S2Protocol(&p),
 		Timeout:      mct.Timeout,
 		Description:  mct.Description,
@@ -110,6 +111,7 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 		}
 		i := model.CommandTemplate{
 			Name:         item.Name,
+			Visible:      item.Visible,
 			Protocol:     item.Protocol.String(),
 			Timeout:      item.Timeout,
 			Description:  item.Description,
@@ -191,6 +193,9 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 		}
 		if u.Name != nil {
 			ct.Name = *u.Name
+		}
+		if u.Visible != nil {
+			ct.Visible = *u.Visible
 		}
 		if u.Protocol != ProtocolNone {
 			ct.Protocol = u.Protocol.String()

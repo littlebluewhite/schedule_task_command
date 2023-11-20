@@ -18,6 +18,7 @@ import (
 
 type CommandServer struct {
 	dbs          dbs.Dbs
+	wm           websocketManager
 	l            logFile.LogFile
 	c            map[uint64]e_command.Command
 	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
@@ -25,12 +26,13 @@ type CommandServer struct {
 	chs          chs
 }
 
-func NewCommandServer(dbs dbs.Dbs) *CommandServer {
+func NewCommandServer(dbs dbs.Dbs, wm websocketManager) *CommandServer {
 	l := logFile.NewLogFile("app", "command_server")
 	c := make(map[uint64]e_command.Command)
 	mu := new(sync.RWMutex)
 	return &CommandServer{
 		dbs: dbs,
+		wm:  wm,
 		l:   l,
 		c:   c,
 		chs: chs{
@@ -289,6 +291,9 @@ func (c *CommandServer) publishContainer(ctx context.Context, com e_command.Comm
 	go func() {
 		_ = c.rdbPub(ctx, com)
 	}()
+	go func() {
+		c.sendWebsocket(com)
+	}()
 }
 
 func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err error) {
@@ -299,6 +304,11 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err 
 		return
 	}
 	return
+}
+
+func (c *CommandServer) sendWebsocket(com e_command.Command) {
+	cb, _ := json.Marshal(e_command.ToPub(com))
+	c.wm.Broadcast(1, cb)
 }
 
 func (c *CommandServer) writeCommand(com e_command.Command) {

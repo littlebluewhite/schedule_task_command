@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/gofiber/contrib/websocket"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_time"
@@ -34,4 +35,9 @@ type ScheduleSer interface {
 	Start(ctx context.Context, interval, removeTime time.Duration)
 	GetTimeServer() TimeServer
 	GetTaskServer() TaskServer
+}
+
+type WebsocketManager interface {
+	Register(d int, client *websocket.Conn)
+	Unregister(d int, client *websocket.Conn)
 }

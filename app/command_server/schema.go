@@ -9,6 +9,10 @@ type chs struct {
 	mu *sync.RWMutex
 }
 
+type websocketManager interface {
+	Broadcast(d int, message []byte)
+}
+
 type httpHeader struct {
 	Key      string `json:"key"`
 	Value    string `json:"value"`

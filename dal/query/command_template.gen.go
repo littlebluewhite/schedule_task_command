@@ -29,6 +29,7 @@ func newCommandTemplate(db *gorm.DB, opts ...gen.DOOption) commandTemplate {
 	_commandTemplate.ALL = field.NewAsterisk(tableName)
 	_commandTemplate.ID = field.NewInt32(tableName, "id")
 	_commandTemplate.Name = field.NewString(tableName, "name")
+	_commandTemplate.Visible = field.NewBool(tableName, "visible")
 	_commandTemplate.Protocol = field.NewString(tableName, "protocol")
 	_commandTemplate.Timeout = field.NewInt32(tableName, "timeout")
 	_commandTemplate.Description = field.NewString(tableName, "description")
@@ -90,6 +91,7 @@ type commandTemplate struct {
 	ALL         field.Asterisk
 	ID          field.Int32
 	Name        field.String
+	Visible     field.Bool
 	Protocol    field.String
 	Timeout     field.Int32
 	Description field.String
@@ -128,6 +130,7 @@ func (c *commandTemplate) updateTableName(table string) *commandTemplate {
 	c.ALL = field.NewAsterisk(table)
 	c.ID = field.NewInt32(table, "id")
 	c.Name = field.NewString(table, "name")
+	c.Visible = field.NewBool(table, "visible")
 	c.Protocol = field.NewString(table, "protocol")
 	c.Timeout = field.NewInt32(table, "timeout")
 	c.Description = field.NewString(table, "description")
@@ -165,9 +168,10 @@ func (c *commandTemplate) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (c *commandTemplate) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 17)
+	c.fieldMap = make(map[string]field.Expr, 18)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
+	c.fieldMap["visible"] = c.Visible
 	c.fieldMap["protocol"] = c.Protocol
 	c.fieldMap["timeout"] = c.Timeout
 	c.fieldMap["description"] = c.Description

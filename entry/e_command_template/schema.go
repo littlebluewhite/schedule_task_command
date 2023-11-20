@@ -10,6 +10,7 @@ import (
 type CommandTemplate struct {
 	ID           int32             `json:"id"`
 	Name         string            `json:"name"`
+	Visible      bool              `json:"visible"`
 	Protocol     Protocol          `json:"protocol"`
 	Timeout      int32             `json:"timeout"`
 	Description  *string           `json:"description"`
@@ -75,6 +76,7 @@ type MCondition struct {
 
 type CommandTemplateCreate struct {
 	Name         string            `json:"name" binding:"required"`
+	Visible      bool              `json:"visible"`
 	Protocol     Protocol          `json:"protocol" binding:"required"`
 	Timeout      int32             `json:"timeout" binding:"required"`
 	Description  *string           `json:"description"`
@@ -93,6 +95,7 @@ type CommandTemplateCreate struct {
 type CommandTemplateUpdate struct {
 	ID           int32             `json:"id"`
 	Name         *string           `json:"name"`
+	Visible      *bool             `json:"visible"`
 	Protocol     Protocol          `json:"protocol"`
 	Timeout      *int32            `json:"timeout"`
 	Description  *string           `json:"description"`

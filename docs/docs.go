@@ -1541,6 +1541,9 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "visible": {
+                    "type": "boolean"
+                },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
                 }
@@ -1604,6 +1607,9 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "visible": {
+                    "type": "boolean"
+                },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
                 }
@@ -1662,6 +1668,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
@@ -2425,6 +2434,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2448,6 +2460,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2474,6 +2489,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2648,6 +2666,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2663,6 +2684,9 @@ const docTemplate = `{
                 },
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatumCreate"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2680,6 +2704,9 @@ const docTemplate = `{
                 },
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2772,7 +2799,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.7.5",
+	Version:          "2.7.6",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

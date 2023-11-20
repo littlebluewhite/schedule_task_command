@@ -9,6 +9,7 @@ import (
 type TaskTemplate struct {
 	ID         int32           `json:"id"`
 	Name       string          `json:"name"`
+	Visible    bool            `json:"visible"`
 	UpdatedAt  *time.Time      `json:"updated_at"`
 	CreatedAt  *time.Time      `json:"created_at"`
 	StageItems []StageItem     `json:"stage_items"`
@@ -39,6 +40,7 @@ type To struct {
 
 type TaskTemplateCreate struct {
 	Name       string            `json:"name" binding:"required"`
+	Visible    bool              `json:"visible"`
 	StageItems []StageItemCreate `json:"stages"`
 	Tags       json.RawMessage   `json:"tags"`
 }
@@ -55,6 +57,7 @@ type StageItemCreate struct {
 type TaskTemplateUpdate struct {
 	ID         int32             `json:"id" binding:"required"`
 	Name       *string           `json:"name"`
+	Visible    *bool             `json:"visible"`
 	StageItems []StageItemUpdate `json:"stages"`
 	Tags       json.RawMessage   `json:"tags"`
 }

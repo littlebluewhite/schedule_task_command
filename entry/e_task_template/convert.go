@@ -33,6 +33,7 @@ func Format(ct []model.TaskTemplate) []TaskTemplate {
 		i := TaskTemplate{
 			ID:         item.ID,
 			Name:       item.Name,
+			Visible:    item.Visible,
 			UpdatedAt:  item.UpdatedAt,
 			CreatedAt:  item.CreatedAt,
 			StageItems: sResult,
@@ -60,6 +61,7 @@ func CreateConvert(c []*TaskTemplateCreate) []*model.TaskTemplate {
 		}
 		i := model.TaskTemplate{
 			Name:       item.Name,
+			Visible:    item.Visible,
 			StageItems: sResult,
 			Tags:       item.Tags,
 		}
@@ -77,6 +79,9 @@ func UpdateConvert(ttMap map[int]model.TaskTemplate, utt []*TaskTemplateUpdate) 
 		}
 		if u.Name != nil {
 			tt.Name = *u.Name
+		}
+		if u.Visible != nil {
+			tt.Visible = *u.Visible
 		}
 		if u.Tags != nil {
 			tt.Tags = u.Tags

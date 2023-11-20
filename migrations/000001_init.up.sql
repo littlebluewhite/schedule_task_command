@@ -2,6 +2,7 @@ CREATE TABLE `time_template`
 (
     `id`           int PRIMARY KEY AUTO_INCREMENT,
     `name`         varchar(255) UNIQUE NOT NULL,
+    `visible`      boolean             NOT NULL,
     `time_data_id` int UNIQUE          NOT NULL,
     `updated_at`   datetime,
     `created_at`   datetime
@@ -37,6 +38,7 @@ CREATE TABLE `command_template`
 (
     `id`          int PRIMARY KEY AUTO_INCREMENT,
     `name`        varchar(255) UNIQUE                               NOT NULL,
+    `visible`     boolean                                           NOT NULL,
     `protocol`    ENUM ('http', 'websocket', 'mqtt', 'redis_topic') NOT NULL,
     `timeout`     int                                               NOT NULL,
     `description` varchar(255),
@@ -130,6 +132,7 @@ CREATE TABLE `task_template`
 (
     `id`         int PRIMARY KEY AUTO_INCREMENT,
     `name`       varchar(255) NOT NULL,
+    `visible`    boolean      NOT NULL,
     `updated_at` datetime,
     `created_at` datetime,
     `tags`       json DEFAULT (JSON_ARRAY())
