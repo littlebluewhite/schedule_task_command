@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.7.5"
+        "version": "2.7.6"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -1533,6 +1533,9 @@
                         "type": "integer"
                     }
                 },
+                "visible": {
+                    "type": "boolean"
+                },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
                 }
@@ -1596,6 +1599,9 @@
                         "type": "integer"
                     }
                 },
+                "visible": {
+                    "type": "boolean"
+                },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
                 }
@@ -1654,6 +1660,9 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 },
                 "websocket": {
                     "$ref": "#/definitions/e_command_template.WebsocketCommand"
@@ -2417,6 +2426,9 @@
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2440,6 +2452,9 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2466,6 +2481,9 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2640,6 +2658,9 @@
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2655,6 +2676,9 @@
                 },
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatumCreate"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2672,6 +2696,9 @@
                 },
                 "time_data": {
                     "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
+                },
+                "visible": {
+                    "type": "boolean"
                 }
             }
         },

@@ -15,6 +15,7 @@ const TableNameCommandTemplate = "command_template"
 type CommandTemplate struct {
 	ID           int32             `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name         string            `gorm:"column:name;not null" json:"name"`
+	Visible      bool              `gorm:"column:visible;not null" json:"visible"`
 	Protocol     string            `gorm:"column:protocol;not null" json:"protocol"`
 	Timeout      int32             `gorm:"column:timeout;not null" json:"timeout"`
 	Description  *string           `gorm:"column:description" json:"description"`

@@ -15,6 +15,7 @@ const TableNameTaskTemplate = "task_template"
 type TaskTemplate struct {
 	ID         int32           `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name       string          `gorm:"column:name;not null" json:"name"`
+	Visible    bool            `gorm:"column:visible;not null" json:"visible"`
 	UpdatedAt  *time.Time      `gorm:"column:updated_at" json:"updated_at"`
 	CreatedAt  *time.Time      `gorm:"column:created_at" json:"created_at"`
 	Tags       json.RawMessage `gorm:"column:tags;default:json_array()" json:"tags"`

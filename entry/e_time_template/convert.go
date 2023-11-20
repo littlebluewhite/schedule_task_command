@@ -12,6 +12,7 @@ func Format(tt []model.TimeTemplate) []TimeTemplate {
 		i := TimeTemplate{
 			ID:        item.ID,
 			Name:      item.Name,
+			Visible:   item.Visible,
 			UpdatedAt: item.UpdatedAt,
 			CreatedAt: item.CreatedAt,
 			TimeData: e_time_data.TimeDatum{
@@ -56,7 +57,8 @@ func CreateConvert(c []*TimeTemplateCreate) []*model.TimeTemplate {
 		fmt.Printf("%+v\n", item)
 		fmt.Printf("%[1]T, %+[1]v\n", item.TimeData.RepeatType)
 		i := model.TimeTemplate{
-			Name: item.Name,
+			Name:    item.Name,
+			Visible: item.Visible,
 			TimeData: model.TimeDatum{
 				RepeatType:      item.TimeData.RepeatType.ToModel(),
 				StartDate:       item.TimeData.StartDate,
@@ -82,6 +84,9 @@ func UpdateConvert(ttMap map[int]model.TimeTemplate, utt []*TimeTemplateUpdate) 
 		}
 		if u.Name != nil {
 			tt.Name = *u.Name
+		}
+		if u.Visible != nil {
+			tt.Visible = *u.Visible
 		}
 		if u.TimeData != nil {
 			tt.TimeData.RepeatType = u.TimeData.RepeatType.ToModel()
