@@ -1,21 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/goccy/go-json"
+)
 
 func main() {
-	a := 1
-	b := 2
-	c := 3
-	switch {
-	case a == 1:
-		fmt.Println("a ok")
-	case b == 2:
-		fmt.Println("b ok")
-	default:
-		fmt.Println("c ok", c)
+	v := make(map[string]string)
+	//var v map[string]string
+	b := []byte(`{"id": "1", "name": "aaa"}`)
+	e := json.Unmarshal(b, &v)
+	fmt.Println(e)
+	a := map[string]string{
+		"a": "fff",
+		"b": "888",
 	}
-}
-
-type stageMapValue2 struct {
-	a map[string]int
+	fmt.Println(a == nil)
+	if a != nil {
+		for key, value := range a {
+			v[key] = value
+		}
+	}
+	fmt.Println(v)
 }

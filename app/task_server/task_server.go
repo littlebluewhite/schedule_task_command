@@ -324,7 +324,7 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 	values["timestamp"] = time.Now().Unix()
 	values["data"] = jd
 	values["is_wait_call_back"] = 0
-	values["callback_token"] = task.Token
+	values["callback_token"] = ""
 	values["send_pattern"] = "1"
 	values["callback_timeout"] = 5
 	values["status_code"] = 1
