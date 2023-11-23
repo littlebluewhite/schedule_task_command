@@ -135,6 +135,8 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		c.l.Error().Printf("id: %d request failed, template id: %d", com.ID, com.TemplateId)
 		if resp1 == nil {
 			c.l.Error().Printf("request: %+v, and response is nil", req)
+			com.Status = e_command.Failure
+			com.Message = &RequestErr
 			return com
 		}
 	}
@@ -152,7 +154,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 			c.l.Error().Println("Response body closed failed")
 		}
 	}()
-	c.l.Info().Printf("id: %d \nrequest result: %s\n", com.ID, com.RespData)
+	c.l.Info().Printf("id: %d \nrequest result: %s, status code: %d\n", com.ID, com.RespData, com.StatusCode)
 	return com
 }
 
