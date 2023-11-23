@@ -262,7 +262,7 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 	}
 	comTemplateValue := ""
 	if comTemplateId != "" {
-		comTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.task_template_id == "%s")`, comTemplateId)
+		comTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.command_template_id == "%s")`, comTemplateId)
 	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
