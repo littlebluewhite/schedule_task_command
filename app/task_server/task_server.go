@@ -219,7 +219,7 @@ Loop1:
 			t.chs.mu.Lock()
 			now := time.Now()
 			for tId, item := range t.t {
-				if item.Status != e_task.Process && item.To.Add(s).After(now) {
+				if item.Status != e_task.Process && item.To.Add(s).Before(now) {
 					delete(t.t, tId)
 				}
 			}
