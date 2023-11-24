@@ -222,7 +222,7 @@ Loop1:
 			c.chs.mu.Lock()
 			now := time.Now()
 			for cId, item := range c.c {
-				if item.Status != e_command.Process && item.To.Add(s).After(now) {
+				if item.Status != e_command.Process && item.To.Add(s).Before(now) {
 					delete(c.c, cId)
 				}
 			}
