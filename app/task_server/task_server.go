@@ -280,6 +280,10 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status stri
 	} else {
 		return
 	}
+	// send empty []
+	if ht == nil {
+		ht = make([]e_task.TaskPub, 0)
+	}
 	return
 }
 

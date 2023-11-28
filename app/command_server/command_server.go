@@ -284,6 +284,10 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 	} else {
 		return
 	}
+	// send empty []
+	if hc == nil {
+		hc = make([]e_command.CommandPub, 0)
+	}
 	return
 }
 
