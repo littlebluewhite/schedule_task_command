@@ -46,8 +46,8 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 			}
 			// variables error only
 			if com.Message != nil {
-				// variables failed so cancel this command
-				com.CancelFunc()
+				// variables failed or http request failed
+				return com
 			} else {
 				// send command successfully
 				if com.CommandData.Monitor == nil {
