@@ -1,4 +1,4 @@
-swagger-docs:
+swag:
 	swag init --parseDependency --parseInternal --parseDepth 1 -d cmd/api
 
 run:
@@ -25,7 +25,7 @@ down_test:
 to:
 	go run cmd/migrate/main.go -to -version 1
 
-swagger-docs-generate:
+swagger-docs:
 	swag init --parseDependency --parseInternal --parseDepth 1 -d cmd/api
 
 build-m:

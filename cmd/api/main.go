@@ -32,7 +32,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.7.10
+// @version         2.7.11
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
