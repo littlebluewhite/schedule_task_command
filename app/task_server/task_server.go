@@ -231,9 +231,10 @@ Loop1:
 
 func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	ctx := context.Background()
-	jTask, err := json.Marshal(e_task.ToPub(task))
+	tp := e_task.ToPub(task)
+	jTask, err := json.Marshal(tp)
 	if err != nil {
-		panic(err)
+		t.l.Error().Printf("err: %v, ToPub: %+v", err, tp)
 	}
 	templateId := fmt.Sprintf("%d", task.TemplateId)
 	p := influxdb2.NewPoint("task_history",

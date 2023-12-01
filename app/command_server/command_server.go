@@ -237,7 +237,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	tp := e_command.ToPub(com)
 	jCom, err := json.Marshal(tp)
 	if err != nil {
-		panic(err)
+		c.l.Error().Printf("err: %v, ToPub: %+v", err, tp)
 	}
 	templateId := fmt.Sprintf("%d", com.TemplateId)
 	p := influxdb2.NewPoint("command_history",
