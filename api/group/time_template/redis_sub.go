@@ -15,7 +15,7 @@ func rdbSub(o *Operate, l logFile.LogFile) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			panic(err)
+			l.Error().Println(err)
 		}
 		b := []byte(msg.Payload)
 		var s SendTime

@@ -107,7 +107,7 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			panic(err)
+			t.l.Error().Println(err)
 		}
 		b := []byte(msg.Payload)
 		var s e_task.Task
@@ -243,8 +243,8 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 		map[string]interface{}{"data": jTask},
 		task.From,
 	)
-	if err := t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		panic(err)
+	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
+		t.l.Error().Println(err)
 	}
 }
 
@@ -275,7 +275,7 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status stri
 			var task e_task.TaskPub
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &task); e != nil {
-				panic(e)
+				t.l.Error().Println(e)
 			}
 			ht = append(ht, task)
 		}
