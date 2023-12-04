@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"maps"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
@@ -119,7 +120,7 @@ func (c *CommandServer) receiveStream(ctx context.Context) {
 func (c *CommandServer) ReadMap() map[uint64]e_command.Command {
 	c.chs.mu.RLock()
 	defer c.chs.mu.RUnlock()
-	return c.c
+	return maps.Clone(c.c)
 }
 
 func (c *CommandServer) GetList() []e_command.Command {
