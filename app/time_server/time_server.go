@@ -44,7 +44,7 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			panic(err)
+			t.l.Error().Println(err)
 		}
 		b := []byte(msg.Payload)
 		var pt e_time.PublishTime
@@ -89,7 +89,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 	isTime := fmt.Sprintf("%t", pt.IsTime)
 	jsonPt, err := json.Marshal(pt)
 	if err != nil {
-		panic(err)
+		t.l.Error().Println(err)
 	}
 	p := influxdb2.NewPoint("time_history",
 		map[string]string{"template_id": templateId, "is_time": isTime},
@@ -97,7 +97,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 		pt.Time,
 	)
 	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		panic(err)
+		t.l.Error().Println(err)
 	}
 }
 
@@ -128,7 +128,7 @@ func (t *TimeServer) ReadFromHistory(templateId, start, stop, isTime string) (ht
 			var pt e_time.PublishTime
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &pt); e != nil {
-				panic(e)
+				t.l.Error().Println(e)
 			}
 			ht = append(ht, pt)
 		}

@@ -94,7 +94,7 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			panic(err)
+			c.l.Error().Println(err)
 		}
 		b := []byte(msg.Payload)
 		var com e_command.Command
@@ -246,8 +246,8 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 		map[string]interface{}{"data": jCom},
 		com.From,
 	)
-	if err := c.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		panic(err)
+	if err = c.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
+		c.l.Error().Println(err)
 	}
 }
 
@@ -278,7 +278,7 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 			var com e_command.CommandPub
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &com); e != nil {
-				panic(e)
+				c.l.Error().Println(e)
 			}
 			hc = append(hc, com)
 		}

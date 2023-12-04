@@ -35,7 +35,7 @@ func NewOperate(dbs dbs.Dbs, taskS api.TaskServer) *Operate {
 	}
 	err := o.reloadCache()
 	if err != nil {
-		panic("initial time template Operate error")
+		panic("initial task template Operate error")
 	}
 	return o
 }

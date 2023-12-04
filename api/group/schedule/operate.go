@@ -29,7 +29,7 @@ func NewOperate(dbs dbs.Dbs, ss api.ScheduleSer) *Operate {
 	}
 	err := o.ReloadCache()
 	if err != nil {
-		panic("initial time template Operate error")
+		panic("initial schedule Operate error")
 	}
 	return o
 }
