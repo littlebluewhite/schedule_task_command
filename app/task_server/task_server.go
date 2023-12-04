@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"maps"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
@@ -144,7 +145,7 @@ func (t *TaskServer[T]) streamCancelTask(rsc map[string]interface{}) (result str
 func (t *TaskServer[T]) ReadMap() map[uint64]e_task.Task {
 	t.chs.mu.RLock()
 	defer t.chs.mu.RUnlock()
-	return t.t
+	return maps.Clone(t.t)
 }
 
 func (t *TaskServer[T]) GetList() []e_task.Task {
