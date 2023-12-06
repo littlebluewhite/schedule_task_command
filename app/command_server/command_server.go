@@ -277,8 +277,14 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 		for result.Next() {
 			var com e_command.CommandPub
 			v := result.Record().Value()
-			if e := json.Unmarshal([]byte(v.(string)), &com); e != nil {
+			vString, ok := v.(string)
+			if !ok {
+				c.l.Error().Printf("value: %v is not string", v)
+				continue
+			}
+			if e := json.Unmarshal([]byte(vString), &com); e != nil {
 				c.l.Error().Println(e)
+				continue
 			}
 			hc = append(hc, com)
 		}

@@ -45,7 +45,7 @@ func (h *Handler) GetCommandTemplates(c *fiber.Ctx) error {
 		h.l.Error().Println("GetCommandTemplates: ", err)
 		return util.Err(c, err, 0)
 	}
-	h.l.Info().Println("GetCommandTemplates: success")
+	h.l.Info().Printf("GetCommandTemplates: success: %+v", result)
 	return c.Status(200).JSON(result)
 }
 
