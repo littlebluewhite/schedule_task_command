@@ -274,8 +274,14 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status stri
 		for result.Next() {
 			var task e_task.TaskPub
 			v := result.Record().Value()
-			if e := json.Unmarshal([]byte(v.(string)), &task); e != nil {
-				t.l.Error().Println(e)
+			vString, ok := v.(string)
+			if !ok {
+				t.l.Error().Printf("value: %v is not string", v)
+				continue
+			}
+			if err = json.Unmarshal([]byte(vString), &task); err != nil {
+				t.l.Error().Println(err)
+				continue
 			}
 			ht = append(ht, task)
 		}

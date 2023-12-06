@@ -32,7 +32,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.7.14
+// @version         2.7.15
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -73,7 +73,7 @@ func main() {
 
 	// start schedule server
 	go func() {
-		scheduleServer.Start(ctx, 1*time.Second, 24*time.Hour)
+		scheduleServer.Start(ctx, 1*time.Second, 2*time.Hour)
 	}()
 
 	ServerConfig := config.NewConfig[config.ServerConfig](".", "env", "server")
