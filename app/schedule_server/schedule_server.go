@@ -88,9 +88,10 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 					// Task execute
 					s.l.Info().Printf("id: %d execute", scheduleId)
 					st := e_task_template.SendTaskTemplate{
-						TemplateId:  int(schedule.TaskTemplateID),
-						TriggerFrom: triggerFrom,
-						Token:       token,
+						TemplateId:     int(schedule.TaskTemplateID),
+						TriggerFrom:    triggerFrom,
+						TriggerAccount: "system",
+						Token:          token,
 					}
 					task := s.generateTask(st)
 					_ = s.taskS.ExecuteWait(ctx, task)

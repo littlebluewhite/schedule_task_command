@@ -1,0 +1,108 @@
+{
+  "id": 2201,
+  "name": "backend_test",
+  "visible": true,
+  "updated_at": "2023-12-11T11:27:14+08:00",
+  "created_at": "2023-12-11T11:25:44+08:00",
+  "stage_items": [
+    {
+      "id": 3670,
+      "name": "F_01啟動監視紀錄",
+      "stage_number": 1,
+      "mode": "execute",
+      "command_template_id": 7,
+      "tags": [
+        "test"
+      ],
+      "variable": {},
+      "parser": null,
+      "command_template": {
+        "id": 7,
+        "name": "F_01啟動監視紀錄",
+        "visible": true,
+        "protocol": "http",
+        "timeout": 20000,
+        "description": "",
+        "host": "127.0.0.1:9330",
+        "port": "9330",
+        "updated_at": "2023-11-29T14:32:06+08:00",
+        "created_at": "2023-11-20T14:50:53+08:00",
+        "http": {
+          "method": "PUT",
+          "url": "http://127.0.0.1:9330/api/object/insert_value_by_uid/",
+          "authorization_type": "token",
+          "params": [],
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer 57at3klp0y192aecwc",
+              "data_type": "auto-add",
+              "is_active": true
+            }
+          ],
+          "body_type": "json",
+          "body": [
+            {
+              "uid": "SOPTEST@Command01",
+              "value": "啟用監視紀錄完成"
+            }
+          ]
+        },
+        "monitor": null,
+        "tags": [],
+        "variable": {},
+        "parser_return": []
+      }
+    },
+    {
+      "id": 3671,
+      "name": "F_02推播通知",
+      "stage_number": 1,
+      "mode": "execute",
+      "command_template_id": 8,
+      "tags": [
+        "test2"
+      ],
+      "variable": {},
+      "parser": null,
+      "command_template": {
+        "id": 8,
+        "name": "F_02推播通知",
+        "visible": true,
+        "protocol": "http",
+        "timeout": 20000,
+        "description": "",
+        "host": "127.0.0.1:9330",
+        "port": "9330",
+        "updated_at": "2023-11-29T14:32:17+08:00",
+        "created_at": "2023-11-20T14:54:55+08:00",
+        "http": {
+          "method": "PUT",
+          "url": "http://127.0.0.1:9330/api/object/insert_value_by_uid/",
+          "authorization_type": "token",
+          "params": [],
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer 57at3klp0y192aecwc",
+              "data_type": "auto-add",
+              "is_active": true
+            }
+          ],
+          "body_type": "json",
+          "body": [
+            {
+              "uid": "SOPTEST@Command02",
+              "value": "推播通知完成"
+            }
+          ]
+        },
+        "monitor": null,
+        "tags": [],
+        "variable": null,
+        "parser_return": []
+      }
+    }
+  ],
+  "tags": []
+}
