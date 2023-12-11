@@ -331,9 +331,8 @@ func (c *CommandServer) writeCommand(com e_command.Command) {
 func (c *CommandServer) getVariables(com e_command.Command) e_command.Command {
 	v := make(map[string]string)
 	// template 有變數
-	if com.CommandData.Variable != nil {
-		e := json.Unmarshal(com.CommandData.Variable, &v)
-		if e != nil {
+	if com.CommandData.Variable != nil && string(com.CommandData.Variable) != "null" {
+		if err := json.Unmarshal(com.CommandData.Variable, &v); err != nil {
 			com.Message = &CommandTemplateVariable
 			return com
 		}

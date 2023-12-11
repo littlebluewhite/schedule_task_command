@@ -20,8 +20,8 @@ import (
 func setUpServer() (ts *TaskServer[api.CommandServer]) {
 	l := logFile.NewLogFile("test", "taskServer.log")
 	DBS := dbs.NewDbs(l, true)
-	cs := command_server.NewCommandServer(DBS)
-	ts = NewTaskServer[api.CommandServer](DBS, cs)
+	cs := command_server.NewCommandServer(DBS, nil)
+	ts = NewTaskServer[api.CommandServer](DBS, cs, nil)
 	return
 }
 
