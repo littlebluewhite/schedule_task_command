@@ -1,7 +1,6 @@
 package time_template
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_time_template"
@@ -160,6 +159,5 @@ func (h *Handler) CheckTime(c *fiber.Ctx) error {
 	if err != nil {
 		return util.Err(c, err, 0)
 	}
-	fmt.Println(isTime)
 	return c.Status(200).JSON(isTime)
 }

@@ -62,7 +62,6 @@ func (o *Operate) List() ([]model.HeaderTemplate, error) {
 func (o *Operate) listCache() ([]model.HeaderTemplate, error) {
 	var tt []model.HeaderTemplate
 	cacheMap := o.getCacheMap()
-	fmt.Println(cacheMap)
 	for _, value := range cacheMap {
 		tt = append(tt, value)
 	}

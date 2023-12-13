@@ -68,7 +68,6 @@ func (o *Operate) listDB() ([]*model.TimeTemplate, error) {
 func (o *Operate) listCache() ([]model.TimeTemplate, error) {
 	var tt []model.TimeTemplate
 	cacheMap := o.getCacheMap()
-	fmt.Println(cacheMap)
 	for _, value := range cacheMap {
 		tt = append(tt, value)
 	}
