@@ -220,6 +220,10 @@ Loop1:
 			t.chs.mu.Lock()
 			now := time.Now()
 			for tId, item := range t.t {
+				// task is not finished
+				if item.To == nil {
+					continue
+				}
 				if item.Status != e_task.Process && item.To.Add(s).Before(now) {
 					delete(t.t, tId)
 				}

@@ -223,6 +223,10 @@ Loop1:
 			c.chs.mu.Lock()
 			now := time.Now()
 			for cId, item := range c.c {
+				// command is not finished
+				if item.To == nil {
+					continue
+				}
 				if item.Status != e_command.Process && item.To.Add(s).Before(now) {
 					delete(c.c, cId)
 				}
