@@ -71,7 +71,6 @@ func (o *Operate) listDB() ([]*model.TaskTemplate, error) {
 func (o *Operate) listCache() ([]model.TaskTemplate, error) {
 	var tt []model.TaskTemplate
 	cacheMap := o.getCacheMap()
-	fmt.Println(cacheMap)
 	for _, value := range cacheMap {
 		tt = append(tt, value)
 	}

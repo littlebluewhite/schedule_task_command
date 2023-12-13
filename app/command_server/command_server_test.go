@@ -18,7 +18,7 @@ import (
 func setUpServer() (cs *CommandServer, o *command.Operate) {
 	l := logFile.NewLogFile("test", "commandServer.log")
 	DBS := dbs.NewDbs(l, true)
-	cs = NewCommandServer(DBS)
+	cs = NewCommandServer(DBS, nil)
 	o = command.NewOperate(cs)
 	return
 }

@@ -61,7 +61,6 @@ func (o *Operate) listDB() ([]*model.Schedule, error) {
 func (o *Operate) listCache() ([]model.Schedule, error) {
 	var s []model.Schedule
 	cacheMap := o.getCacheMap()
-	fmt.Println(cacheMap)
 	for _, value := range cacheMap {
 		s = append(s, value)
 	}
