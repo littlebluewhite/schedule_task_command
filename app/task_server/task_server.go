@@ -13,6 +13,7 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util/logFile"
 	"schedule_task_command/util/redis_stream"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -220,6 +221,10 @@ Loop1:
 			t.chs.mu.Lock()
 			now := time.Now()
 			for tId, item := range t.t {
+				// task is not finished
+				if item.To == nil {
+					continue
+				}
 				if item.Status != e_task.Process && item.To.Add(s).Before(now) {
 					delete(t.t, tId)
 				}
@@ -239,7 +244,10 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	}
 	templateId := fmt.Sprintf("%d", task.TemplateId)
 	p := influxdb2.NewPoint("task_history",
-		map[string]string{"task_template_id": templateId, "status": task.Status.String()},
+		map[string]string{
+			"id":               strconv.FormatUint(task.ID, 10),
+			"task_template_id": templateId,
+			"status":           task.Status.String()},
 		map[string]interface{}{"data": jTask},
 		task.From,
 	)
@@ -248,7 +256,7 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	}
 }
 
-func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status string) (ht []e_task.TaskPub, err error) {
+func (t *TaskServer[T]) ReadFromHistory(id, taskTemplateId, start, stop, status string) (ht []e_task.TaskPub, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -262,13 +270,18 @@ func (t *TaskServer[T]) ReadFromHistory(taskTemplateId, start, stop, status stri
 	if taskTemplateId != "" {
 		taskTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.task_template_id == "%s")`, taskTemplateId)
 	}
+	taskIDValue := ""
+	if id != "" {
+		taskIDValue = fmt.Sprintf(`|> filter(fn: (r) => r.id == "%s")`, id)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "task_history")
 |> filter(fn: (r) => r._field == "data")
 %s
 %s
-`, start, stopValue, taskTemplateValue, statusValue)
+%s
+`, start, stopValue, taskTemplateValue, statusValue, taskIDValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {

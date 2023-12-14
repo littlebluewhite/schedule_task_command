@@ -8,7 +8,7 @@ import (
 )
 
 type hOperate interface {
-	GetHistory(templateId, start, stop, isTime string) ([]e_time.PublishTime, error)
+	GetHistory(id, templateId, start, stop, isTime string) ([]e_time.PublishTime, error)
 }
 
 type Handler struct {
@@ -28,6 +28,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Tags    time
 // @Accept  json
 // @Produce json
+// @Param       id  query     int false "time id"
 // @Param       template_id  query     int false "time template id"
 // @Param       is_time  query     string false "is_time" Enums(false, true)
 // @Param       start  query     string true "start time"
@@ -36,13 +37,14 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Router  /api/time/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	templateId := c.Query("template_id")
+	id := c.Query("id")
 	isTime := c.Query("is_time")
 	start := c.Query("start")
 	if start == "" {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.GetHistory(templateId, start, stop, isTime)
+	data, err := h.o.GetHistory(id, templateId, start, stop, isTime)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

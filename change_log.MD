@@ -1,3 +1,31 @@
+# Schedule_Task_Command_Time  version 2.8.0
+
+### Task Server
+- Get history data add new tag "id"
+
+### Task API
+- modify history data, add query id
+- get task by id can search both live data and history data
+- get simple task by id can search both live data and history data
+- get stage_item status can search both live data and history data
+
+### Command Server
+- Get history data add new tag "id"
+
+### Command API
+- modify history data, add query id
+- get command by id can search both live data and history data
+
+### Time Server
+- Get history data add new tag "id"
+
+### Time API
+- modify history data, add query id
+
+------------------------------------------------------------------
+## 下一個版本預計完成
+
+
 # Schedule_Task_Command_Time  version 2.7.17
 
 ### Task Server

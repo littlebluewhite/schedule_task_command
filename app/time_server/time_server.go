@@ -101,7 +101,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 	}
 }
 
-func (t *TimeServer) ReadFromHistory(templateId, start, stop, isTime string) (ht []e_time.PublishTime, err error) {
+func (t *TimeServer) ReadFromHistory(id, templateId, start, stop, isTime string) (ht []e_time.PublishTime, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -115,13 +115,18 @@ func (t *TimeServer) ReadFromHistory(templateId, start, stop, isTime string) (ht
 	if isTime != "" {
 		isTimeValue = fmt.Sprintf(`|> filter(fn: (r) => r.is_time == "%s")`, isTime)
 	}
+	timeIDValue := ""
+	if id != "" {
+		timeIDValue = fmt.Sprintf(`|> filter(fn: (r) => r.id == "%s")`, id)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "time_history")
 |> filter(fn: (r) => r._field == "data")
 %s
 %s
-`, start, stopValue, templateIdValue, isTimeValue)
+%s
+`, start, stopValue, templateIdValue, isTimeValue, timeIDValue)
 	result, err := t.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {

@@ -25,7 +25,27 @@ func ToPub(t Task) (tp TaskPub) {
 	return
 }
 
-func ToSimpleTask(t Task) (ts SimpleTask) {
+func TaskToSimpleTask(t Task) (ts SimpleTask) {
+	var si []StageItem
+	var sns []int32
+	for sn := range t.Stages {
+		sns = append(sns, sn)
+	}
+	slices.Sort(sns)
+	for _, stageNumber := range sns {
+		si = append(si, t.Stages[stageNumber].Monitor...)
+		si = append(si, t.Stages[stageNumber].Execute...)
+	}
+	SimpleStageItemSlice := ToSimpleStageItemSlice(si)
+	ts.ID = t.ID
+	ts.TemplateName = t.TaskData.Name
+	ts.Status = int(t.Status)
+	ts.StageNumber = t.StageNumber
+	ts.StageItems = SimpleStageItemSlice
+	return
+}
+
+func TaskPubToSimpleTask(t TaskPub) (ts SimpleTask) {
 	var si []StageItem
 	var sns []int32
 	for sn := range t.Stages {
@@ -62,7 +82,7 @@ func ToSimpleStageItemSlice(si []StageItem) []SimpleStageItem {
 	return SimpleStageItemSlice
 }
 
-func ToStageItemStatus(t Task) (r []int) {
+func ToStageItemStatus(t TaskPub) (r []int) {
 	var si []StageItem
 	var sns []int32
 	for sn := range t.Stages {
@@ -90,7 +110,7 @@ func ToPubSlice(ts []Task) []TaskPub {
 func ToSimpleTaskSlice(ts []Task) []SimpleTask {
 	tss := make([]SimpleTask, 0, len(ts))
 	for _, t := range ts {
-		tss = append(tss, ToSimpleTask(t))
+		tss = append(tss, TaskToSimpleTask(t))
 	}
 	return tss
 }
