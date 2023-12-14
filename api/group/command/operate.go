@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"schedule_task_command/api"
 	"schedule_task_command/entry/e_command"
+	"strconv"
 )
 
 type Operate struct {
@@ -44,14 +45,30 @@ func (o *Operate) Cancel(id uint64, message string) error {
 	return nil
 }
 
-func (o *Operate) GetHistory(templateId, start, stop, status string) ([]e_command.CommandPub, error) {
+func (o *Operate) GetHistory(id, templateId, start, stop, status string) ([]e_command.CommandPub, error) {
 	s := e_command.S2Status(&status)
 	if s != e_command.Success && s != e_command.Failure && s != e_command.Cancel && status != "" {
 		return nil, HistoryStatusErr
 	}
-	ht, e := o.commandS.ReadFromHistory(templateId, start, stop, status)
+	ht, e := o.commandS.ReadFromHistory(id, templateId, start, stop, status)
 	if e != nil {
 		return nil, e
 	}
 	return ht, nil
+}
+
+func (o *Operate) FindById(id uint64) (c e_command.CommandPub, err error) {
+	cm := o.commandS.ReadMap()
+	com, ok := cm[id]
+	if ok {
+		c = e_command.ToPub(com)
+		return
+	}
+	hc, err := o.GetHistory(strconv.FormatUint(id, 10), "", "0", "", "")
+	if len(hc) > 0 {
+		c = hc[0]
+		return
+	}
+	err = errors.New(fmt.Sprintf("cannot find id: %d", id))
+	return
 }

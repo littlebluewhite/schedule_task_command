@@ -16,8 +16,8 @@ func NewOperate(timeS api.TimeServer) *Operate {
 	return o
 }
 
-func (o *Operate) GetHistory(templateId, start, stop, isTime string) ([]e_time.PublishTime, error) {
-	pt, e := o.timeS.ReadFromHistory(templateId, start, stop, isTime)
+func (o *Operate) GetHistory(id, templateId, start, stop, isTime string) ([]e_time.PublishTime, error) {
+	pt, e := o.timeS.ReadFromHistory(id, templateId, start, stop, isTime)
 	if e != nil {
 		return nil, e
 	}

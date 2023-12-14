@@ -12,7 +12,8 @@ type hOperate interface {
 	List() ([]e_task.Task, error)
 	Find(ids []uint64) ([]e_task.Task, error)
 	Cancel(id uint64, message string) error
-	GetHistory(templateId, start, stop, status string) ([]e_task.TaskPub, error)
+	GetHistory(id, templateId, start, stop, status string) ([]e_task.TaskPub, error)
+	FindById(id uint64) (t e_task.TaskPub, err error)
 }
 
 type Handler struct {
@@ -45,7 +46,7 @@ func (h *Handler) GetTasks(c *fiber.Ctx) error {
 
 // GetTaskById swagger
 // @Summary     Show task
-// @Description Get task by id
+// @Description Get task by id include history data
 // @Tags        task
 // @Produce     json
 // @Param       id  path     string true "id"
@@ -58,12 +59,12 @@ func (h *Handler) GetTaskById(c *fiber.Ctx) error {
 		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]uint64{uint64(id)})
+	t, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(e_task.ToPub(ht[0]))
+	return c.Status(200).JSON(t)
 }
 
 // GetSimpleTasks swagger
@@ -84,7 +85,7 @@ func (h *Handler) GetSimpleTasks(c *fiber.Ctx) error {
 
 // GetSimpleTasksById swagger
 // @Summary     Show task
-// @Description Get simple task by id
+// @Description Get simple task by id include history data
 // @Tags        task
 // @Produce     json
 // @Param       id  path     string true "id"
@@ -97,12 +98,12 @@ func (h *Handler) GetSimpleTasksById(c *fiber.Ctx) error {
 		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]uint64{uint64(id)})
+	t, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(e_task.ToSimpleTask(ht[0]))
+	return c.Status(200).JSON(e_task.TaskPubToSimpleTask(t))
 }
 
 // GetStageItemStatus swagger
@@ -120,12 +121,12 @@ func (h *Handler) GetStageItemStatus(c *fiber.Ctx) error {
 		h.l.Error().Println("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]uint64{uint64(id)})
+	t, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(e_task.ToStageItemStatus(ht[0]))
+	return c.Status(200).JSON(e_task.ToStageItemStatus(t))
 }
 
 // GetHistory swagger
@@ -133,6 +134,7 @@ func (h *Handler) GetStageItemStatus(c *fiber.Ctx) error {
 // @Tags    task
 // @Accept  json
 // @Produce json
+// @Param       id  query     int false "task id"
 // @Param       template_id  query     int false "task template id"
 // @Param       status  query     string false "status" Enums(Success, Failure, Cancel)
 // @Param       start  query     string true "start time"
@@ -140,6 +142,7 @@ func (h *Handler) GetStageItemStatus(c *fiber.Ctx) error {
 // @Success 200 {array} e_task.Task
 // @Router  /api/task/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
+	id := c.Query("id")
 	templateId := c.Query("template_id")
 	status := c.Query("status")
 	start := c.Query("start")
@@ -147,7 +150,7 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.GetHistory(templateId, start, stop, status)
+	data, err := h.o.GetHistory(id, templateId, start, stop, status)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

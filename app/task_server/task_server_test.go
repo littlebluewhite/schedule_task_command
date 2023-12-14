@@ -389,7 +389,7 @@ func TestReadHistory(t *testing.T) {
 	ctx := context.Background()
 	go func() { ts.Start(ctx, 2*time.Minute) }()
 	t.Run("test1", func(t *testing.T) {
-		hc, err := ts.ReadFromHistory("", "-50d", "", "Failure")
+		hc, err := ts.ReadFromHistory("", "", "-50d", "", "Failure")
 		require.NoError(t, err)
 		for _, task := range hc {
 			require.Equal(t, e_task.Failure, task.Status)

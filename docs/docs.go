@@ -63,6 +63,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "Command id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "Command template id",
                         "name": "template_id",
                         "in": "query"
@@ -107,7 +113,7 @@ const docTemplate = `{
         },
         "/api/command/{id}": {
             "get": {
-                "description": "Get Command by id",
+                "description": "Get Command by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -750,6 +756,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "task id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "task template id",
                         "name": "template_id",
                         "in": "query"
@@ -817,7 +829,7 @@ const docTemplate = `{
         },
         "/api/task/simple/{id}": {
             "get": {
-                "description": "Get simple task by id",
+                "description": "Get simple task by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -878,7 +890,7 @@ const docTemplate = `{
         },
         "/api/task/{id}": {
             "get": {
-                "description": "Get task by id",
+                "description": "Get task by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -1145,6 +1157,12 @@ const docTemplate = `{
                 ],
                 "summary": "get time history",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time id",
+                        "name": "id",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "time template id",
@@ -2799,7 +2817,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.7.17",
+	Version:          "2.8.0",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

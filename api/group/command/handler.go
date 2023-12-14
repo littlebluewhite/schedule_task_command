@@ -12,7 +12,8 @@ type hOperate interface {
 	List() ([]e_command.Command, error)
 	Find(ids []uint64) ([]e_command.Command, error)
 	Cancel(id uint64, message string) error
-	GetHistory(templateId, status, start, stop string) ([]e_command.CommandPub, error)
+	GetHistory(id, templateId, status, start, stop string) ([]e_command.CommandPub, error)
+	FindById(id uint64) (e_command.CommandPub, error)
 }
 
 type Handler struct {
@@ -44,7 +45,7 @@ func (h *Handler) GetCommands(c *fiber.Ctx) error {
 
 // GetCommandById swagger
 // @Summary     Show Command
-// @Description Get Command by id
+// @Description Get Command by id include history data
 // @Tags        Command
 // @Produce     json
 // @Param       id  path     string true "id"
@@ -57,12 +58,12 @@ func (h *Handler) GetCommandById(c *fiber.Ctx) error {
 		h.l.Error().Println("GetCommandById: ", e)
 		return util.Err(c, e, 0)
 	}
-	ht, err := h.o.Find([]uint64{uint64(id)})
+	com, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetCommandById: ", err)
 		return util.Err(c, err, 0)
 	}
-	return c.Status(200).JSON(e_command.ToPub(ht[0]))
+	return c.Status(200).JSON(com)
 }
 
 // CancelCommand swagger
@@ -98,6 +99,7 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 // @Tags    Command
 // @Accept  json
 // @Produce json
+// @Param       id  query     int false "Command id"
 // @Param       template_id  query     int false "Command template id"
 // @Param       status  query     string false "status" Enums(Success, Failure, Cancel)
 // @Param       start  query     string true "start time"
@@ -105,6 +107,7 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 // @Success 200 {array} e_command.Command
 // @Router  /api/command/history [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
+	id := c.Query("id")
 	templateId := c.Query("template_id")
 	status := c.Query("status")
 	start := c.Query("start")
@@ -112,7 +115,7 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 		return util.Err(c, NoStartTime, 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.GetHistory(templateId, start, stop, status)
+	data, err := h.o.GetHistory(id, templateId, start, stop, status)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

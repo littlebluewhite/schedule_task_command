@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.7.17"
+        "version": "2.8.0"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -53,6 +53,12 @@
                 ],
                 "summary": "get Command history",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Command id",
+                        "name": "id",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "Command template id",
@@ -99,7 +105,7 @@
         },
         "/api/command/{id}": {
             "get": {
-                "description": "Get Command by id",
+                "description": "Get Command by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -742,6 +748,12 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "task id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "task template id",
                         "name": "template_id",
                         "in": "query"
@@ -809,7 +821,7 @@
         },
         "/api/task/simple/{id}": {
             "get": {
-                "description": "Get simple task by id",
+                "description": "Get simple task by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -870,7 +882,7 @@
         },
         "/api/task/{id}": {
             "get": {
-                "description": "Get task by id",
+                "description": "Get task by id include history data",
                 "produces": [
                     "application/json"
                 ],
@@ -1137,6 +1149,12 @@
                 ],
                 "summary": "get time history",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time id",
+                        "name": "id",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "time template id",

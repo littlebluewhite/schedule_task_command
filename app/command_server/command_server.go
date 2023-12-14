@@ -12,6 +12,7 @@ import (
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util/logFile"
 	"schedule_task_command/util/redis_stream"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -246,7 +247,10 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	}
 	templateId := fmt.Sprintf("%d", com.TemplateId)
 	p := influxdb2.NewPoint("command_history",
-		map[string]string{"command_template_id": templateId, "status": com.Status.String()},
+		map[string]string{
+			"id":                  strconv.FormatUint(com.ID, 10),
+			"command_template_id": templateId,
+			"status":              com.Status.String()},
 		map[string]interface{}{"data": jCom},
 		com.From,
 	)
@@ -255,7 +259,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	}
 }
 
-func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status string) (hc []e_command.CommandPub, err error) {
+func (c *CommandServer) ReadFromHistory(id, comTemplateId, start, stop, status string) (hc []e_command.CommandPub, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
@@ -269,13 +273,18 @@ func (c *CommandServer) ReadFromHistory(comTemplateId, start, stop, status strin
 	if comTemplateId != "" {
 		comTemplateValue = fmt.Sprintf(`|> filter(fn: (r) => r.command_template_id == "%s")`, comTemplateId)
 	}
+	comIDValue := ""
+	if id != "" {
+		comIDValue = fmt.Sprintf(`|> filter(fn: (r) => r.id == "%s")`, id)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "command_history")
 |> filter(fn: (r) => r._field == "data")
 %s
 %s
-`, start, stopValue, comTemplateValue, statusValue)
+%s
+`, start, stopValue, comTemplateValue, statusValue, comIDValue)
 	result, err := c.dbs.GetIdb().Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {
