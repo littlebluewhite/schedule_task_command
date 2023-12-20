@@ -521,6 +521,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/logs": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Log"
+                ],
+                "summary": "get logs history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_log.Log"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/ping/list": {
             "get": {
                 "description": "test list ping",
@@ -1940,6 +1980,44 @@ const docTemplate = `{
                 }
             }
         },
+        "e_log.Log": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "type": "string"
+                },
+                "content_length": {
+                    "type": "integer"
+                },
+                "datetime": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "referer": {
+                    "type": "string"
+                },
+                "request_line": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "web_path": {
+                    "type": "string"
+                }
+            }
+        },
         "e_schedule.Schedule": {
             "type": "object",
             "properties": {
@@ -2817,7 +2895,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.8.0",
+	Version:          "2.9.0",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

@@ -25,7 +25,7 @@ import (
 
 func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketManager) {
 	// Middleware
-	log := logFile.NewLogFile("api", "inject.log")
+	log := logFile.NewLogFile("api", "group.log")
 	fiberLog := getFiberLogFile(log)
 	app.Use(recover.New())
 	app.Use(logger.New(logger.Config{
@@ -37,6 +37,19 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketMan
 
 	// api group add cors middleware
 	Api := app.Group("/api", cors.New())
+
+	// use middleware to write log
+	o := NewOperate(dbs)
+	h := NewHandler(o, log)
+	Api.Use(func(c *fiber.Ctx) error {
+		err := c.Next()
+		err = o.WriteLog(c)
+		if err != nil {
+			log.Error().Println(err)
+		}
+		return err
+	})
+	Api.Get("/logs", h.GetHistory)
 
 	// create new group
 	g := NewAPIGroup(Api, dbs, ss, wm)

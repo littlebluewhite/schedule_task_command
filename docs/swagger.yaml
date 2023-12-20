@@ -355,6 +355,31 @@ definitions:
     required:
     - id
     type: object
+  e_log.Log:
+    properties:
+      account:
+        type: string
+      content_length:
+        type: integer
+      datetime:
+        type: string
+      ip:
+        type: string
+      referer:
+        type: string
+      request_line:
+        type: string
+      status_code:
+        type: integer
+      timestamp:
+        type: number
+      token:
+        type: string
+      user_agent:
+        type: string
+      web_path:
+        type: string
+    type: object
   e_schedule.Schedule:
     properties:
       created_at:
@@ -944,7 +969,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.8.0
+  version: 2.9.0
 paths:
   /api/command/:
     get:
@@ -1270,6 +1295,32 @@ paths:
       summary: Show header templates
       tags:
       - header_template
+  /api/logs:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: start time
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: stop time
+        in: query
+        name: stop
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/e_log.Log'
+            type: array
+      summary: get logs history
+      tags:
+      - Log
   /api/ping/list:
     get:
       description: test list ping

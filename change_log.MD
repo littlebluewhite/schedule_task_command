@@ -1,3 +1,14 @@
+# Schedule_Task_Command_Time  version 2.9.0
+
+### all API
+ - add log write to influxDB
+
+### log API
+ - add get historical logs
+
+------------------------------------------------------------------
+
+
 # Schedule_Task_Command_Time  version 2.8.0
 
 ### Task Server
@@ -23,7 +34,6 @@
 - modify history data, add query id
 
 ------------------------------------------------------------------
-## 下一個版本預計完成
 
 
 # Schedule_Task_Command_Time  version 2.7.17
