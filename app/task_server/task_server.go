@@ -109,6 +109,7 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
 			t.l.Error().Println(err)
+			continue
 		}
 		b := []byte(msg.Payload)
 		var s e_task.Task
@@ -338,10 +339,11 @@ func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error
 
 func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err error) {
 	data := map[string]interface{}{
-		"id":      task.ID,
-		"stages":  task.StageNumber,
-		"status":  task.Status,
-		"message": task.Message,
+		"id":           task.ID,
+		"stages":       task.StageNumber,
+		"status":       task.Status,
+		"message":      task.Message,
+		"trigger_from": task.TriggerFrom,
 	}
 	jd, _ := json.Marshal(data)
 	values := redis_stream.CreateRedisStreamCom()
