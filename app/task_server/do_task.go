@@ -3,7 +3,6 @@ package task_server
 import (
 	"context"
 	"fmt"
-	"github.com/goccy/go-json"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
@@ -198,11 +197,10 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []string,
 	task e_task.Task) (c e_command.Command) {
 	// get variables
-	var variables map[string]string
-	if v, ok := task.Variables[int(stage.ID)]; ok {
-		variables = v
-	} else {
-		_ = json.Unmarshal(stage.Variable, &variables)
+	variables, err := getStageVariables(stage, task)
+	if err != nil {
+		t.l.Error().Printf("task id: %d, task template id: %d, stage id: %d, error: %v",
+			task.ID, task.TemplateId, stage.ID, err)
 	}
 	c = e_command.Command{
 		TemplateId:     stage.CommandTemplateID,
