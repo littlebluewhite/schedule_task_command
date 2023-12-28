@@ -16,5 +16,2871 @@
         "version": "2.10.0"
     },
     "host": "127.0.0.1:5487",
-    "paths": {}
+    "paths": {
+        "/api/command/": {
+            "get": {
+                "description": "Get all commands",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show all commands",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "get Command history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Command id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Command template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command.Command"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command/{id}": {
+            "get": {
+                "description": "Get Command by id include history data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "Show Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_command.Command"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel Command by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command"
+                ],
+                "summary": "cancel Command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "cancel message",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command.CancelBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command_template/": {
+            "get": {
+                "description": "Get all command templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Show all command templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command_template.CommandTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Create command templates",
+                "parameters": [
+                    {
+                        "description": "command template body",
+                        "name": "command_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command_template.CommandTemplateCreate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command_template.CommandTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Delete command templates",
+                "parameters": [
+                    {
+                        "description": "command_template id",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Update command templates",
+                "parameters": [
+                    {
+                        "description": "modify command template body",
+                        "name": "command_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_command_template.CommandTemplateUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "execute command templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "command_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send command body",
+                        "name": "sendCommand",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command_template.SendCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "command id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/command_template/{id}": {
+            "get": {
+                "description": "Get command templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Show command templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "command template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_command_template.CommandTemplate"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/header_template/": {
+            "get": {
+                "description": "Get all header templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "header_template"
+                ],
+                "summary": "Show all header templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_header_template.HeaderTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "header_template"
+                ],
+                "summary": "Create header templates",
+                "parameters": [
+                    {
+                        "description": "header template body",
+                        "name": "header_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_header_template.HeaderTemplateCreate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_header_template.HeaderTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "header_template"
+                ],
+                "summary": "Delete header templates",
+                "parameters": [
+                    {
+                        "description": "header_template id",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "header_template"
+                ],
+                "summary": "Update header templates",
+                "parameters": [
+                    {
+                        "description": "modify header template body",
+                        "name": "header_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_header_template.HeaderTemplateUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/header_template/{id}": {
+            "get": {
+                "description": "Get header templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "header_template"
+                ],
+                "summary": "Show header templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "header template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_header_template.HeaderTemplate"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logs": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Log"
+                ],
+                "summary": "get logs history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_log.Log"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ping/list": {
+            "get": {
+                "description": "test list ping",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ping"
+                ],
+                "summary": "return list ping",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ping.SwaggerListPing"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ping/test": {
+            "get": {
+                "description": "test ping",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ping"
+                ],
+                "summary": "test ping",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ping.SwaggerPing"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/": {
+            "get": {
+                "description": "Get all schedules",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Show all schedules",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_schedule.Schedule"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Create schedules",
+                "parameters": [
+                    {
+                        "description": "schedule body",
+                        "name": "schedule",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_schedule.ScheduleCreate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_schedule.Schedule"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Delete schedules",
+                "parameters": [
+                    {
+                        "description": "schedule id",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Update schedules",
+                "parameters": [
+                    {
+                        "description": "modify schedule body",
+                        "name": "schedule",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_schedule.ScheduleUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/{id}": {
+            "get": {
+                "description": "Get schedules by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Show schedules",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "schedule id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_schedule.Schedule"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/": {
+            "get": {
+                "description": "Get all tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show all tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.TaskPub"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "get task history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "task template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Success",
+                            "Failure",
+                            "Cancel"
+                        ],
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.Task"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/simple/": {
+            "get": {
+                "description": "Get all simple tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show all simple tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task.SimpleTask"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/simple/{id}": {
+            "get": {
+                "description": "Get simple task by id include history data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task.SimpleTask"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/stage_item/status/{id}": {
+            "get": {
+                "description": "Get stage item Status by task id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show stage item Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/{id}": {
+            "get": {
+                "description": "Get task by id include history data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Show task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task.Task"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel task by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "cancel task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "cancel message",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.CancelBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task_template/": {
+            "get": {
+                "description": "Get all task templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Show all task templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task_template.TaskTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Create task templates",
+                "parameters": [
+                    {
+                        "description": "task template body",
+                        "name": "task_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task_template.TaskTemplateCreate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task_template.TaskTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Delete task templates",
+                "parameters": [
+                    {
+                        "description": "task_template id",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Update task templates",
+                "parameters": [
+                    {
+                        "description": "modify task template body",
+                        "name": "task_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_task_template.TaskTemplateUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task_template/execute/{id}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "execute task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task_template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "send task body",
+                        "name": "sendTask",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task_template.SendTask"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "task id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task_template/{id}": {
+            "get": {
+                "description": "Get task templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "task_template"
+                ],
+                "summary": "Show task templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "task template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_task_template.TaskTemplate"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/time/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time"
+                ],
+                "summary": "get time history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "template_id",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "false",
+                            "true"
+                        ],
+                        "type": "string",
+                        "description": "is_time",
+                        "name": "is_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start time",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stop time",
+                        "name": "stop",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time.PublishTime"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/time_template/": {
+            "get": {
+                "description": "Get all time templates",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Show all time templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time_template.TimeTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Create time templates",
+                "parameters": [
+                    {
+                        "description": "time template body",
+                        "name": "time_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time_template.TimeTemplateCreate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time_template.TimeTemplate"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Delete time templates",
+                "parameters": [
+                    {
+                        "description": "time_template id",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Update time templates",
+                "parameters": [
+                    {
+                        "description": "modify time template body",
+                        "name": "time_template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/e_time_template.TimeTemplateUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/time_template/checkTime/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Check time templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "check time body",
+                        "name": "checkTime",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/time_template.CheckTime"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/time_template/{id}": {
+            "get": {
+                "description": "Get time templates by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "time_template"
+                ],
+                "summary": "Show time templates",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "time template id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_time_template.TimeTemplate"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "command.CancelBody": {
+            "type": "object",
+            "properties": {
+                "client_message": {
+                    "type": "string"
+                }
+            }
+        },
+        "command_template.SendCommand": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "e_command.Command": {
+            "type": "object",
+            "properties": {
+                "client_message": {
+                    "type": "string"
+                },
+                "command_data": {
+                    "$ref": "#/definitions/e_command_template.CommandTemplate"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "resp_data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "return": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "e_command_template.CommandTemplate": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "http": {
+                    "$ref": "#/definitions/e_command_template.HTTPSCommand"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "monitor": {
+                    "$ref": "#/definitions/e_command_template.Monitor"
+                },
+                "mqtt": {
+                    "$ref": "#/definitions/e_command_template.MqttCommand"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parser_return": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.ParserReturn"
+                    }
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "integer"
+                },
+                "redis": {
+                    "$ref": "#/definitions/e_command_template.RedisCommand"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visible": {
+                    "type": "boolean"
+                },
+                "websocket": {
+                    "$ref": "#/definitions/e_command_template.WebsocketCommand"
+                }
+            }
+        },
+        "e_command_template.CommandTemplateCreate": {
+            "type": "object",
+            "required": [
+                "host",
+                "name",
+                "port",
+                "protocol",
+                "timeout"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "http": {
+                    "$ref": "#/definitions/e_command_template.HTTPSCommand"
+                },
+                "monitor": {
+                    "$ref": "#/definitions/e_command_template.Monitor"
+                },
+                "mqtt": {
+                    "$ref": "#/definitions/e_command_template.MqttCommand"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parser_return": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.ParserReturn"
+                    }
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "integer"
+                },
+                "redis": {
+                    "$ref": "#/definitions/e_command_template.RedisCommand"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visible": {
+                    "type": "boolean"
+                },
+                "websocket": {
+                    "$ref": "#/definitions/e_command_template.WebsocketCommand"
+                }
+            }
+        },
+        "e_command_template.CommandTemplateUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "http": {
+                    "$ref": "#/definitions/e_command_template.HTTPSCommand"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "monitor": {
+                    "$ref": "#/definitions/e_command_template.MonitorUpdate"
+                },
+                "mqtt": {
+                    "$ref": "#/definitions/e_command_template.MqttCommand"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parser_return": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.ParserReturn"
+                    }
+                },
+                "port": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "integer"
+                },
+                "redis": {
+                    "$ref": "#/definitions/e_command_template.RedisCommand"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visible": {
+                    "type": "boolean"
+                },
+                "websocket": {
+                    "$ref": "#/definitions/e_command_template.WebsocketCommand"
+                }
+            }
+        },
+        "e_command_template.HTTPSCommand": {
+            "type": "object",
+            "properties": {
+                "authorization_type": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "body_type": {
+                    "type": "integer"
+                },
+                "header": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "method": {
+                    "type": "integer"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_command_template.MCondition": {
+            "type": "object",
+            "properties": {
+                "calculate_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "pre_logic_type": {
+                    "type": "string"
+                },
+                "search_rule": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_command_template.Monitor": {
+            "type": "object",
+            "required": [
+                "interval",
+                "status_code"
+            ],
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                },
+                "m_conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.MCondition"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_command_template.MonitorUpdate": {
+            "type": "object",
+            "required": [
+                "interval",
+                "status_code"
+            ],
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                },
+                "m_conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_command_template.MCondition"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_command_template.MqttCommand": {
+            "type": "object",
+            "required": [
+                "topic",
+                "type"
+            ],
+            "properties": {
+                "header": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "message": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "topic": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_command_template.ParserReturn": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "search_rule": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_command_template.RedisCommand": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "db": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_command_template.WebsocketCommand": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "header": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_header_template.HeaderTemplate": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_header_template.HeaderTemplateCreate": {
+            "type": "object",
+            "required": [
+                "data",
+                "name"
+            ],
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_header_template.HeaderTemplateUpdate": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_log.Log": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "type": "string"
+                },
+                "content_length": {
+                    "type": "integer"
+                },
+                "datetime": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "referer": {
+                    "type": "string"
+                },
+                "request_line": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "web_path": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_schedule.Schedule": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "task_id": {
+                    "type": "integer"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_schedule.ScheduleCreate": {
+            "type": "object",
+            "required": [
+                "name",
+                "time_data"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "task_id": {
+                    "type": "integer"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
+                }
+            }
+        },
+        "e_schedule.ScheduleUpdate": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "task_id": {
+                    "type": "integer"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
+                }
+            }
+        },
+        "e_task.FailedCommand": {
+            "type": "object",
+            "properties": {
+                "command_id": {
+                    "type": "integer"
+                },
+                "command_template_id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "e_task.SimpleStageItem": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_task.SimpleTask": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "stage_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.SimpleStageItem"
+                    }
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "template_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_task.Stage": {
+            "type": "object",
+            "properties": {
+                "execute": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.StageItem"
+                    }
+                },
+                "monitor": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.StageItem"
+                    }
+                }
+            }
+        },
+        "e_task.StageItem": {
+            "type": "object",
+            "properties": {
+                "command_id": {
+                    "type": "integer"
+                },
+                "command_template_id": {
+                    "type": "integer"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer"
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                },
+                "variable": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "e_task.Task": {
+            "type": "object",
+            "properties": {
+                "client_message": {
+                    "type": "string"
+                },
+                "failed_command": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.FailedCommand"
+                    }
+                },
+                "from": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "stages": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/e_task.Stage"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "task_data": {
+                    "$ref": "#/definitions/e_task_template.TaskTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "e_task.TaskPub": {
+            "type": "object",
+            "properties": {
+                "client_message": {
+                    "type": "string"
+                },
+                "failed_command": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task.FailedCommand"
+                    }
+                },
+                "from": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "stages": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/e_task.Stage"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "task_data": {
+                    "$ref": "#/definitions/e_task_template.TaskTemplate"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "e_task_template.ParserItem": {
+            "type": "object",
+            "properties": {
+                "from_key": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task_template.To"
+                    }
+                }
+            }
+        },
+        "e_task_template.StageItem": {
+            "type": "object",
+            "properties": {
+                "command_template": {
+                    "$ref": "#/definitions/e_command_template.CommandTemplate"
+                },
+                "command_template_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parser": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task_template.ParserItem"
+                    }
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_task_template.StageItemCreate": {
+            "type": "object",
+            "required": [
+                "mode",
+                "name",
+                "stage_number"
+            ],
+            "properties": {
+                "command_template_id": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_task_template.StageItemUpdate": {
+            "type": "object",
+            "required": [
+                "mode",
+                "name",
+                "stage_number"
+            ],
+            "properties": {
+                "command_template_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parser": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "stage_number": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_task_template.TaskTemplate": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stage_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task_template.StageItem"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "e_task_template.TaskTemplateCreate": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task_template.StageItemCreate"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "e_task_template.TaskTemplateUpdate": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/e_task_template.StageItemUpdate"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "e_task_template.To": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
+        "e_time.PublishTime": {
+            "type": "object",
+            "properties": {
+                "is_time": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "e_time_data.TimeDatum": {
+            "type": "object",
+            "properties": {
+                "condition_type": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "interval_seconds": {
+                    "type": "integer"
+                },
+                "repeat_type": {
+                    "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "t_condition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_time_data.TimeDatumCreate": {
+            "type": "object",
+            "required": [
+                "end_time",
+                "start_date",
+                "start_time"
+            ],
+            "properties": {
+                "condition_type": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "interval_seconds": {
+                    "type": "integer"
+                },
+                "repeat_type": {
+                    "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "t_condition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_time_data.TimeDatumUpdate": {
+            "type": "object",
+            "required": [
+                "end_time",
+                "repeat_type",
+                "start_date",
+                "start_time",
+                "t_condition"
+            ],
+            "properties": {
+                "condition_type": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "interval_seconds": {
+                    "type": "integer"
+                },
+                "repeat_type": {
+                    "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "t_condition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "e_time_template.TimeTemplate": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatum"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "e_time_template.TimeTemplateCreate": {
+            "type": "object",
+            "required": [
+                "name",
+                "time_data"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatumCreate"
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "e_time_template.TimeTemplateUpdate": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "time_data": {
+                    "$ref": "#/definitions/e_time_data.TimeDatumUpdate"
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ping.SwaggerListPing": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "name": {
+                    "type": "string",
+                    "example": "wilson"
+                },
+                "time": {
+                    "type": "string",
+                    "example": "2023-09-04T03:05:50.692675318+08:00"
+                }
+            }
+        },
+        "ping.SwaggerPing": {
+            "type": "object",
+            "properties": {
+                "example": {
+                    "type": "string",
+                    "example": "asdfasdf"
+                }
+            }
+        },
+        "task.CancelBody": {
+            "type": "object",
+            "properties": {
+                "client_message": {
+                    "type": "string"
+                }
+            }
+        },
+        "task_template.SendTask": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string",
+                    "example": "Wilson"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[task execute]"
+                    ]
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "time_template.CheckTime": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "trigger_account": {
+                    "type": "string"
+                },
+                "trigger_from": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
 }
