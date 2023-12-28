@@ -177,6 +177,9 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	ctx, cancel := context.WithTimeout(ctx,
 		time.Duration(com.CommandData.Timeout)*time.Millisecond)
 
+	// add default variables to command
+	com = addDefaultVariables(com)
+
 	com.Status = e_command.Process
 	com.CancelFunc = cancel
 	// write command

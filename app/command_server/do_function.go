@@ -180,13 +180,15 @@ func monitorData(com e_command.Command, m e_command_template.Monitor) (err *util
 }
 
 func parserData(com e_command.Command) map[string]string {
-	result := make(map[string]string)
+	parserReturn := make(map[string]string)
 	for _, pr := range com.CommandData.ParserReturn {
 		key, _ := util.ChangeStringVariables(pr.Key, com.Variables)
 		searchRule, _ := util.ChangeStringVariables(pr.SearchRule, com.Variables)
-		result[key] = fmt.Sprintf("%v", stringAnalyze(com.RespData, searchRule).valueResult)
+		parserReturn[key] = fmt.Sprintf("%v", stringAnalyze(com.RespData, searchRule).valueResult)
 	}
-	return result
+	// add default parser data
+	addDefaultParserReturn(parserReturn, com)
+	return parserReturn
 }
 
 func stringAnalyze(data []byte, rule string) (result analyzeResult) {

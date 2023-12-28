@@ -1,0 +1,12 @@
+{
+  "data": {
+    "template_id": 1,
+    "trigger_account": "system",
+    "trigger_from": [],
+    "variables": {
+      "-1": {
+        "alarm_event_id": 2233
+      }
+    }
+  }
+}

@@ -1,10 +1,29 @@
+# Schedule_Task_Command_Time  version 2.10.0
+
+### Command server
+- add default variable to command
+  - key: __command_id__
+- add default parser return 
+  - key: __status_code__
+  - key: __command_id__
+  - key: __Status__
+
+### Task server
+- can send global variables to task(set int as -1)
+  - ex: variables:{"-1":{"global_event_id": 5487}}
+- add default global variables
+  - key: __task_id__
+
+------------------------------------------------------------------
+
+
 # Schedule_Task_Command_Time  version 2.9.1
 
 ### all API
- - add log write to influxDB
+- add log write to influxDB
 
 ### log API
- - add get historical logs
+- add get historical logs
 
 ------------------------------------------------------------------
 
