@@ -1,6 +1,7 @@
 package rdb
 
 import (
+	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"path/filepath"
@@ -17,13 +18,42 @@ func init() {
 	rootPath = filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(b))))
 }
 
-func NewRedis(yamlName string) *redis.Client {
-	redisConfig := config.NewConfig[config.RedisConfig](rootPath, "env", yamlName)
+func newRedis(redisConfig config.RedisConfig) *redis.Client {
 	dsn := fmt.Sprintf("redis://%s:%s@%s:%s/%s",
 		redisConfig.User, redisConfig.Password, redisConfig.Host, redisConfig.Port, redisConfig.DB)
 	opt, err := redis.ParseURL(dsn)
 	if err != nil {
 		panic(err)
 	}
-	return redis.NewClient(opt)
+	rdb := redis.NewClient(opt)
+	_, err = rdb.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("redis connect success")
+	return rdb
+}
+
+func newClusterRedis(redisConfig config.RedisConfig) *redis.ClusterClient {
+	address := make([]string, 0, len(redisConfig.ClusterPorts))
+	for _, port := range redisConfig.ClusterPorts {
+		address = append(address, fmt.Sprintf("%s:%s", redisConfig.ClusterHost, port))
+	}
+	rdb := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs: address,
+	})
+	_, err := rdb.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("redis cluster connect success")
+	return rdb
+}
+
+func NewClient(yamlName string) redis.UniversalClient {
+	redisConfig := config.NewConfig[config.RedisConfig](rootPath, "env", yamlName)
+	if redisConfig.IsCluster {
+		return newClusterRedis(redisConfig)
+	}
+	return newRedis(redisConfig)
 }

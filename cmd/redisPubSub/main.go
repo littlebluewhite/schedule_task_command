@@ -13,7 +13,7 @@ import (
 
 func main() {
 	w := &sync.WaitGroup{}
-	r := rdb.NewRedis("redis")
+	r := rdb.NewClient("redis")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Add(2)
@@ -30,7 +30,7 @@ func main() {
 	fmt.Println("ok")
 }
 
-func pub(ctx context.Context, r *redis.Client) {
+func pub(ctx context.Context, r redis.UniversalClient) {
 	c := time_template.SendTime{
 		TemplateId: 2,
 		Token:      "test",
@@ -45,7 +45,7 @@ func pub(ctx context.Context, r *redis.Client) {
 	}
 }
 
-func sub(ctx context.Context, r *redis.Client) {
+func sub(ctx context.Context, r redis.UniversalClient) {
 	pubsub := r.Subscribe(ctx, "timeRec")
 	msg, err := pubsub.ReceiveMessage(ctx)
 	if err != nil {

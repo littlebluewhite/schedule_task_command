@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	r := rdb.NewRedis("redis")
+	r := rdb.NewClient("redis")
 	ctx := context.Background()
 	if _, err := r.Pipelined(ctx, func(rdb redis.Pipeliner) error {
 		rdb.HSet(ctx, "key", "str1", "hello")

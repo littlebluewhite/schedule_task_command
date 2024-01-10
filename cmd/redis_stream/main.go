@@ -57,7 +57,7 @@ func main() {
 	//time.Sleep(10 * time.Second)
 }
 
-func add(rdb *redis.Client) string {
+func add(rdb redis.UniversalClient) string {
 	ctx := context.Background()
 	r, err := rdb.XAdd(ctx, &redis.XAddArgs{
 		Stream: "AlarmAPIModuleReceiver",
@@ -82,14 +82,14 @@ func add(rdb *redis.Client) string {
 	return r
 }
 
-func del(rdb *redis.Client, id string) {
+func del(rdb redis.UniversalClient, id string) {
 	err := rdb.XDel(context.Background(), "my-stream", id).Err()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func trim(rdb *redis.Client) {
+func trim(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	err := rdb.XTrimMaxLen(ctx, "my-stream", 2).Err()
 	if err != nil {
@@ -97,7 +97,7 @@ func trim(rdb *redis.Client) {
 	}
 }
 
-func createGroup(rdb *redis.Client, start string) {
+func createGroup(rdb redis.UniversalClient, start string) {
 	ctx := context.Background()
 	err := rdb.XGroupCreate(ctx, "my-stream", "schedule", start).Err()
 	if err != nil {
@@ -105,7 +105,7 @@ func createGroup(rdb *redis.Client, start string) {
 	}
 }
 
-func groupR(rdb *redis.Client) {
+func groupR(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	for {
 		re, err := rdb.XReadGroup(ctx, &redis.XReadGroupArgs{
@@ -130,7 +130,7 @@ func groupR(rdb *redis.Client) {
 	}
 }
 
-func destroyGroup(rdb *redis.Client) {
+func destroyGroup(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	r, err := rdb.XGroupDestroy(ctx, "my-stream", "schedule").Result()
 	if err != nil {
@@ -139,7 +139,7 @@ func destroyGroup(rdb *redis.Client) {
 	fmt.Println(r)
 }
 
-func pend(rdb *redis.Client) {
+func pend(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	r, err := rdb.XPending(ctx, "my-stream", "schedule").Result()
 	if err != nil {
@@ -148,7 +148,7 @@ func pend(rdb *redis.Client) {
 	fmt.Println(r)
 }
 
-func groupSetID(rdb *redis.Client) {
+func groupSetID(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	r, err := rdb.XGroupSetID(ctx, "my-stream", "schedule", "1698649259746-0").Result()
 	if err != nil {
@@ -157,7 +157,7 @@ func groupSetID(rdb *redis.Client) {
 	fmt.Println(r)
 }
 
-func infoGroup(rdb *redis.Client) {
+func infoGroup(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	r, err := rdb.XInfoGroups(ctx, "my-stream").Result()
 	if err != nil {
@@ -166,7 +166,7 @@ func infoGroup(rdb *redis.Client) {
 	fmt.Printf("%+v\n", r)
 }
 
-func infoConsumer(rdb *redis.Client) {
+func infoConsumer(rdb redis.UniversalClient) {
 	ctx := context.Background()
 	r, err := rdb.XInfoConsumers(ctx, "my-stream", "schedule").Result()
 	if err != nil {

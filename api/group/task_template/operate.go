@@ -22,7 +22,7 @@ import (
 type Operate struct {
 	db    *gorm.DB
 	cache *cache.Cache
-	rdb   *redis.Client
+	rdb   redis.UniversalClient
 	taskS api.TaskServer
 }
 

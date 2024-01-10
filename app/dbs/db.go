@@ -19,7 +19,7 @@ type Dbs interface {
 	initIdb(log logFile.LogFile)
 	GetSql() *gorm.DB
 	GetCache() *cache.Cache
-	GetRdb() *redis.Client
+	GetRdb() redis.UniversalClient
 	GetIdb() HistoryDB
 }
 
@@ -32,7 +32,7 @@ type HistoryDB interface {
 type dbs struct {
 	Sql   *gorm.DB
 	Cache *cache.Cache
-	Rdb   *redis.Client
+	Rdb   redis.UniversalClient
 	Idb   HistoryDB
 }
 
@@ -78,7 +78,7 @@ func (d *dbs) initCache() {
 }
 
 func (d *dbs) initRdb(log logFile.LogFile) {
-	d.Rdb = rdb.NewRedis("redis")
+	d.Rdb = rdb.NewClient("redis")
 	log.Info().Println("Redis Connection successful")
 }
 
@@ -95,7 +95,7 @@ func (d *dbs) GetCache() *cache.Cache {
 	return d.Cache
 }
 
-func (d *dbs) GetRdb() *redis.Client {
+func (d *dbs) GetRdb() redis.UniversalClient {
 	return d.Rdb
 }
 

@@ -17,11 +17,14 @@ type ServerConfig struct {
 }
 
 type RedisConfig struct {
-	Host     string `mapstructure:"REDIS_HOST"`
-	Port     string `mapstructure:"REDIS_PORT"`
-	User     string `mapstructure:"REDIS_USER"`
-	Password string `mapstructure:"REDIS_PASSWORD"`
-	DB       string `mapstructure:"REDIS_DB"`
+	Host         string   `mapstructure:"REDIS_HOST"`
+	Port         string   `mapstructure:"REDIS_PORT"`
+	User         string   `mapstructure:"REDIS_USER"`
+	Password     string   `mapstructure:"REDIS_PASSWORD"`
+	DB           string   `mapstructure:"REDIS_DB"`
+	IsCluster    bool     `mapstructure:"REDIS_IS_CLUSTER"`
+	ClusterHost  string   `mapstructure:"REDIS_CLUSTER_HOST"`
+	ClusterPorts []string `mapstructure:"REDIS_CLUSTER_PORT"`
 }
 
 type InfluxdbConfig struct {

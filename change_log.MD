@@ -1,3 +1,10 @@
+# Schedule_Task_Command_Time  version 2.12.0
+
+### redis add cluster connection
+
+------------------------------------------------------------------
+
+
 # Schedule_Task_Command_Time  version 2.11.0
 
 ### Websocket hub
