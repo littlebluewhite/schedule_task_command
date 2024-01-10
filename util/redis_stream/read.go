@@ -8,13 +8,13 @@ import (
 )
 
 type RedisStream struct {
-	rdb        *redis.Client
+	rdb        redis.UniversalClient
 	streamName string
 	groupName  string
 	l          logFile.LogFile
 }
 
-func NewStreamRead(rdb *redis.Client, streamName string, groupName string, l logFile.LogFile) *RedisStream {
+func NewStreamRead(rdb redis.UniversalClient, streamName string, groupName string, l logFile.LogFile) *RedisStream {
 	return &RedisStream{
 		rdb:        rdb,
 		streamName: streamName,

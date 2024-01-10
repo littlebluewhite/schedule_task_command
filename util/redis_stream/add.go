@@ -5,7 +5,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func StreamAdd(ctx context.Context, rdb *redis.Client,
+func StreamAdd(ctx context.Context, rdb redis.UniversalClient,
 	streamName string, values map[string]interface{}) error {
 	_, err := rdb.XAdd(ctx, &redis.XAddArgs{
 		Stream: streamName,
