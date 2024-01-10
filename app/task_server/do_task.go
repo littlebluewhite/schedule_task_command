@@ -106,6 +106,7 @@ func getTaskStage(stages []e_task_template.StageItem) (gsr getStagesResult) {
 					CommandTemplateId: stages[i].CommandTemplateID,
 				},
 			}
+		case e_task_template.NoneMode:
 		}
 	}
 	sort.Slice(gsr.sns, func(i, j int) bool {

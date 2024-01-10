@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gofiber/contrib/websocket"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_module"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_time"
 	"time"
@@ -37,7 +38,8 @@ type ScheduleSer interface {
 	GetTaskServer() TaskServer
 }
 
-type WebsocketManager interface {
-	Register(d int, client *websocket.Conn)
-	Unregister(d int, client *websocket.Conn)
+type HubManager interface {
+	RegisterHub(module e_module.Module)
+	Broadcast(module e_module.Module, message []byte)
+	WsConnect(module e_module.Module, conn *websocket.Conn) error
 }

@@ -1,6 +1,7 @@
 package command_server
 
 import (
+	"schedule_task_command/entry/e_module"
 	"schedule_task_command/util"
 	"sync"
 )
@@ -9,8 +10,8 @@ type chs struct {
 	mu *sync.RWMutex
 }
 
-type websocketManager interface {
-	Broadcast(d int, message []byte)
+type HubManager interface {
+	Broadcast(module e_module.Module, message []byte)
 }
 
 type httpHeader struct {
@@ -48,5 +49,4 @@ var CommandCannotCancel = util.MyErr("command cannot be canceled")
 var HeaderVariables = util.MyErr("header use variables failed")
 var RequestErr = util.MyErr("http request failed")
 var URLVariables = util.MyErr("url use variables failed")
-var BodyVariables = util.MyErr("body use variables failed")
 var CommandTemplateVariable = util.MyErr("command template variable failed to format")

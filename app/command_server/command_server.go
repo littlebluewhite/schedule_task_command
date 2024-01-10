@@ -10,6 +10,7 @@ import (
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_module"
 	"schedule_task_command/util/logFile"
 	"schedule_task_command/util/redis_stream"
 	"strconv"
@@ -20,7 +21,7 @@ import (
 
 type CommandServer struct {
 	dbs          dbs.Dbs
-	wm           websocketManager
+	hm           HubManager
 	l            logFile.LogFile
 	c            map[uint64]e_command.Command
 	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
@@ -28,13 +29,13 @@ type CommandServer struct {
 	chs          chs
 }
 
-func NewCommandServer(dbs dbs.Dbs, wm websocketManager) *CommandServer {
+func NewCommandServer(dbs dbs.Dbs, wh HubManager) *CommandServer {
 	l := logFile.NewLogFile("app", "command_server")
 	c := make(map[uint64]e_command.Command)
 	mu := new(sync.RWMutex)
 	return &CommandServer{
 		dbs: dbs,
-		wm:  wm,
+		hm:  wh,
 		l:   l,
 		c:   c,
 		chs: chs{
@@ -335,7 +336,7 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err 
 
 func (c *CommandServer) sendWebsocket(com e_command.Command) {
 	cb, _ := json.Marshal(e_command.ToPub(com))
-	c.wm.Broadcast(1, cb)
+	c.hm.Broadcast(e_module.Command, cb)
 }
 
 func (c *CommandServer) writeCommand(com e_command.Command) {

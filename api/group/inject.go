@@ -23,7 +23,7 @@ import (
 	"schedule_task_command/util/logFile"
 )
 
-func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketManager) {
+func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) {
 	// Middleware
 	log := logFile.NewLogFile("api", "group.log")
 	fiberLog := getFiberLogFile(log)
@@ -52,7 +52,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketMan
 	Api.Get("/logs", h.GetHistory)
 
 	// create new group
-	g := NewAPIGroup(Api, dbs, ss, wm)
+	g := NewAPIGroup(Api, dbs, ss, hm)
 
 	// model registration
 	ping.RegisterRouter(g)

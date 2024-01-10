@@ -31,26 +31,6 @@ func Format(tt []model.TimeTemplate) []TimeTemplate {
 	return result
 }
 
-func Model2Entry(t model.TimeTemplate) TimeTemplate {
-	tt := TimeTemplate{
-		ID:        t.ID,
-		Name:      t.Name,
-		UpdatedAt: t.UpdatedAt,
-		CreatedAt: t.CreatedAt,
-		TimeData: e_time_data.TimeDatum{
-			RepeatType:      e_time_data.S2RepeatType(t.TimeData.RepeatType),
-			StartDate:       t.TimeData.StartDate,
-			EndDate:         t.TimeData.EndDate,
-			StartTime:       string(t.TimeData.StartTime),
-			EndTime:         string(t.TimeData.EndTime),
-			IntervalSeconds: t.TimeData.IntervalSeconds,
-			ConditionType:   e_time_data.S2ConditionType(t.TimeData.ConditionType),
-			TCondition:      t.TimeData.TCondition,
-		},
-	}
-	return tt
-}
-
 func CreateConvert(c []*TimeTemplateCreate) []*model.TimeTemplate {
 	result := make([]*model.TimeTemplate, 0, len(c))
 	for _, item := range c {

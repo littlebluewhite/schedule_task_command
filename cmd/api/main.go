@@ -12,7 +12,7 @@ import (
 	"schedule_task_command/app/schedule_server"
 	"schedule_task_command/app/task_server"
 	"schedule_task_command/app/time_server"
-	"schedule_task_command/app/websocket_manager"
+	"schedule_task_command/app/websocket_hub"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
@@ -32,7 +32,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.10.0
+// @version         2.11.0
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -60,13 +60,12 @@ func main() {
 	}()
 
 	// create websocket manager
-	wm := websocket_manager.NewWebsocketManager()
-	// run websocket manager
-	go wm.Run()
+	hm := websocket_hub.NewHubManager()
+
 	// create servers
-	commandServer := command_server.NewCommandServer(DBS, wm)
+	commandServer := command_server.NewCommandServer(DBS, hm)
 	// task server need commandServer
-	taskServer := task_server.NewTaskServer[api.CommandServer](DBS, commandServer, wm)
+	taskServer := task_server.NewTaskServer[api.CommandServer](DBS, commandServer, hm)
 	timeServer := time_server.NewTimeServer(DBS)
 	// schedule server need task server and time server
 	scheduleServer := schedule_server.NewScheduleServer[api.TaskServer, api.TimeServer](DBS, taskServer, timeServer)
@@ -92,7 +91,7 @@ func main() {
 		},
 	)
 
-	group.Inject(apiServer, DBS, scheduleServer, wm)
+	group.Inject(apiServer, DBS, scheduleServer, hm)
 
 	// for api server shout down gracefully
 	serverShutdown := make(chan struct{})

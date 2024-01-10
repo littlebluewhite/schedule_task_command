@@ -2,6 +2,7 @@ package task_server
 
 import (
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_module"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
@@ -12,8 +13,8 @@ type chs struct {
 	mu *sync.RWMutex
 }
 
-type websocketManager interface {
-	Broadcast(d int, message []byte)
+type hubManager interface {
+	Broadcast(module e_module.Module, message []byte)
 }
 
 type getStagesResult struct {

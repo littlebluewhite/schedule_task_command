@@ -86,7 +86,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				isTime, _ := s.timeS.Execute(pt)
 				if isTime {
 					// Task execute
-					s.l.Info().Printf("id: %d execute", scheduleId)
+					s.l.Info().Printf("id: %s execute", scheduleId)
 					st := e_task_template.SendTaskTemplate{
 						TemplateId:     int(schedule.TaskTemplateID),
 						TriggerFrom:    triggerFrom,
