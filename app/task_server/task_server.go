@@ -10,6 +10,7 @@ import (
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
+	"schedule_task_command/entry/e_module"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util/logFile"
 	"schedule_task_command/util/redis_stream"
@@ -26,7 +27,7 @@ type commandServer interface {
 
 type TaskServer[T any] struct {
 	dbs          dbs.Dbs
-	wm           websocketManager
+	hm           hubManager
 	l            logFile.LogFile
 	t            map[uint64]e_task.Task
 	cs           commandServer
@@ -35,13 +36,13 @@ type TaskServer[T any] struct {
 	chs          chs
 }
 
-func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer, wm websocketManager) *TaskServer[T] {
+func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer, wm hubManager) *TaskServer[T] {
 	l := logFile.NewLogFile("app", "task_server")
 	t := make(map[uint64]e_task.Task)
 	mu := new(sync.RWMutex)
 	return &TaskServer[T]{
 		dbs: dbs,
-		wm:  wm,
+		hm:  wm,
 		l:   l,
 		t:   t,
 		cs:  cs,
@@ -368,7 +369,7 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 
 func (t *TaskServer[T]) sendWebsocket(task e_task.Task) {
 	tb, _ := json.Marshal(e_task.ToPub(task))
-	t.wm.Broadcast(2, tb)
+	t.hm.Broadcast(e_module.Task, tb)
 }
 
 func (t *TaskServer[T]) GetCommandServer() T {

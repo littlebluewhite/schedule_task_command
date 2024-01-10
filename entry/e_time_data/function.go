@@ -129,6 +129,8 @@ func (td *TimeDatum) checkMonthly(t time.Time) (result bool) {
 		if weekCount == 3 {
 			result = util.Contains[int]([]int{int(t.Weekday())}, conditions)
 		}
+	case weeklyDay:
+	case conditionNone:
 	}
 	return
 }

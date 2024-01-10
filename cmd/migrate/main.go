@@ -4,7 +4,7 @@ import (
 	"flag"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	config "schedule_task_command/util/config"
+	"schedule_task_command/util/config"
 	"schedule_task_command/util/migrate"
 )
 

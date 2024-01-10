@@ -1,9 +1,18 @@
+# Schedule_Task_Command_Time  version 2.11.0
+
+### Websocket hub
+- add command websocket
+- improve websocket hub manager
+
+------------------------------------------------------------------
+
+
 # Schedule_Task_Command_Time  version 2.10.0
 
 ### Command server
 - add default variable to command
   - key: __command_id__
-- add default parser return 
+- add default parser return
   - key: __status_code__
   - key: __command_id__
   - key: __Status__

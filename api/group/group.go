@@ -10,15 +10,15 @@ type Group struct {
 	app fiber.Router
 	dbs dbs.Dbs
 	ss  api.ScheduleSer
-	wm  api.WebsocketManager
+	hm  api.HubManager
 }
 
-func NewAPIGroup(app fiber.Router, dbs dbs.Dbs, ss api.ScheduleSer, wm api.WebsocketManager) *Group {
+func NewAPIGroup(app fiber.Router, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) *Group {
 	return &Group{
 		app: app,
 		dbs: dbs,
 		ss:  ss,
-		wm:  wm,
+		hm:  hm,
 	}
 }
 
@@ -34,6 +34,6 @@ func (g *Group) GetScheduleServer() api.ScheduleSer {
 	return g.ss
 }
 
-func (g *Group) GetWebsocketManager() api.WebsocketManager {
-	return g.wm
+func (g *Group) GetWebsocketHub() api.HubManager {
+	return g.hm
 }
