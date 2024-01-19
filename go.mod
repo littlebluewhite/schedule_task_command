@@ -17,14 +17,14 @@ require (
 	github.com/swaggo/swag v1.16.2
 	gorm.io/datatypes v1.2.0
 	gorm.io/driver/mysql v1.5.2
-	gorm.io/gen v0.3.24
+	gorm.io/gen v0.3.25
 	gorm.io/gorm v1.25.5
 	gorm.io/plugin/dbresolver v1.5.0
 )
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
