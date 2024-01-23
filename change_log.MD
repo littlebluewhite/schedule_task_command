@@ -1,4 +1,4 @@
-# Schedule_Task_Command_Time  version 2.12.1
+# Schedule_Task_Command_Time  version 2.12.2
 
 ### redis add cluster connection
 
