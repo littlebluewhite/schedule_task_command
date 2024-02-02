@@ -7,6 +7,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/app/dbs/influxdb"
 	"schedule_task_command/dal/model"
+	"schedule_task_command/util/config"
 	"time"
 )
 
@@ -14,7 +15,14 @@ func main() {
 	d := model.CommandTemplate{ID: 1, Name: "aaa"}
 	j, _ := json.Marshal(d)
 	ctx := context.Background()
-	idb := influxdb.NewInfluxdb("influxdb")
+	influxdbConfig := config.InfluxdbConfig{
+		Host:   "127.0.0.1",
+		Port:   "8086",
+		Org:    "my-org",
+		Token:  "my-super-influxdb-auth-token",
+		Bucket: "schedule",
+	}
+	idb := influxdb.NewInfluxdb(influxdbConfig)
 	defer idb.Close()
 	p := influxdb2.NewPoint("schedule_history",
 		map[string]string{"id": "2", "name": "alarm SOP", "user": "wilson"},
@@ -43,7 +51,7 @@ func main() {
 			v := result.Record().Value()
 			var c model.CommandTemplate
 			if result.Record().Field() == "data" {
-				json.Unmarshal([]byte(v.(string)), &c)
+				_ = json.Unmarshal([]byte(v.(string)), &c)
 				fmt.Println(c)
 			}
 			fmt.Printf("value: %v\ntype: %T\n", v, v)

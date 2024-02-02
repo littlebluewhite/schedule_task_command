@@ -1,3 +1,23 @@
+# Schedule_Task_Command_Time  version 2.13.0
+
+### General
+- config file update
+- util config function update
+
+### Logs
+- read api update
+- write api add parameters
+  - account
+  - ip
+  - method
+  - module
+  - status_code
+
+### all server
+- add locals variables
+------------------------------------------------------------------
+
+
 # Schedule_Task_Command_Time  version 2.12.3
 
 ### redis add cluster connection
@@ -12,7 +32,6 @@
 ### Websocket hub
 - add command websocket
 - improve websocket hub manager
-
 ------------------------------------------------------------------
 
 
@@ -31,7 +50,6 @@
   - ex: variables:{"-1":{"global_event_id": 5487}}
 - add default global variables
   - key: __task_id__
-
 ------------------------------------------------------------------
 
 
@@ -42,7 +60,6 @@
 
 ### log API
 - add get historical logs
-
 ------------------------------------------------------------------
 
 
@@ -69,7 +86,6 @@
 
 ### Time API
 - modify history data, add query id
-
 ------------------------------------------------------------------
 
 
@@ -84,7 +100,6 @@
 
 ### Command Server
 - parser return data
-
 ------------------------------------------------------------------
 ## 下一個版本預計完成
 
@@ -128,7 +143,6 @@
 
 ### Time Server
 - redis topic 修改傳入格式
-
 ------------------------------------------------------------------
 ## 下一個版本預計完成
 
@@ -143,7 +157,6 @@
 - 新增變數
 - DB command_template新增variable欄位
 - command_template add Patch method 修改command API
-
 ------------------------------------------------------------------
 ## 下一個版本預計完成
  - cancel task 新增message
@@ -171,7 +184,6 @@
 - 歷史Command api
 - 即時Command api
 - Redis topic觸發功能
-
 ------------------------------------------------------------------
 ## 下一個版本預計完成
 Task 增加變數

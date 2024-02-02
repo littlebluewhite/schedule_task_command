@@ -9,6 +9,7 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/entry/e_log"
+	"strconv"
 	"time"
 )
 
@@ -29,9 +30,19 @@ func NewOperate(dbs dbs.Dbs) *Operate {
 }
 
 func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
+	// write log
 	ctx := context.Background()
 	now := time.Now()
 	response := c.Response()
+
+	var module string
+	switch c.Locals("Module").(type) {
+	case string:
+		module = c.Locals("Module").(string)
+	case nil:
+		module = ""
+	}
+
 	l := e_log.Log{
 		Timestamp:     float64(now.UnixMilli()) / 1000000,
 		Account:       c.Get("Account"),
@@ -39,7 +50,9 @@ func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
 		Datetime:      now,
 		IP:            c.IP(),
 		Referer:       c.Get("Referer"),
-		RequestLine:   fmt.Sprintf("%s %s", c.Method(), c.OriginalURL()),
+		ApiUrl:        c.OriginalURL(),
+		Method:        c.Method(),
+		Module:        module,
 		StatusCode:    response.StatusCode(),
 		Token:         c.Get("Authorization"),
 		UserAgent:     c.Get("User-Agent"),
@@ -50,7 +63,13 @@ func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
 		return
 	}
 	p := influxdb2.NewPoint("log",
-		map[string]string{},
+		map[string]string{
+			"account":     l.Account,
+			"ip":          l.IP,
+			"method":      l.Method,
+			"module":      l.Module,
+			"status_code": strconv.FormatInt(int64(l.StatusCode), 10),
+		},
 		map[string]interface{}{"data": jL},
 		now,
 	)
@@ -60,17 +79,42 @@ func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
 	return
 }
 
-func (o *Operate) ReadLog(start, stop string) (logs []e_log.Log, err error) {
+func (o *Operate) ReadLog(start, stop, account, ip, method, module, statusCode string) (logs []e_log.Log, err error) {
 	ctx := context.Background()
 	stopValue := ""
 	if stop != "" {
 		stopValue = fmt.Sprintf(", stop: %s", stop)
 	}
+	accountValue := ""
+	if account != "" {
+		accountValue = fmt.Sprintf(`|> filter(fn: (r) => r.account == "%s")`, account)
+	}
+	ipValue := ""
+	if ip != "" {
+		ipValue = fmt.Sprintf(`|> filter(fn: (r) => r.ip == "%s")`, ip)
+	}
+	methodValue := ""
+	if method != "" {
+		methodValue = fmt.Sprintf(`|> filter(fn: (r) => r.method == "%s")`, method)
+	}
+	moduleValue := ""
+	if module != "" {
+		moduleValue = fmt.Sprintf(`|> filter(fn: (r) => r.module == "%s")`, module)
+	}
+	statusCodeValue := ""
+	if statusCode != "" {
+		statusCodeValue = fmt.Sprintf(`|> filter(fn: (r) => r.status_code == "%s")`, statusCode)
+	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
 |> filter(fn: (r) => r._measurement == "log")
 |> filter(fn: (r) => r._field == "data")
-`, start, stopValue)
+%s
+%s
+%s
+%s
+%s
+`, start, stopValue, accountValue, ipValue, methodValue, moduleValue, statusCodeValue)
 	result, err := o.idb.Querier().Query(ctx, stmt)
 	if err == nil {
 		for result.Next() {

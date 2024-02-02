@@ -546,6 +546,43 @@ const docTemplate = `{
                         "description": "stop time",
                         "name": "stop",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "account",
+                        "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ip",
+                        "name": "ip",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "GET",
+                            "POST",
+                            "PATCH",
+                            "PUT",
+                            "DELETE"
+                        ],
+                        "type": "string",
+                        "description": "method",
+                        "name": "method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "module",
+                        "name": "module",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status_code",
+                        "name": "status_code",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1986,6 +2023,9 @@ const docTemplate = `{
                 "account": {
                     "type": "string"
                 },
+                "api_url": {
+                    "type": "string"
+                },
                 "content_length": {
                     "type": "integer"
                 },
@@ -1995,10 +2035,13 @@ const docTemplate = `{
                 "ip": {
                     "type": "string"
                 },
-                "referer": {
+                "method": {
                     "type": "string"
                 },
-                "request_line": {
+                "module": {
+                    "type": "string"
+                },
+                "referer": {
                     "type": "string"
                 },
                 "status_code": {
@@ -2895,7 +2938,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.12.3",
+	Version:          "2.13.0",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

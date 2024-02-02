@@ -18,6 +18,11 @@ func RegisterRouter(g group) {
 
 	ct := app.Group("/command_template")
 
+	ct.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "command_server-command_template")
+		return c.Next()
+	})
+
 	// subscribe to redis
 	go func() {
 		rdbSub(o, log)

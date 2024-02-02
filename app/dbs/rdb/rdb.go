@@ -4,23 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"path/filepath"
-	"runtime"
 	"schedule_task_command/util/config"
 )
 
-var (
-	rootPath string
-)
-
-func init() {
-	_, b, _, _ := runtime.Caller(0)
-	rootPath = filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(b))))
-}
-
 func newRedis(redisConfig config.RedisConfig) *redis.Client {
 	dsn := fmt.Sprintf("redis://%s:%s@%s:%s/%s",
-		redisConfig.User, redisConfig.Password, redisConfig.Host, redisConfig.Port, redisConfig.DB)
+		redisConfig.User, redisConfig.Password, redisConfig.Host, redisConfig.Ports[0], redisConfig.DB)
 	opt, err := redis.ParseURL(dsn)
 	if err != nil {
 		panic(err)
@@ -35,9 +24,9 @@ func newRedis(redisConfig config.RedisConfig) *redis.Client {
 }
 
 func newClusterRedis(redisConfig config.RedisConfig) *redis.ClusterClient {
-	address := make([]string, 0, len(redisConfig.ClusterPorts))
-	for _, port := range redisConfig.ClusterPorts {
-		address = append(address, fmt.Sprintf("%s:%s", redisConfig.ClusterHost, port))
+	address := make([]string, 0, len(redisConfig.Ports))
+	for _, port := range redisConfig.Ports {
+		address = append(address, fmt.Sprintf("%s:%s", redisConfig.Host, port))
 	}
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs: address,
@@ -50,10 +39,9 @@ func newClusterRedis(redisConfig config.RedisConfig) *redis.ClusterClient {
 	return rdb
 }
 
-func NewClient(yamlName string) redis.UniversalClient {
-	redisConfig := config.NewConfig[config.RedisConfig](rootPath, "env", yamlName)
-	if redisConfig.IsCluster {
-		return newClusterRedis(redisConfig)
+func NewClient(config config.RedisConfig) redis.UniversalClient {
+	if config.IsCluster {
+		return newClusterRedis(config)
 	}
-	return newRedis(redisConfig)
+	return newRedis(config)
 }

@@ -6,11 +6,19 @@ import (
 	"github.com/goccy/go-json"
 	"schedule_task_command/app/dbs/influxdb"
 	"schedule_task_command/entry/e_time"
+	"schedule_task_command/util/config"
 )
 
 func main() {
 	ctx := context.Background()
-	idb := influxdb.NewInfluxdb("influxdb")
+	influxdbConfig := config.InfluxdbConfig{
+		Host:   "127.0.0.1",
+		Port:   "8086",
+		Org:    "my-org",
+		Token:  "my-super-influxdb-auth-token",
+		Bucket: "schedule",
+	}
+	idb := influxdb.NewInfluxdb(influxdbConfig)
 	defer idb.Close()
 	ht := make([]e_time.PublishTime, 0, 20)
 	start := "-8d"

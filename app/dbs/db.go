@@ -8,15 +8,16 @@ import (
 	"schedule_task_command/app/dbs/influxdb"
 	"schedule_task_command/app/dbs/rdb"
 	"schedule_task_command/app/dbs/sql"
+	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
 	"time"
 )
 
 type Dbs interface {
-	initSql(log logFile.LogFile)
+	initSql(log logFile.LogFile, Config config.SQLConfig)
 	initCache()
-	initRdb(log logFile.LogFile)
-	initIdb(log logFile.LogFile)
+	initRdb(log logFile.LogFile, config config.RedisConfig)
+	initIdb(log logFile.LogFile, Config config.InfluxdbConfig)
 	GetSql() *gorm.DB
 	GetCache() *cache.Cache
 	GetRdb() redis.UniversalClient
@@ -36,22 +37,22 @@ type dbs struct {
 	Idb   HistoryDB
 }
 
-func NewDbs(log logFile.LogFile, IsTest bool) Dbs {
+func NewDbs(log logFile.LogFile, IsTest bool, config config.ConnConfig) Dbs {
 	d := &dbs{}
 	if IsTest {
-		d.initTestSql(log)
+		d.initTestSql(log, config.TestSQL)
 	} else {
-		d.initSql(log)
+		d.initSql(log, config.SQL)
 	}
 	d.initCache()
-	d.initRdb(log)
-	d.initIdb(log)
+	d.initRdb(log, config.Redis)
+	d.initIdb(log, config.Influxdb)
 	return d
 }
 
 // DB start
-func (d *dbs) initTestSql(log logFile.LogFile) {
-	s, err := sql.NewDB("mySQL", "DB_test.log", "db_test")
+func (d *dbs) initTestSql(log logFile.LogFile, Config config.SQLConfig) {
+	s, err := sql.NewDB("mySQL", "DB_test.log", Config)
 	if err != nil {
 		log.Error().Println("DB Connection failed")
 		panic(err)
@@ -62,8 +63,8 @@ func (d *dbs) initTestSql(log logFile.LogFile) {
 }
 
 // DB start
-func (d *dbs) initSql(log logFile.LogFile) {
-	s, err := sql.NewDB("mySQL", "DB.log", "db")
+func (d *dbs) initSql(log logFile.LogFile, Config config.SQLConfig) {
+	s, err := sql.NewDB("mySQL", "DB.log", Config)
 	if err != nil {
 		log.Error().Println("DB Connection failed")
 		panic(err)
@@ -77,13 +78,13 @@ func (d *dbs) initCache() {
 	d.Cache = cache.New(5*time.Minute, 10*time.Minute)
 }
 
-func (d *dbs) initRdb(log logFile.LogFile) {
-	d.Rdb = rdb.NewClient("redis")
+func (d *dbs) initRdb(log logFile.LogFile, Config config.RedisConfig) {
+	d.Rdb = rdb.NewClient(Config)
 	log.Info().Println("Redis Connection successful")
 }
 
-func (d *dbs) initIdb(log logFile.LogFile) {
-	d.Idb = influxdb.NewInfluxdb("influxdb")
+func (d *dbs) initIdb(log logFile.LogFile, Config config.InfluxdbConfig) {
+	d.Idb = influxdb.NewInfluxdb(Config)
 	log.Info().Println("InfluxDB Connection successful")
 }
 

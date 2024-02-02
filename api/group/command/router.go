@@ -14,6 +14,11 @@ func RegisterRouter(g group) {
 
 	c := app.Group("/command")
 
+	c.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "command_server-command")
+		return c.Next()
+	})
+
 	h := NewHandler(o, log)
 	c.Get("/", h.GetCommands)
 	c.Get("/history", h.GetHistory)

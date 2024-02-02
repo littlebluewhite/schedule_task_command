@@ -8,7 +8,7 @@ import (
 )
 
 type hOperate interface {
-	ReadLog(start, stop string) ([]e_log.Log, error)
+	ReadLog(start, stop, account, ip, method, module, statusCode string) ([]e_log.Log, error)
 }
 
 type Handler struct {
@@ -30,15 +30,25 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Produce json
 // @Param       start  query     string true "start time"
 // @Param       stop  query     string false "stop time"
+// @Param       account  query     string false "account"
+// @Param       ip  query     string false "ip"
+// @Param       method  query     string false "method" Enums(GET, POST, PATCH, PUT, DELETE)
+// @Param       module  query     string false "module"
+// @Param       status_code  query     string false "status_code"
 // @Success 200 {array} e_log.Log
 // @Router  /api/logs [get]
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
 	start := c.Query("start")
+	account := c.Query("account")
+	ip := c.Query("ip")
+	method := c.Query("method")
+	module := c.Query("module")
+	statusCode := c.Query("statusCode")
 	if start == "" {
 		return util.Err(c, util.MyErr("No start time input"), 0)
 	}
 	stop := c.Query("stop")
-	data, err := h.o.ReadLog(start, stop)
+	data, err := h.o.ReadLog(start, stop, account, ip, method, module, statusCode)
 	if err != nil {
 		return util.Err(c, err, 0)
 	}

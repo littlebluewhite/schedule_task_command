@@ -8,7 +8,7 @@ RUN go build -o main /app/cmd/migrate/main.go
 FROM alpine
 WORKDIR /app
 COPY --from=builder /app/main /app/cmd/migrate/
-COPY ../../../env env
+COPY ../../../config config
 COPY ../../../migrations migrations
 
 CMD ["/app/cmd/migrate/main", "-up"]

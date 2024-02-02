@@ -2,35 +2,45 @@ package config
 
 import "time"
 
-type DBConfig struct {
-	Host     string `mapstructure:"DB_HOST"`
-	Port     string `mapstructure:"DB_PORT"`
-	User     string `mapstructure:"DB_USER"`
-	Password string `mapstructure:"DB_PASSWORD"`
-	DB       string `mapstructure:"DB_DB"`
+type Config struct {
+	Conn   ConnConfig   `mapstructure:"conn"`
+	Server ServerConfig `mapstructure:"server"`
+}
+
+type ConnConfig struct {
+	Redis    RedisConfig    `mapstructure:"redis"`
+	SQL      SQLConfig      `mapstructure:"SQL"`
+	Influxdb InfluxdbConfig `mapstructure:"influxdb"`
+	TestSQL  SQLConfig      `mapstructure:"testSQL"`
+}
+
+type SQLConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	DB       string `mapstructure:"db"`
 }
 
 type ServerConfig struct {
-	Port         string        `mapstructure:"PORT"`
-	ReadTimeout  time.Duration `mapstructure:"READ_TIMEOUT"`
-	WriteTimeout time.Duration `mapstructure:"WRITE_TIMEOUT"`
+	Port         string        `mapstructure:"port"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout time.Duration `mapstructure:"write_timeout"`
 }
 
 type RedisConfig struct {
-	Host         string   `mapstructure:"REDIS_HOST"`
-	Port         string   `mapstructure:"REDIS_PORT"`
-	User         string   `mapstructure:"REDIS_USER"`
-	Password     string   `mapstructure:"REDIS_PASSWORD"`
-	DB           string   `mapstructure:"REDIS_DB"`
-	IsCluster    bool     `mapstructure:"REDIS_IS_CLUSTER"`
-	ClusterHost  string   `mapstructure:"REDIS_CLUSTER_HOST"`
-	ClusterPorts []string `mapstructure:"REDIS_CLUSTER_PORT"`
+	Host      string   `mapstructure:"host"`
+	Ports     []string `mapstructure:"port"`
+	User      string   `mapstructure:"user"`
+	Password  string   `mapstructure:"password"`
+	DB        string   `mapstructure:"db"`
+	IsCluster bool     `mapstructure:"is_cluster"`
 }
 
 type InfluxdbConfig struct {
-	Host   string `mapstructure:"INFLUXDB_HOST"`
-	Port   string `mapstructure:"INFLUXDB_PORT"`
-	Org    string `mapstructure:"INFLUXDB_ORG"`
-	Bucket string `mapstructure:"INFLUXDB_BUCKET"`
-	Token  string `mapstructure:"INFLUXDB_TOKEN"`
+	Host   string `mapstructure:"host"`
+	Port   string `mapstructure:"port"`
+	Org    string `mapstructure:"org"`
+	Token  string `mapstructure:"token"`
+	Bucket string `mapstructure:"bucket"`
 }

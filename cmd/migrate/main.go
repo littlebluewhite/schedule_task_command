@@ -17,11 +17,12 @@ func main() {
 	flag.BoolVar(&to, "to", false, "to version")
 	flag.IntVar(&version, "version", -1, "version")
 	flag.Parse()
-	var c config.DBConfig
+	Config := config.NewConfig[config.Config](".", "config", "config", config.Yaml)
+	var c config.SQLConfig
 	if t {
-		c = config.NewConfig[config.DBConfig](".", "env", "db_test")
+		c = Config.Conn.TestSQL
 	} else {
-		c = config.NewConfig[config.DBConfig](".", "env", "db")
+		c = Config.Conn.SQL
 	}
 
 	client := migrate.New(c)

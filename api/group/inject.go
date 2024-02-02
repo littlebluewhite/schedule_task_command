@@ -37,6 +37,10 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) 
 
 	// api group add cors middleware
 	Api := app.Group("/api", cors.New())
+	Api.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "logs")
+		return c.Next()
+	})
 
 	// use middleware to write log
 	o := NewOperate(dbs)

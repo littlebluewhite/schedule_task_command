@@ -9,7 +9,9 @@ type Log struct {
 	Datetime      time.Time `json:"datetime"`
 	IP            string    `json:"ip"`
 	Referer       string    `json:"referer"`
-	RequestLine   string    `json:"request_line"`
+	ApiUrl        string    `json:"api_url"`
+	Method        string    `json:"method"`
+	Module        string    `json:"module"`
 	StatusCode    int       `json:"status_code"`
 	Token         string    `json:"token"`
 	UserAgent     string    `json:"user_agent"`
