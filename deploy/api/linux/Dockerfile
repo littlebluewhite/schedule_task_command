@@ -12,7 +12,7 @@ RUN go build -o main /app/cmd/api/main.go
 FROM alpine
 WORKDIR /app
 COPY --from=builder /app/main /app/cmd/api/
-COPY env env
+COPY config config
 
 RUN apk update
 RUN apk add -U tzdata

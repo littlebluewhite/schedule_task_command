@@ -28,7 +28,7 @@ type Migration struct {
 	client *migrate.Migrate
 }
 
-func New(config config.DBConfig) *Migration {
+func New(config config.SQLConfig) *Migration {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?multiStatements=true",
 		config.User, config.Password, config.Host, config.Port, config.DB)
 	db, err := sql.Open("mysql", dsn)

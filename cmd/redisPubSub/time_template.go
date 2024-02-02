@@ -7,13 +7,20 @@ import (
 	"github.com/redis/go-redis/v9"
 	"schedule_task_command/app/dbs/rdb"
 	"schedule_task_command/util"
+	"schedule_task_command/util/config"
 	"sync"
 	"time"
 )
 
 func main() {
 	w := &sync.WaitGroup{}
-	r := rdb.NewClient("redis")
+	redisConfig := config.RedisConfig{
+		Host:      "127.0.0.1",
+		Ports:     []string{"6379"},
+		DB:        "0",
+		IsCluster: false,
+	}
+	r := rdb.NewClient(redisConfig)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	w.Add(2)
@@ -35,7 +42,7 @@ func subT(ctx context.Context, r redis.UniversalClient) {
 	fmt.Println(m)
 	b := []byte(m)
 	var p publishTime
-	json.Unmarshal(b, &p)
+	_ = json.Unmarshal(b, &p)
 
 	fmt.Println(p)
 	fmt.Printf("%T, %v\n", p, p)

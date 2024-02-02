@@ -15,6 +15,11 @@ func RegisterRouter(g group) {
 
 	tt := app.Group("/time_template")
 
+	tt.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "time_server-time_template")
+		return c.Next()
+	})
+
 	// subscribe to redis
 	go func() {
 		rdbSub(o, log)

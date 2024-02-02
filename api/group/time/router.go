@@ -14,6 +14,11 @@ func RegisterRouter(g group) {
 
 	tt := app.Group("/time")
 
+	tt.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "time_server-time")
+		return c.Next()
+	})
+
 	h := NewHandler(o, log)
 	tt.Get("/history", h.GetHistory)
 }

@@ -9,21 +9,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 	"schedule_task_command/util/config"
 	"time"
 )
 
-var (
-	rootPath string
-)
-
-func init() {
-	_, b, _, _ := runtime.Caller(0)
-	rootPath = filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(b))))
-}
-
-func NewDB(dirPath, fileName, yamlName string) (*gorm.DB, error) {
+func NewDB(dirPath, fileName string, Config config.SQLConfig) (*gorm.DB, error) {
 	newPath := filepath.Join("./log", dirPath)
 	_ = os.MkdirAll(newPath, os.ModePerm)
 	newPath = filepath.Join(newPath, fileName)
@@ -41,9 +31,8 @@ func NewDB(dirPath, fileName, yamlName string) (*gorm.DB, error) {
 			Colorful:                  false,       // 禁用彩色打印
 		},
 	)
-	dbConfig := config.NewConfig[config.DBConfig](rootPath, "env", yamlName)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true&parseTime=true&loc=Local",
-		dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DB)
+		Config.User, Config.Password, Config.Host, Config.Port, Config.DB)
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 		Logger:                 newLogger,

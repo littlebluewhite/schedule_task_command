@@ -6,10 +6,17 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
 	"schedule_task_command/app/dbs/rdb"
+	"schedule_task_command/util/config"
 )
 
 func main() {
-	r := rdb.NewClient("redis")
+	redisConfig := config.RedisConfig{
+		Host:      "127.0.0.1",
+		Ports:     []string{"6379"},
+		DB:        "0",
+		IsCluster: false,
+	}
+	r := rdb.NewClient(redisConfig)
 	ctx := context.Background()
 	if _, err := r.Pipelined(ctx, func(rdb redis.Pipeliner) error {
 		rdb.HSet(ctx, "key", "str1", "hello")

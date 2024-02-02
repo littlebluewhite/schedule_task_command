@@ -359,15 +359,19 @@ definitions:
     properties:
       account:
         type: string
+      api_url:
+        type: string
       content_length:
         type: integer
       datetime:
         type: string
       ip:
         type: string
-      referer:
+      method:
         type: string
-      request_line:
+      module:
+        type: string
+      referer:
         type: string
       status_code:
         type: integer
@@ -969,7 +973,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.12.3
+  version: 2.13.0
 paths:
   /api/command/:
     get:
@@ -1308,6 +1312,32 @@ paths:
       - description: stop time
         in: query
         name: stop
+        type: string
+      - description: account
+        in: query
+        name: account
+        type: string
+      - description: ip
+        in: query
+        name: ip
+        type: string
+      - description: method
+        enum:
+        - GET
+        - POST
+        - PATCH
+        - PUT
+        - DELETE
+        in: query
+        name: method
+        type: string
+      - description: module
+        in: query
+        name: module
+        type: string
+      - description: status_code
+        in: query
+        name: status_code
         type: string
       produces:
       - application/json

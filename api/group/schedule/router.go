@@ -14,6 +14,11 @@ func RegisterRouter(g group) {
 
 	s := app.Group("/schedule")
 
+	s.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "Schedule_server-schedule")
+		return c.Next()
+	})
+
 	h := NewHandler(o, log)
 	s.Get("/", h.GetSchedules)
 	s.Get("/:id", h.GetScheduleById)

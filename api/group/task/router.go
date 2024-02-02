@@ -14,6 +14,11 @@ func RegisterRouter(g group) {
 
 	tt := app.Group("/task")
 
+	tt.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "task_server-task")
+		return c.Next()
+	})
+
 	h := NewHandler(o, log)
 	tt.Get("/", h.GetTasks)
 	tt.Get("/simple/", h.GetSimpleTasks)

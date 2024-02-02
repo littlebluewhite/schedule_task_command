@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.12.3"
+        "version": "2.13.0"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -537,6 +537,43 @@
                         "type": "string",
                         "description": "stop time",
                         "name": "stop",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "account",
+                        "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ip",
+                        "name": "ip",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "GET",
+                            "POST",
+                            "PATCH",
+                            "PUT",
+                            "DELETE"
+                        ],
+                        "type": "string",
+                        "description": "method",
+                        "name": "method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "module",
+                        "name": "module",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status_code",
+                        "name": "status_code",
                         "in": "query"
                     }
                 ],
@@ -1978,6 +2015,9 @@
                 "account": {
                     "type": "string"
                 },
+                "api_url": {
+                    "type": "string"
+                },
                 "content_length": {
                     "type": "integer"
                 },
@@ -1987,10 +2027,13 @@
                 "ip": {
                     "type": "string"
                 },
-                "referer": {
+                "method": {
                     "type": "string"
                 },
-                "request_line": {
+                "module": {
+                    "type": "string"
+                },
+                "referer": {
                     "type": "string"
                 },
                 "status_code": {

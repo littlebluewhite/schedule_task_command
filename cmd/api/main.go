@@ -5,6 +5,8 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"os/signal"
+	"path/filepath"
+	"runtime"
 	"schedule_task_command/api"
 	"schedule_task_command/api/group"
 	"schedule_task_command/app/command_server"
@@ -22,17 +24,20 @@ import (
 )
 
 var (
-	mainLog logFile.LogFile
+	mainLog  logFile.LogFile
+	rootPath string
 )
 
 // 初始化配置
 func init() {
 	// log配置
 	mainLog = logFile.NewLogFile("", "main.log")
+	_, b, _, _ := runtime.Caller(0)
+	rootPath = filepath.Dir(filepath.Dir(filepath.Dir(b)))
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.12.3
+// @version         2.13.0
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -52,8 +57,11 @@ func main() {
 
 	mainLog.Info().Println("command module start")
 
+	// read config
+	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
+
 	// DBs start includes SQL Cache
-	DBS := dbs.NewDbs(mainLog, false)
+	DBS := dbs.NewDbs(mainLog, false, Config.Conn)
 	defer func() {
 		DBS.GetIdb().Close()
 		mainLog.Info().Println("influxDB Disconnect")
@@ -75,7 +83,7 @@ func main() {
 		scheduleServer.Start(ctx, 1*time.Second, 4*time.Hour)
 	}()
 
-	ServerConfig := config.NewConfig[config.ServerConfig](".", "env", "server")
+	ServerConfig := Config.Server
 
 	var sb strings.Builder
 	sb.WriteString(":")

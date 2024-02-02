@@ -13,6 +13,11 @@ func RegisterRouter(g group) {
 
 	ht := app.Group("/header_template")
 
+	ht.Use(func(c *fiber.Ctx) error {
+		c.Locals("Module", "command_server-header_template")
+		return c.Next()
+	})
+
 	h := NewHandler(o, log)
 	ht.Get("/", h.GetheaderTemplates)
 	ht.Get("/:id", h.GetHeaderTemplateById)
