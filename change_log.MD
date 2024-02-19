@@ -1,8 +1,9 @@
-# Schedule_Task_Command_Time  version 2.13.0
+# Schedule_Task_Command_Time  version 2.13.1
 
 ### General
 - config file update
 - util config function update
+- golang and package update
 
 ### Logs
 - read api update
