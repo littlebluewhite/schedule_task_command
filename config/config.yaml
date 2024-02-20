@@ -4,7 +4,7 @@ conn:
     port: [6379]
     user:
     password:
-    db: 0
+    db: 15
     is_cluster: False
   sql:
     host: 127.0.0.1
