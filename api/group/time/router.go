@@ -15,7 +15,7 @@ func RegisterRouter(g group) {
 	tt := app.Group("/time")
 
 	tt.Use(func(c *fiber.Ctx) error {
-		c.Locals("Module", "time_server-time")
+		c.Locals("Module", "schedule_module-time")
 		return c.Next()
 	})
 

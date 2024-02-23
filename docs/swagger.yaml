@@ -973,7 +973,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.2
+  version: 2.13.3
 paths:
   /api/command/:
     get:
@@ -1332,6 +1332,11 @@ paths:
         name: method
         type: string
       - description: module
+        enum:
+        - schedule_module-schedule
+        - schedule_module-task
+        - schedule_module-command
+        - schedule_module-time
         in: query
         name: module
         type: string

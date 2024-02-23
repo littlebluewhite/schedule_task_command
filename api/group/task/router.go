@@ -15,7 +15,7 @@ func RegisterRouter(g group) {
 	tt := app.Group("/task")
 
 	tt.Use(func(c *fiber.Ctx) error {
-		c.Locals("Module", "task_server-task")
+		c.Locals("Module", "schedule_module-task")
 		return c.Next()
 	})
 

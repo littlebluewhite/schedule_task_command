@@ -573,6 +573,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "schedule_module-schedule",
+                            "schedule_module-task",
+                            "schedule_module-command",
+                            "schedule_module-time"
+                        ],
                         "type": "string",
                         "description": "module",
                         "name": "module",
@@ -2938,7 +2944,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.13.2",
+	Version:          "2.13.3",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},
