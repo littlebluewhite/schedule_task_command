@@ -14,7 +14,7 @@ func RegisterRouter(g group) {
 	ht := app.Group("/header_template")
 
 	ht.Use(func(c *fiber.Ctx) error {
-		c.Locals("Module", "command_server-header_template")
+		c.Locals("Module", "schedule_module-command")
 		return c.Next()
 	})
 

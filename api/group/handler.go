@@ -33,7 +33,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Param       account  query     string false "account"
 // @Param       ip  query     string false "ip"
 // @Param       method  query     string false "method" Enums(GET, POST, PATCH, PUT, DELETE)
-// @Param       module  query     string false "module"
+// @Param       module  query     string false "module" Enums(schedule_module-schedule, schedule_module-task, schedule_module-command, schedule_module-time)
 // @Param       status_code  query     string false "status_code"
 // @Success 200 {array} e_log.Log
 // @Router  /api/logs [get]

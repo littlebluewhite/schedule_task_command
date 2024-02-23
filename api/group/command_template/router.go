@@ -19,7 +19,7 @@ func RegisterRouter(g group) {
 	ct := app.Group("/command_template")
 
 	ct.Use(func(c *fiber.Ctx) error {
-		c.Locals("Module", "command_server-command_template")
+		c.Locals("Module", "schedule_module-command")
 		return c.Next()
 	})
 
