@@ -29,12 +29,12 @@ type ServerConfig struct {
 }
 
 type RedisConfig struct {
-	Host      string   `mapstructure:"host"`
-	Ports     []string `mapstructure:"port"`
-	User      string   `mapstructure:"user"`
-	Password  string   `mapstructure:"password"`
-	DB        string   `mapstructure:"db"`
-	IsCluster bool     `mapstructure:"is_cluster"`
+	Host      string `mapstructure:"host"`
+	Port      string `mapstructure:"port"`
+	User      string `mapstructure:"user"`
+	Password  string `mapstructure:"password"`
+	DB        string `mapstructure:"db"`
+	IsCluster bool   `mapstructure:"is_cluster"`
 }
 
 type InfluxdbConfig struct {
