@@ -973,7 +973,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.3
+  version: 2.13.4
 paths:
   /api/command/:
     get:
