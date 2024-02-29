@@ -1,4 +1,4 @@
-# Schedule_Task_Command 2.13.3
+# Schedule_Task_Command 2.13.4
 
 https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
 
@@ -66,7 +66,7 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
       `create database schedule;`
    2. 創建需要的image
       api image:
-      `docker build -t schedule:2.13.3 -f deploy/api/windows/Dockerfile .`
+      `docker build -t schedule:2.13.4 -f deploy/api/windows/Dockerfile .`
       migrate image:
 
       `docker build -t schedule-migrate:latest -f deploy/migrate/windows/Dockerfile .`
@@ -75,17 +75,17 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
       1. run migrate container
          DB_HOST可指定特定的DB IP
 
-         `docker run --name schedule-migrate --rm -e DB_HOST=host.docker.internal schedule-migrate:latest`
+         `docker run --name schedule-migrate --rm -e CONN_SQL_HOST=host.docker.internal schedule-migrate:latest`
       2. run api container
 
-         `docker run --name schedule -p 5487:5487 -e DB_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.13.3`
+         `docker run --name schedule -p 5487:5487 -e CONN_SQL_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.13.4`
 2. ##### Linux系統
 
    1. 到mysql創建一個新的database "schedule"
       `create database schedule;`
    2. 創建需要的image
       api image:
-      `docker build -t schedule:2.13.3 -f deploy/api/linux/Dockerfile .`
+      `docker build -t schedule:2.13.4 -f deploy/api/linux/Dockerfile .`
       migrate image:
 
       `docker build -t schedule-migrate:latest -f deploy/migrate/linux/Dockerfile .`
@@ -95,11 +95,11 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
          DB_HOST可指定特定的DB IP
 
          `docker run --name schedule-migrate --rm --network="host" schedule-migrate:latest`
-         `docker run --name schedule-migrate --rm -e DB_HOST=192.168.1.11 schedule-migrate:latest`
+         `docker run --name schedule-migrate --rm -e CONN_SQL_HOST=192.168.1.11 schedule-migrate:latest`
       2. run api container
 
-         `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:2.13.3 -e TZ=Asia/Taipei`
-         `docker run --name schedule -p 5487:5487 -e TZ=Asia/Taipei -e DB_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.13.3`
+         `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:2.13.4 -e TZ=Asia/Taipei`
+         `docker run --name schedule -p 5487:5487 -e TZ=Asia/Taipei -e CONN_SQL_HOST=192.168.1.11 -e CONN_INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.13.4`
 
 # Log File
 
