@@ -23,9 +23,19 @@ type SQLConfig struct {
 }
 
 type ServerConfig struct {
+	Schedule Schedule `mapstructure:"schedule"`
+	Task
+}
+
+type Schedule struct {
 	Port         string        `mapstructure:"port"`
 	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+	Interval     time.Duration `mapstructure:"interval"`
+}
+
+type Task struct {
+	CleanTime time.Duration `mapstructure:"clean_time"`
 }
 
 type RedisConfig struct {

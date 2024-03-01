@@ -26,6 +26,10 @@ conn:
     db: schedule_test
 
 server:
-  port: 5487
-  rear_timeout: 300  # s
-  write_timeout: 300  # s
+  schedule:
+    port: 5487
+    rear_timeout: 300  # s
+    write_timeout: 300  # s
+    interval: 1  # s
+  task:
+    clean_time: 4 # hour

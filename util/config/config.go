@@ -28,7 +28,7 @@ func loadConfig[T any](myPath string, fileName string, configType CType) (Config
 	return
 }
 
-func NewConfig[T SQLConfig | ServerConfig | RedisConfig | InfluxdbConfig | Config](
+func NewConfig[T Config](
 	rootPath, folder, fileName string, configType CType,
 ) (cfg T) {
 	cfg = loadConfig[T](path.Join(rootPath, folder), fileName, configType)
