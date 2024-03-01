@@ -60,7 +60,7 @@ services:
       CONN_INFLUXDB_TOKEN: my-super-influxdb-auth-token
       CONN_INFLUXDB_BUCKET: schedule
       CONN_REDIS_HOST: redis
-      CONN_REDIS_PORT: "[6379]"
+      CONN_REDIS_PORT: 6379
       CONN_REDIS_IS_CLUSTER: False
       CONN_REDIS_DB: 15
 

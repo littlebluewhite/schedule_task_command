@@ -9,7 +9,7 @@ import (
 
 func newRedis(redisConfig config.RedisConfig) *redis.Client {
 	dsn := fmt.Sprintf("redis://%s:%s@%s:%s/%s",
-		redisConfig.User, redisConfig.Password, redisConfig.Host, redisConfig.Ports[0], redisConfig.DB)
+		redisConfig.User, redisConfig.Password, redisConfig.Host, redisConfig.Port, redisConfig.DB)
 	opt, err := redis.ParseURL(dsn)
 	if err != nil {
 		panic(err)
@@ -24,10 +24,8 @@ func newRedis(redisConfig config.RedisConfig) *redis.Client {
 }
 
 func newClusterRedis(redisConfig config.RedisConfig) *redis.ClusterClient {
-	address := make([]string, 0, len(redisConfig.Ports))
-	for _, port := range redisConfig.Ports {
-		address = append(address, fmt.Sprintf("%s:%s", redisConfig.Host, port))
-	}
+	address := make([]string, 0, 1)
+	address = append(address, fmt.Sprintf("%s:%s", redisConfig.Host, redisConfig.Port))
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs: address,
 	})

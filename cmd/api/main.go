@@ -37,7 +37,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.13.4
+// @version         2.13.6
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -60,6 +60,8 @@ func main() {
 	// read config
 	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
 
+	ServerConfig := Config.Server
+
 	// DBs start includes SQL Cache
 	DBS := dbs.NewDbs(mainLog, false, Config.Conn)
 	defer func() {
@@ -80,19 +82,19 @@ func main() {
 
 	// start schedule server
 	go func() {
-		scheduleServer.Start(ctx, 1*time.Second, 4*time.Hour)
+		scheduleServer.Start(ctx,
+			ServerConfig.Schedule.Interval*time.Second,
+			ServerConfig.Task.CleanTime*time.Hour)
 	}()
-
-	ServerConfig := Config.Server
 
 	var sb strings.Builder
 	sb.WriteString(":")
-	sb.WriteString(ServerConfig.Port)
+	sb.WriteString(ServerConfig.Schedule.Port)
 	//addr := sb.String()
 	apiServer := fiber.New(
 		fiber.Config{
-			ReadTimeout:  ServerConfig.ReadTimeout * time.Minute,
-			WriteTimeout: ServerConfig.WriteTimeout * time.Minute,
+			ReadTimeout:  ServerConfig.Schedule.ReadTimeout * time.Minute,
+			WriteTimeout: ServerConfig.Schedule.WriteTimeout * time.Minute,
 			AppName:      "schedule_task_command",
 			JSONEncoder:  json.Marshal,
 			JSONDecoder:  json.Unmarshal,

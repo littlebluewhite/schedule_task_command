@@ -23,18 +23,28 @@ type SQLConfig struct {
 }
 
 type ServerConfig struct {
+	Schedule Schedule `mapstructure:"schedule"`
+	Task
+}
+
+type Schedule struct {
 	Port         string        `mapstructure:"port"`
 	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+	Interval     time.Duration `mapstructure:"interval"`
+}
+
+type Task struct {
+	CleanTime time.Duration `mapstructure:"clean_time"`
 }
 
 type RedisConfig struct {
-	Host      string   `mapstructure:"host"`
-	Ports     []string `mapstructure:"port"`
-	User      string   `mapstructure:"user"`
-	Password  string   `mapstructure:"password"`
-	DB        string   `mapstructure:"db"`
-	IsCluster bool     `mapstructure:"is_cluster"`
+	Host      string `mapstructure:"host"`
+	Port      string `mapstructure:"port"`
+	User      string `mapstructure:"user"`
+	Password  string `mapstructure:"password"`
+	DB        string `mapstructure:"db"`
+	IsCluster bool   `mapstructure:"is_cluster"`
 }
 
 type InfluxdbConfig struct {
