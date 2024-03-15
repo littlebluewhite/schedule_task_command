@@ -1,35 +1,35 @@
-conn:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    user:
-    password:
-    db: 15
-    is_cluster: False
-  sql:
-    host: 127.0.0.1
-    port: 3306
-    user: root
-    password: 123456
-    db: schedule
-  influxdb:
-    host: 127.0.0.1
-    port: 8086
-    org: my-org
-    token: my-super-influxdb-auth-token
-    bucket: schedule
-  testSQL:
-    host: 127.0.0.1
-    port: 3306
-    user: root
-    password: 123456
-    db: schedule_test
+redis:
+  host: 127.0.0.1
+  port: 6379
+  user:
+  password:
+  db: 15
+  is_cluster: False
+
+sql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: 123456
+  db: schedule
+
+influxdb:
+  host: 127.0.0.1
+  port: 8086
+  org: my-org
+  token: my-super-influxdb-auth-token
+  bucket: schedule
+
+testSQL:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: 123456
+  db: schedule_test
 
 server:
-  schedule:
-    port: 5487
-    rear_timeout: 300  # s
-    write_timeout: 300  # s
-    interval: 1  # s
-  task:
-    clean_time: 4 # hour
+  port: 5487
+  rear_timeout: 300  # s
+  write_timeout: 300  # s
+  interval: 1  # s
+  clean_time: 4 # hour

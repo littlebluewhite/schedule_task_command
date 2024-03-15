@@ -37,7 +37,7 @@ type dbs struct {
 	Idb   HistoryDB
 }
 
-func NewDbs(log logFile.LogFile, IsTest bool, config config.ConnConfig) Dbs {
+func NewDbs(log logFile.LogFile, IsTest bool, config config.Config) Dbs {
 	d := &dbs{}
 	if IsTest {
 		d.initTestSql(log, config.TestSQL)
