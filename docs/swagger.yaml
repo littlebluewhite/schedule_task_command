@@ -42,6 +42,8 @@ definitions:
         additionalProperties:
           type: string
         type: object
+      source:
+        type: string
       status:
         type: integer
       status_code:
@@ -545,6 +547,8 @@ definitions:
         type: integer
       message:
         type: string
+      source:
+        type: string
       stage_number:
         type: integer
       stages:
@@ -587,6 +591,8 @@ definitions:
       id:
         type: integer
       message:
+        type: string
+      source:
         type: string
       stage_number:
         type: integer
@@ -973,7 +979,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.7
+  version: 2.13.8
 paths:
   /api/command/:
     get:

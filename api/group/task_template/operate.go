@@ -294,6 +294,7 @@ func (o *Operate) Execute(ctx context.Context, st e_task_template.SendTaskTempla
 func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
 	task = e_task.Task{
 		TemplateId:     st.TemplateId,
+		Source:         st.Source,
 		TriggerFrom:    st.TriggerFrom,
 		TriggerAccount: st.TriggerAccount,
 		Token:          st.Token,
@@ -305,6 +306,8 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		task.Message = &CannotFindTemplate
 		return
 	}
+	trigger := fmt.Sprintf("Task Template No.: %d", st.TemplateId)
+	task.TriggerFrom = append(task.TriggerFrom, trigger)
 	task.TaskData = e_task_template.Format(ttList)[0]
 	return
 }
@@ -323,7 +326,6 @@ func (o *Operate) streamExecuteTaskTemplate(rsc map[string]interface{}) (result 
 		return
 	}
 	entry.Token = rsc["callback_token"].(string)
-	entry.TriggerFrom = append(entry.TriggerFrom, "stream execute taskTemplate")
 	id, err := o.Execute(context.Background(), entry)
 	if err != nil {
 		return

@@ -58,12 +58,12 @@ func (h *Handler) GetScheduleById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("GetScheduleById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	s, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
 		h.l.Error().Println("GetScheduleById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	h.l.Info().Println("GetScheduleById: success")
 	return c.Status(200).JSON(e_schedule.Format(s)[0])

@@ -37,7 +37,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.13.7
+// @version         2.13.8
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -123,5 +123,4 @@ func main() {
 	stop()
 	time.Sleep(1 * time.Second)
 	mainLog.Info().Println("Server exiting")
-
 }

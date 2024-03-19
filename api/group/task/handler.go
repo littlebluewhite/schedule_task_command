@@ -57,12 +57,12 @@ func (h *Handler) GetTaskById(c *fiber.Ctx) error {
 	if err != nil {
 		e := errors.New("id is error")
 		h.l.Error().Println("GetTaskById: ", e)
-		return util.Err(c, e, 0)
+		return util.Err(c, e, 1)
 	}
 	t, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetTaskById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	return c.Status(200).JSON(t)
 }

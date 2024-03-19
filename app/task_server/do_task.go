@@ -145,7 +145,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 	executeCh := make(chan comBuilder, len(sm.execute))
 	defer close(executeCh)
 
-	triggerFrom := append(task.TriggerFrom, fmt.Sprintf("task: %d", task.ID))
+	triggerFrom := append(task.TriggerFrom, fmt.Sprintf("Task: %d", task.ID))
 	for _, stage := range sm.monitor {
 		go func(stage e_task_template.StageItem) {
 			com := t.ts2Com(stage, triggerFrom, task)
@@ -205,6 +205,7 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []st
 	}
 	c = e_command.Command{
 		TemplateId:     stage.CommandTemplateID,
+		Source:         task.Source,
 		TriggerFrom:    triggerFrom,
 		TriggerAccount: task.TriggerAccount,
 		Token:          task.Token,

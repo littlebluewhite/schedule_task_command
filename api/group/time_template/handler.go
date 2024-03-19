@@ -58,12 +58,12 @@ func (h *Handler) GetTimeTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("GetTimeTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	tt, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
 		h.l.Error().Println("GetTimeTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	result := e_time_template.Format(tt)
 	h.l.Info().Println("GetTimeTemplateById: success")

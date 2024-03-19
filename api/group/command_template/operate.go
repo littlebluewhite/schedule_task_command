@@ -320,6 +320,7 @@ func (o *Operate) Execute(ctx context.Context, sc e_command_template.SendCommand
 func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c e_command.Command) {
 	c = e_command.Command{
 		TemplateId:     sc.TemplateId,
+		Source:         sc.Source,
 		TriggerFrom:    sc.TriggerFrom,
 		TriggerAccount: sc.TriggerAccount,
 		Token:          sc.Token,
@@ -332,6 +333,8 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		return
 	}
 	ct := e_command_template.Format(cList)[0]
+	trigger := fmt.Sprintf("Command Template No.: %d", c.TemplateId)
+	c.TriggerFrom = append(c.TriggerFrom, trigger)
 	c.CommandData = ct
 
 	return

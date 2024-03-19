@@ -105,7 +105,6 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 			c.l.Error().Println(SendToRedisErr)
 			continue
 		}
-		com.TriggerFrom = append(com.TriggerFrom, "redis channel")
 		_, err = c.ExecuteReturnId(ctx, com)
 		if err != nil {
 			c.l.Error().Println("Error executing Command")
