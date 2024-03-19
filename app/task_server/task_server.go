@@ -118,7 +118,6 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 		if err != nil {
 			t.l.Error().Println(SendToRedisErr)
 		}
-		s.TriggerFrom = append(s.TriggerFrom, "redis channel")
 		_, err = t.ExecuteReturnId(ctx, s)
 		if err != nil {
 			t.l.Error().Println("Error executing Task")

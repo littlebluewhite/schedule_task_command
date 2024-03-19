@@ -10,6 +10,7 @@ func ToPub(c Command) (cp CommandPub) {
 	cp.From = c.From
 	cp.To = c.To
 	cp.Variables = c.Variables
+	cp.Source = c.Source
 	cp.TriggerFrom = c.TriggerFrom
 	cp.TriggerAccount = c.TriggerAccount
 	cp.StatusCode = c.StatusCode

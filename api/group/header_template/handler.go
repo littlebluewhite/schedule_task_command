@@ -57,12 +57,12 @@ func (h *Handler) GetHeaderTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("GetHeaderTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	ht, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
 		h.l.Error().Println("GetHeaderTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	h.l.Info().Println("GetHeaderTemplateById: success")
 	return c.Status(200).JSON(ht[0])

@@ -284,7 +284,6 @@ func (o *Operate) streamCheckTime(rsc map[string]interface{}) (result string, er
 		Token:          rsc["callback_token"].(string),
 		Time:           &t,
 	}
-	ct.TriggerFrom = append(entry.TriggerFrom, "stream execute timeTemplate")
 	isTime, err := o.CheckTime(entry.TemplateId, ct)
 	if err != nil {
 		return

@@ -75,7 +75,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				}
 				scheduleId := fmt.Sprintf("Schedule ID: %d", schedule.ID)
 				token := fmt.Sprintf("schedule-%s-%s", scheduleId, t)
-				triggerFrom := []string{"Schedule", scheduleId}
+				triggerFrom := []string{scheduleId}
 				// Check time
 				pt := e_time.PublishTime{
 					TriggerFrom: triggerFrom,
@@ -89,6 +89,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 					s.l.Info().Printf("id: %s execute", scheduleId)
 					st := e_task_template.SendTaskTemplate{
 						TemplateId:     int(schedule.TaskTemplateID),
+						Source:         "Schedule",
 						TriggerFrom:    triggerFrom,
 						TriggerAccount: "system",
 						Token:          token,
@@ -116,6 +117,7 @@ func (s *ScheduleServer[T, U]) getSchedule() map[int]e_schedule.Schedule {
 func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate) (task e_task.Task) {
 	task = e_task.Task{
 		TemplateId:     st.TemplateId,
+		Source:         st.Source,
 		TriggerFrom:    st.TriggerFrom,
 		TriggerAccount: st.TriggerAccount,
 		Token:          st.Token,

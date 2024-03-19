@@ -56,12 +56,12 @@ func (h *Handler) GetCommandById(c *fiber.Ctx) error {
 	if err != nil {
 		e := errors.New("id is error")
 		h.l.Error().Println("GetCommandById: ", e)
-		return util.Err(c, e, 0)
+		return util.Err(c, e, 1)
 	}
 	com, err := h.o.FindById(uint64(id))
 	if err != nil {
 		h.l.Error().Println("GetCommandById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	return c.Status(200).JSON(com)
 }

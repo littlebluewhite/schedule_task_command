@@ -1550,6 +1550,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "source": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -2312,6 +2315,9 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
+                "source": {
+                    "type": "string"
+                },
                 "stage_number": {
                     "type": "integer"
                 },
@@ -2375,6 +2381,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "message": {
+                    "type": "string"
+                },
+                "source": {
                     "type": "string"
                 },
                 "stage_number": {
@@ -2944,7 +2953,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.13.7",
+	Version:          "2.13.8",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

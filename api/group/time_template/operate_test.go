@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"gorm.io/datatypes"
+	"path/filepath"
+	"runtime"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/app/time_server"
 	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/entry/e_time_template"
+	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
 	"testing"
 	"time"
@@ -15,7 +18,10 @@ import (
 
 func setUpOperate() (o hOperate, l logFile.LogFile) {
 	l = logFile.NewLogFile("test", "Operate.log")
-	DBS := dbs.NewDbs(l, true)
+	_, b, _, _ := runtime.Caller(0)
+	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
+	c := config.NewConfig(rootPath, "config", "config", config.Yaml)
+	DBS := dbs.NewDbs(l, true, c)
 	timeS := time_server.NewTimeServer(DBS)
 	o = NewOperate(DBS, timeS)
 	return

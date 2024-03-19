@@ -60,12 +60,12 @@ func (h *Handler) GetTaskTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("GetTaskTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	ht, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
 		h.l.Error().Println("GetTaskTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	h.l.Info().Println("GetTaskTemplateById: success")
 	return c.Status(200).JSON(e_task_template.Format(ht)[0])
@@ -148,15 +148,16 @@ func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("ExecuteTask: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	entry := SendTask{}
 	if err = c.BodyParser(&entry); err != nil {
 		h.l.Error().Println("ExecuteTask: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	st := e_task_template.SendTaskTemplate{
 		TemplateId:     id,
+		Source:         "Task Template",
 		TriggerFrom:    entry.TriggerFrom,
 		TriggerAccount: entry.TriggerAccount,
 		Token:          entry.Token,
@@ -164,7 +165,7 @@ func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
 	}
 	tid, err := h.o.Execute(c.UserContext(), st)
 	if err != nil {
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 3)
 	}
 	return c.Status(200).JSON(tid)
 }

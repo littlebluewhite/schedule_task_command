@@ -61,12 +61,12 @@ func (h *Handler) GetCommandTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("GetCommandTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	ht, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
 		h.l.Error().Println("GetCommandTemplateById: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	h.l.Info().Println("GetCommandTemplateById: success")
 	return c.Status(200).JSON(e_command_template.Format(ht)[0])
@@ -149,15 +149,16 @@ func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		h.l.Error().Println("ExecuteCommand: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 1)
 	}
 	entry := SendCommand{}
 	if err = c.BodyParser(&entry); err != nil {
 		h.l.Error().Println("ExecuteCommand: ", err)
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 2)
 	}
 	st := e_command_template.SendCommandTemplate{
 		TemplateId:     int32(id),
+		Source:         "Command Template",
 		TriggerFrom:    entry.TriggerFrom,
 		TriggerAccount: entry.TriggerAccount,
 		Token:          entry.Token,
@@ -165,7 +166,7 @@ func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 	}
 	commandId, err := h.o.Execute(c.UserContext(), st)
 	if err != nil {
-		return util.Err(c, err, 0)
+		return util.Err(c, err, 3)
 	}
 	return c.Status(200).JSON(commandId)
 }
