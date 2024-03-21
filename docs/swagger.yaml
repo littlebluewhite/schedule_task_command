@@ -736,7 +736,7 @@ definitions:
     properties:
       name:
         type: string
-      stages:
+      stage_items:
         items:
           $ref: '#/definitions/e_task_template.StageItemCreate'
         type: array
@@ -755,7 +755,7 @@ definitions:
         type: integer
       name:
         type: string
-      stages:
+      stage_items:
         items:
           $ref: '#/definitions/e_task_template.StageItemUpdate'
         type: array
@@ -979,7 +979,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.8
+  version: 2.13.9
 paths:
   /api/command/:
     get:

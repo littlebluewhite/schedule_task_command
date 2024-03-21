@@ -2603,7 +2603,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "stages": {
+                "stage_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/e_task_template.StageItemCreate"
@@ -2632,7 +2632,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "stages": {
+                "stage_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/e_task_template.StageItemUpdate"
@@ -2953,7 +2953,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.13.8",
+	Version:          "2.13.9",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},
