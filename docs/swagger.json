@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.13.8"
+        "version": "2.13.9"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -2595,7 +2595,7 @@
                 "name": {
                     "type": "string"
                 },
-                "stages": {
+                "stage_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/e_task_template.StageItemCreate"
@@ -2624,7 +2624,7 @@
                 "name": {
                     "type": "string"
                 },
-                "stages": {
+                "stage_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/e_task_template.StageItemUpdate"

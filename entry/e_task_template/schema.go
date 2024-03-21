@@ -41,7 +41,7 @@ type To struct {
 type TaskTemplateCreate struct {
 	Name       string            `json:"name" binding:"required"`
 	Visible    bool              `json:"visible"`
-	StageItems []StageItemCreate `json:"stages"`
+	StageItems []StageItemCreate `json:"stage_items"`
 	Tags       json.RawMessage   `json:"tags"`
 }
 
@@ -58,7 +58,7 @@ type TaskTemplateUpdate struct {
 	ID         int32             `json:"id" binding:"required"`
 	Name       *string           `json:"name"`
 	Visible    *bool             `json:"visible"`
-	StageItems []StageItemUpdate `json:"stages"`
+	StageItems []StageItemUpdate `json:"stage_items"`
 	Tags       json.RawMessage   `json:"tags"`
 }
 
