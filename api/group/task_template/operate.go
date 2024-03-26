@@ -306,7 +306,7 @@ func (o *Operate) generateTask(st e_task_template.SendTaskTemplate) (task e_task
 		task.Message = &CannotFindTemplate
 		return
 	}
-	trigger := fmt.Sprintf("Task Template No.: %d", st.TemplateId)
+	trigger := map[string]string{"task_template": fmt.Sprintf("%d", st.TemplateId)}
 	task.TriggerFrom = append(task.TriggerFrom, trigger)
 	task.TaskData = e_task_template.Format(ttList)[0]
 	return

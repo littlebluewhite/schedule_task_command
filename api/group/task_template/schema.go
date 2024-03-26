@@ -1,7 +1,7 @@
 package task_template
 
 type SendTask struct {
-	TriggerFrom    []string                  `json:"trigger_from" example:"[task execute]"`
+	TriggerFrom    []map[string]string       `json:"trigger_from"`
 	TriggerAccount string                    `json:"trigger_account" example:"Wilson"`
 	Token          string                    `json:"token"`
 	Variables      map[int]map[string]string `json:"variables"`

@@ -1506,11 +1506,11 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "[task execute]"
-                    ]
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "variables": {
                     "type": "object",
@@ -1574,7 +1574,10 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2348,7 +2351,10 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2416,7 +2422,10 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2690,7 +2699,10 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -2911,11 +2923,11 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "[task execute]"
-                    ]
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "variables": {
                     "type": "object",
@@ -2943,7 +2955,10 @@ const docTemplate = `{
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -2953,7 +2968,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.13.9",
+	Version:          "2.13.10",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

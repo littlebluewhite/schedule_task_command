@@ -52,7 +52,6 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 		if err != nil {
 			t.l.Error().Println("Error executing Command")
 		}
-		pt.TriggerFrom = append(pt.TriggerFrom, "redis channel")
 		_, _ = t.Execute(pt)
 	}
 }

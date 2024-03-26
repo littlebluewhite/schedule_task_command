@@ -16,7 +16,7 @@ func main() {
 	w := &sync.WaitGroup{}
 	redisConfig := config.RedisConfig{
 		Host:      "127.0.0.1",
-		Ports:     []string{"6379"},
+		Port:      "6379",
 		DB:        "0",
 		IsCluster: false,
 	}
@@ -52,14 +52,14 @@ func subT(ctx context.Context, r redis.UniversalClient) {
 }
 
 type publishTime struct {
-	TemplateId     int         `json:"template_id"`
-	TriggerFrom    []string    `json:"trigger_from"`
-	TriggerAccount string      `json:"trigger_account"`
-	Token          string      `json:"token"`
-	Time           time.Time   `json:"time"`
-	IsTime         bool        `json:"is_time"`
-	Status         Status      `json:"status"`
-	Message        *util.MyErr `json:"message"`
+	TemplateId     int                 `json:"template_id"`
+	TriggerFrom    []map[string]string `json:"trigger_from"`
+	TriggerAccount string              `json:"trigger_account"`
+	Token          string              `json:"token"`
+	Time           time.Time           `json:"time"`
+	IsTime         bool                `json:"is_time"`
+	Status         Status              `json:"status"`
+	Message        *util.MyErr         `json:"message"`
 }
 
 type Status int

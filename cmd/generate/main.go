@@ -4,6 +4,7 @@ import (
 	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"schedule_task_command/app/dbs/sql"
+	"schedule_task_command/util/config"
 )
 
 func main() {
@@ -17,7 +18,13 @@ func main() {
 		FieldCoverable: true,
 	})
 
-	db, err := sql.NewDB("mySQL", "gen_sql.log", "db")
+	db, err := sql.NewDB("mySQL", "gen_sql.log", config.SQLConfig{
+		Host:     "127.0.0.1",
+		Port:     "3306",
+		User:     "root",
+		Password: "123456",
+		DB:       "schedule_test",
+	})
 	if err != nil {
 		panic(err)
 	}

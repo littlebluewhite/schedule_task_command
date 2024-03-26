@@ -76,7 +76,7 @@ type StageItemUpdate struct {
 type SendTaskTemplate struct {
 	TemplateId     int                       `json:"template_id"`
 	Source         string                    `json:"source"`
-	TriggerFrom    []string                  `json:"trigger_from"`
+	TriggerFrom    []map[string]string       `json:"trigger_from"`
 	TriggerAccount string                    `json:"trigger_account"`
 	Token          string                    `json:"token"`
 	Variables      map[int]map[string]string `json:"variables"`

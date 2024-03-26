@@ -20,9 +20,9 @@ func main() {
 	Config := config.NewConfig[config.Config](".", "config", "config", config.Yaml)
 	var c config.SQLConfig
 	if t {
-		c = Config.Conn.TestSQL
+		c = Config.TestSQL
 	} else {
-		c = Config.Conn.SQL
+		c = Config.SQL
 	}
 
 	client := migrate.New(c)

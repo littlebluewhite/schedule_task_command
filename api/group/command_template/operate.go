@@ -333,7 +333,7 @@ func (o *Operate) generateCommand(sc e_command_template.SendCommandTemplate) (c 
 		return
 	}
 	ct := e_command_template.Format(cList)[0]
-	trigger := fmt.Sprintf("Command Template No.: %d", c.TemplateId)
+	trigger := map[string]string{"command_template": fmt.Sprintf("%d", sc.TemplateId)}
 	c.TriggerFrom = append(c.TriggerFrom, trigger)
 	c.CommandData = ct
 

@@ -145,7 +145,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 	executeCh := make(chan comBuilder, len(sm.execute))
 	defer close(executeCh)
 
-	triggerFrom := append(task.TriggerFrom, fmt.Sprintf("Task: %d", task.ID))
+	triggerFrom := append(task.TriggerFrom, map[string]string{"task": fmt.Sprintf("%d", task.ID)})
 	for _, stage := range sm.monitor {
 		go func(stage e_task_template.StageItem) {
 			com := t.ts2Com(stage, triggerFrom, task)
@@ -195,7 +195,7 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 	return task
 }
 
-func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []string,
+func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []map[string]string,
 	task e_task.Task) (c e_command.Command) {
 	// get variables
 	variables, err := getStageVariables(stage, task)
@@ -215,13 +215,15 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []st
 	if stage.CommandTemplate.ID != 0 {
 		c.CommandData = stage.CommandTemplate
 		// fetch command template as command data
-	} else if stage.CommandTemplateID != 0 {
+	} else if stage.CommandTemplateID == 0 {
 		var cacheMap map[int]model.CommandTemplate
 		if x, found := t.dbs.GetCache().Get("commandTemplates"); found {
 			cacheMap = x.(map[int]model.CommandTemplate)
 		}
 		c.CommandData = e_command_template.M2Entry(cacheMap[int(stage.CommandTemplateID)])
 	}
+	trigger := map[string]string{"command_template": fmt.Sprintf("%d", c.CommandData.ID)}
+	c.TriggerFrom = append(c.TriggerFrom, trigger)
 
 	return
 }

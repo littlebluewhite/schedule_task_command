@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.13.9"
+        "version": "2.13.10"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -1498,11 +1498,11 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "[task execute]"
-                    ]
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "variables": {
                     "type": "object",
@@ -1566,7 +1566,10 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2340,7 +2343,10 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2408,7 +2414,10 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "variables": {
@@ -2682,7 +2691,10 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -2903,11 +2915,11 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "[task execute]"
-                    ]
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "variables": {
                     "type": "object",
@@ -2935,7 +2947,10 @@
                 "trigger_from": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }

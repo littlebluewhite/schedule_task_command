@@ -73,9 +73,9 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				if !schedule.Enabled {
 					return
 				}
-				scheduleId := fmt.Sprintf("Schedule ID: %d", schedule.ID)
+				scheduleId := fmt.Sprintf("%d", schedule.ID)
 				token := fmt.Sprintf("schedule-%s-%s", scheduleId, t)
-				triggerFrom := []string{scheduleId}
+				triggerFrom := []map[string]string{{"schedule": scheduleId}}
 				// Check time
 				pt := e_time.PublishTime{
 					TriggerFrom: triggerFrom,
@@ -133,6 +133,9 @@ func (s *ScheduleServer[T, U]) generateTask(st e_task_template.SendTaskTemplate)
 		return
 	}
 	task.TaskData = e_task_template.Format([]model.TaskTemplate{mt})[0]
+
+	trigger := map[string]string{"task_template": fmt.Sprintf("%d", st.TemplateId)}
+	task.TriggerFrom = append(task.TriggerFrom, trigger)
 	return
 }
 

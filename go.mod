@@ -6,7 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.0
 	github.com/goccy/go-json v0.10.2
 	github.com/gofiber/contrib/websocket v1.3.0
-	github.com/gofiber/fiber/v2 v2.52.2
+	github.com/gofiber/fiber/v2 v2.52.3
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/influxdata/influxdb-client-go/v2 v2.13.0
@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.3
 	gorm.io/datatypes v1.2.0
-	gorm.io/driver/mysql v1.5.5
+	gorm.io/driver/mysql v1.5.6
 	gorm.io/gen v0.3.25
 	gorm.io/gorm v1.25.8
 	gorm.io/plugin/dbresolver v1.5.1
