@@ -23,7 +23,6 @@ func rdbSub(o *Operate, l logFile.LogFile) {
 		if err != nil {
 			l.Error().Println("send data is not correctly")
 		}
-		s.TriggerFrom = append(s.TriggerFrom, "time_template redis channel")
 		pt := o.generatePublishTime(s)
 		_, err = o.timeS.Execute(pt)
 		if err != nil {

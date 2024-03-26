@@ -12,10 +12,10 @@ definitions:
         example: Wilson
         type: string
       trigger_from:
-        example:
-        - '[task execute]'
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
       variables:
         additionalProperties:
@@ -58,7 +58,9 @@ definitions:
         type: string
       trigger_from:
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
       variables:
         additionalProperties:
@@ -569,7 +571,9 @@ definitions:
         type: string
       trigger_from:
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
       variables:
         additionalProperties:
@@ -614,7 +618,9 @@ definitions:
         type: string
       trigger_from:
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
       variables:
         additionalProperties:
@@ -795,7 +801,9 @@ definitions:
         type: string
       trigger_from:
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
     type: object
   e_time_data.TimeDatum:
@@ -942,10 +950,10 @@ definitions:
         example: Wilson
         type: string
       trigger_from:
-        example:
-        - '[task execute]'
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
       variables:
         additionalProperties:
@@ -964,7 +972,9 @@ definitions:
         type: string
       trigger_from:
         items:
-          type: string
+          additionalProperties:
+            type: string
+          type: object
         type: array
     type: object
 host: 127.0.0.1:5487
@@ -979,7 +989,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.9
+  version: 2.13.10
 paths:
   /api/command/:
     get:

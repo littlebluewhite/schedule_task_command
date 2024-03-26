@@ -51,19 +51,19 @@ func (s Status) MarshalJSON() ([]byte, error) {
 }
 
 type Command struct {
-	CommandId      string            `json:"command_id"`
-	Token          string            `json:"token"`
-	From           time.Time         `json:"from"`
-	To             *time.Time        `json:"to"`
-	Variables      map[string]string `json:"variables"`
-	TriggerFrom    []string          `json:"trigger_from"`
-	TriggerAccount string            `json:"trigger_account"`
-	StatusCode     int               `json:"status_code"`
-	Stages         map[int]string    `json:"stages"`
-	RespData       json.RawMessage   `json:"resp_data"`
-	Status         Status            `json:"status"`
-	Message        error             `json:"message"`
-	TemplateID     int               `json:"template_id"`
+	CommandId      string              `json:"command_id"`
+	Token          string              `json:"token"`
+	From           time.Time           `json:"from"`
+	To             *time.Time          `json:"to"`
+	Variables      map[string]string   `json:"variables"`
+	TriggerFrom    []map[string]string `json:"trigger_from"`
+	TriggerAccount string              `json:"trigger_account"`
+	StatusCode     int                 `json:"status_code"`
+	Stages         map[int]string      `json:"stages"`
+	RespData       json.RawMessage     `json:"resp_data"`
+	Status         Status              `json:"status"`
+	Message        error               `json:"message"`
+	TemplateID     int                 `json:"template_id"`
 }
 
 type MyError string

@@ -9,7 +9,7 @@ import (
 
 type PublishTime struct {
 	TemplateId     int                   `json:"template_id"`
-	TriggerFrom    []string              `json:"trigger_from"`
+	TriggerFrom    []map[string]string   `json:"trigger_from"`
 	TriggerAccount string                `json:"trigger_account"`
 	Token          string                `json:"token"`
 	Time           time.Time             `json:"time"`

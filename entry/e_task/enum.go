@@ -46,7 +46,7 @@ type TaskPub struct {
 	To             *time.Time                   `json:"to"`
 	Variables      map[int]map[string]string    `json:"variables"`
 	Source         string                       `json:"source"`
-	TriggerFrom    []string                     `json:"trigger_from"`
+	TriggerFrom    []map[string]string          `json:"trigger_from"`
 	TriggerAccount string                       `json:"trigger_account"`
 	Status         Status                       `json:"status"`
 	StageNumber    int32                        `json:"stage_number"`

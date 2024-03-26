@@ -24,7 +24,7 @@ func setUpServer() (cs *CommandServer, o *command.Operate) {
 	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
 	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
 	l := logFile.NewLogFile("test", "commandServer.log")
-	DBS := dbs.NewDbs(l, true, Config.Conn)
+	DBS := dbs.NewDbs(l, true, Config)
 	cs = NewCommandServer(DBS, nil)
 	o = command.NewOperate(cs)
 	return
