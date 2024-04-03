@@ -335,7 +335,9 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err 
 
 func (c *CommandServer) sendWebsocket(com e_command.Command) {
 	cb, _ := json.Marshal(e_command.ToPub(com))
-	c.hm.Broadcast(e_module.Command, cb)
+	if c.hm != nil {
+		c.hm.Broadcast(e_module.Command, cb)
+	}
 }
 
 func (c *CommandServer) writeCommand(com e_command.Command) {

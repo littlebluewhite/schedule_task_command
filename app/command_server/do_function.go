@@ -128,6 +128,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		}
 	}
 	req.Header.Set("Content-Type", contentType)
+	fmt.Println(req.Header)
 	client := &http.Client{}
 	var resp *http.Response
 	resp1, e := client.Do(req)
