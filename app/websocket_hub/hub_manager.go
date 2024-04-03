@@ -34,6 +34,7 @@ func (hm *HubManager) RegisterHub(module e_module.Module) {
 
 func (hm *HubManager) Broadcast(module e_module.Module, msg []byte) {
 	hm.l.Info().Printf("module: %s hub broadcast", module)
+	fmt.Println(hm.hubs)
 	hm.hubs[module].Broadcast(msg)
 }
 

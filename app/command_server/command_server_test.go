@@ -54,7 +54,7 @@ func TestExecuteReturnId(t *testing.T) {
 		}
 		commandId, err := cs.ExecuteReturnId(ctx, com)
 		require.Error(t, err)
-		require.Equal(t, commandId, "")
+		require.Equal(t, commandId, uint64(0))
 		fmt.Println(commandId)
 		sl, _ := o.List()
 		fmt.Printf("data: %+v\n", sl)
@@ -80,7 +80,7 @@ func TestDoCommand(t *testing.T) {
 		h1 := e_command_template.HTTPSCommand{
 			Method: e_command_template.GET,
 			URL:    "http://192.168.1.10:9330/api/object/value/?id_list=1",
-			Header: nil,
+			Header: []byte(`[{"key": "Authorization", "value":"Bearer 57at3klp0y192aecwc", "is_active":true,"data_type": "text"}]`),
 		}
 		m1 := e_command_template.Monitor{
 			StatusCode: 200,
@@ -102,13 +102,20 @@ func TestDoCommand(t *testing.T) {
 				Timeout:  10000,
 				Http:     &h1,
 				Monitor:  &m1,
+				ParserReturn: []e_command_template.ParserReturn{
+					{
+						Key:        "value",
+						SearchRule: "root.[0]array.value",
+						Name:       "value",
+					},
+				},
 			},
 		}
 
 		h2 := e_command_template.HTTPSCommand{
 			Method:   e_command_template.PUT,
 			URL:      "http://192.168.1.10:9330/api/object/insert_value/",
-			Header:   []byte(`[{"key": "test","value": "123456","is_active": true,"data_type": "text"}]`),
+			Header:   []byte(`[{"key": "test","value": "123456", "is_active":true,"data_type": "text"},{"key":"Authorization", "value":"Bearer 57at3klp0y192aecwc", "is_active":true,"data_type": "text"}]`),
 			Body:     []byte(`[{"id": 1,"value": "{{value}}"}]`),
 			BodyType: e_command_template.Json,
 		}
@@ -155,11 +162,12 @@ func TestDoCommand(t *testing.T) {
 		wg.Wait()
 		time.Sleep(1 * time.Second)
 		com1 = cs.ReadMap()[comId]
-		fmt.Printf("%+v\n", com1)
-		fmt.Printf("%+v\n", string(com1.RespData))
+		fmt.Printf("com1: %+v\n", com1)
+		fmt.Printf("com1: %+v\n", string(com1.RespData))
 		time.Sleep(1 * time.Second)
 		err := cs.CancelCommand(comId, "test")
 		require.Error(t, err)
+		require.Equal(t, "3", com1.Return["value"])
 	})
 	t.Run("command cancel", func(t *testing.T) {
 		h := e_command_template.HTTPSCommand{

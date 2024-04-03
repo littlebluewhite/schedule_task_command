@@ -368,7 +368,9 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 
 func (t *TaskServer[T]) sendWebsocket(task e_task.Task) {
 	tb, _ := json.Marshal(e_task.ToPub(task))
-	t.hm.Broadcast(e_module.Task, tb)
+	if t.hm != nil {
+		t.hm.Broadcast(e_module.Task, tb)
+	}
 }
 
 func (t *TaskServer[T]) GetCommandServer() T {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/require"
+	"path/filepath"
+	"runtime"
 	"schedule_task_command/api"
 	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
@@ -11,6 +13,7 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
+	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
 	"sync"
 	"testing"
@@ -19,9 +22,16 @@ import (
 
 func setUpServer() (ts *TaskServer[api.CommandServer]) {
 	l := logFile.NewLogFile("test", "taskServer.log")
-	DBS := dbs.NewDbs(l, true)
+
+	_, b, _, _ := runtime.Caller(0)
+	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
+	// read config
+	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
+	DBS := dbs.NewDbs(l, true, Config)
+	// create websocket manager
 	cs := command_server.NewCommandServer(DBS, nil)
 	ts = NewTaskServer[api.CommandServer](DBS, cs, nil)
+	ts.Start(context.Background(), 2*time.Minute)
 	return
 }
 
@@ -47,7 +57,7 @@ func TestExecuteReturnId(t *testing.T) {
 		}
 		id, err := ts.ExecuteReturnId(ctx, task)
 		require.Error(t, err)
-		require.Equal(t, id, "")
+		require.Equal(t, id, uint64(0))
 		time.Sleep(1 * time.Second)
 		fmt.Println(ts.GetList())
 	})
@@ -122,6 +132,13 @@ func TestDoTask(t *testing.T) {
 							Timeout:  10000,
 							Http:     &h1,
 							Monitor:  &m1,
+							ParserReturn: []e_command_template.ParserReturn{
+								{
+									Name:       "key",
+									Key:        "key",
+									SearchRule: "root.[0]array.value",
+								},
+							},
 						},
 					},
 					{
