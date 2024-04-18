@@ -75,10 +75,10 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
       1. run migrate container
          DB_HOST可指定特定的DB IP
 
-         `docker run --name schedule-migrate --rm -e CONN_SQL_HOST=host.docker.internal schedule-migrate:latest`
+         `docker run --name schedule-migrate --rm -e SQL_HOST=host.docker.internal schedule-migrate:latest`
       2. run api container
 
-         `docker run --name schedule -p 5487:5487 -e CONN_SQL_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.13.14`
+         `docker run --name schedule -p 5487:5487 -e SQL_HOST=host.docker.internal -v ${PWD}/docker/log:/app/log schedule:2.13.14`
 2. ##### Linux系統
 
    1. 到mysql創建一個新的database "schedule"
@@ -95,11 +95,11 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
          DB_HOST可指定特定的DB IP
 
          `docker run --name schedule-migrate --rm --network="host" schedule-migrate:latest`
-         `docker run --name schedule-migrate --rm -e CONN_SQL_HOST=192.168.1.11 schedule-migrate:latest`
+         `docker run --name schedule-migrate --rm -e SQL_HOST=192.168.1.11 schedule-migrate:latest`
       2. run api container
 
          `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:2.13.14 -e TZ=Asia/Taipei`
-         `docker run --name schedule -p 5487:5487 -e TZ=Asia/Taipei -e CONN_SQL_HOST=192.168.1.11 -e CONN_INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -v ${PWD}/docker/log:/app/log schedule:2.13.14`
+         `docker run --name schedule -p 5487:5487 -e TZ=Asia/Taipei -e SQL_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -e REDIS_PORT=7001 -e REDIS_IS_CLUSTER=True -v ${PWD}/docker/log:/app/log schedule:2.13.14`
 
 # Log File
 

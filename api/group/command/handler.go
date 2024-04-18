@@ -2,8 +2,6 @@ package command
 
 import (
 	"errors"
-	"fmt"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util"
@@ -65,9 +63,6 @@ func (h *Handler) GetCommandById(c *fiber.Ctx) error {
 		h.l.Error().Println("GetCommandById: ", err)
 		return util.Err(c, err, 2)
 	}
-	b, e := json.Marshal(com)
-	fmt.Println(e)
-	fmt.Println(b)
 	return c.Status(200).JSON(com)
 }
 
