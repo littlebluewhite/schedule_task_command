@@ -149,6 +149,15 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		return com
 	} else {
 		com.RespData = respBody1
+		// check respBody1
+		b, err := json.Marshal(com.RespData)
+		if err != nil {
+			// to json string
+			b = append([]byte("\""), respBody1...)
+			b = append(b, []byte("\"")...)
+			com.RespData = b
+		}
+
 	}
 	defer func() {
 		if e := resp.Body.Close(); e != nil {

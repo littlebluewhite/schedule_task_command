@@ -1,18 +1,11 @@
 package main
 
-import (
-	"fmt"
-	"github.com/goccy/go-json"
-)
+import "fmt"
 
 func main() {
-	v := make(map[string]string)
-	if err := json.Unmarshal([]byte("[]"), &v); err != nil {
-		fmt.Println(err)
+	b := []byte("asf")
+	for _, value := range b {
+		fmt.Printf("%T, %v", value, value)
 	}
-	for key, value := range map[string]string{} {
-		v[key] = value
-	}
-	fmt.Println(v == nil)
-	fmt.Println(v)
+	fmt.Println([]byte("\""))
 }
