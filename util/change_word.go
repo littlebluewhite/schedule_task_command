@@ -45,6 +45,37 @@ func ChangeStringVariables(data string, variables map[string]string) (string, er
 	return data, nil
 }
 
+func GetByteVariables(data []byte) []string {
+	dataC := slices.Clone(data)
+	r, _ := regexp.Compile(`{{([^{}]*)}}`)
+	c := r.FindAllIndex(dataC, -1)
+	result := make([]string, 0, len(c))
+	for i := len(c) - 1; i >= 0; i-- {
+		start := c[i][0]
+		end := c[i][1]
+		v := string(dataC[start+2 : end-2])
+		if !slices.Contains(result, v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+func GetStringVariables(data string) []string {
+	r, _ := regexp.Compile(`{{([^{}]*)}}`)
+	c := r.FindAllStringIndex(data, -1)
+	result := make([]string, 0, len(c))
+	for i := len(c) - 1; i >= 0; i-- {
+		start := c[i][0]
+		end := c[i][1]
+		v := data[start+2 : end-2]
+		if !slices.Contains(result, v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
 func SliceT(data []int) {
 	s := []int{9, 9, 9, 9, 9}
 	d := slices.Replace(data, 2, 4, s...)

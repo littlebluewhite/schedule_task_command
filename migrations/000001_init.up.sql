@@ -36,18 +36,19 @@ CREATE TABLE `schedule`
 
 CREATE TABLE `command_template`
 (
-    `id`          int PRIMARY KEY AUTO_INCREMENT,
-    `name`        varchar(255) UNIQUE                               NOT NULL,
-    `visible`     boolean                                           NOT NULL,
-    `protocol`    ENUM ('http', 'websocket', 'mqtt', 'redis_topic') NOT NULL,
-    `timeout`     int                                               NOT NULL,
-    `description` varchar(255),
-    `host`        varchar(255)                                      NOT NULL,
-    `port`        varchar(255)                                      NOT NULL,
-    `updated_at`  datetime,
-    `created_at`  datetime,
-    `tags`        json DEFAULT (JSON_ARRAY()),
-    `variable`    json DEFAULT (JSON_OBJECT())
+    `id`           int PRIMARY KEY AUTO_INCREMENT,
+    `name`         varchar(255) UNIQUE                               NOT NULL,
+    `visible`      boolean                                           NOT NULL,
+    `protocol`     ENUM ('http', 'websocket', 'mqtt', 'redis_topic') NOT NULL,
+    `timeout`      int                                               NOT NULL,
+    `description`  varchar(255),
+    `host`         varchar(255)                                      NOT NULL,
+    `port`         varchar(255)                                      NOT NULL,
+    `updated_at`   datetime,
+    `created_at`   datetime,
+    `tags`         json DEFAULT (JSON_ARRAY()),
+    `variable`     json DEFAULT (JSON_OBJECT()),
+    `variable_key` json DEFAULT (JSON_ARRAY())
 );
 
 CREATE TABLE `https_command`

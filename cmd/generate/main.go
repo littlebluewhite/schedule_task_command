@@ -86,6 +86,7 @@ func main() {
 		}),
 		gen.FieldType("tags", "json.RawMessage"),
 		gen.FieldType("variable", "json.RawMessage"),
+		gen.FieldType("variable_key", "json.RawMessage"),
 	)
 	stageItem := g.GenerateModel("stage_item",
 		gen.FieldRelate(field.BelongsTo, "CommandTemplate", commandTemplate, &field.RelateConfig{

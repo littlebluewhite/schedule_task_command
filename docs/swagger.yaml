@@ -107,6 +107,10 @@ definitions:
         items:
           type: integer
         type: array
+      variable_key:
+        items:
+          type: integer
+        type: array
       visible:
         type: boolean
       websocket:
@@ -989,7 +993,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: Schedule-Task-Command swagger API
-  version: 2.13.14
+  version: 2.14.0
 paths:
   /api/command/:
     get:
@@ -1213,6 +1217,27 @@ paths:
           schema:
             type: string
       summary: execute command templates
+      tags:
+      - command_template
+  /api/command_template/send/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: send command template body
+        in: body
+        name: command_template
+        required: true
+        schema:
+          $ref: '#/definitions/e_command_template.CommandTemplateCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command.Command'
+      summary: Test command and return result
       tags:
       - command_template
   /api/header_template/:

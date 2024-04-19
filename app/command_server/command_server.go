@@ -173,6 +173,27 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 	return com
 }
 
+func (c *CommandServer) TestExecute(ctx context.Context, com e_command.Command) e_command.Command {
+	// pass the variables
+	com = c.getVariables(com)
+	// add initial variables
+	if com.Variables == nil {
+		com.Variables = make(map[string]string)
+	}
+	if com.Message != nil {
+		c.l.Error().Println(com.Message)
+		return com
+	}
+	from := time.Now()
+	com.From = from
+	ch := make(chan e_command.Command)
+	go func() {
+		ch <- c.doCommandNoRecord(ctx, com)
+	}()
+	com = <-ch
+	return com
+}
+
 func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_command.Command {
 	ctx, cancel := context.WithTimeout(ctx,
 		time.Duration(com.CommandData.Timeout)*time.Millisecond)
@@ -199,6 +220,23 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	c.writeToHistory(com)
 	// publish to all channel
 	c.publishContainer(context.Background(), com)
+	return com
+}
+
+func (c *CommandServer) doCommandNoRecord(ctx context.Context, com e_command.Command) e_command.Command {
+	ctx, cancel := context.WithTimeout(ctx,
+		time.Duration(com.CommandData.Timeout)*time.Millisecond)
+
+	// add default variables to command
+	com = addDefaultVariables(com)
+
+	com.Status = e_command.Process
+	com.CancelFunc = cancel
+
+	com = c.requestProtocol(ctx, com)
+	now := time.Now()
+	com.To = &now
+
 	return com
 }
 
