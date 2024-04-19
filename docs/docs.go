@@ -355,6 +355,7 @@ const docTemplate = `{
                         "description": "send command template body",
                         "name": "command_template",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/e_command_template.CommandTemplateCreate"
                         }
@@ -1680,6 +1681,12 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "variable_key": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "visible": {
                     "type": "boolean"
                 },
@@ -3000,7 +3007,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.13.14",
+	Version:          "2.14.0",
 	Host:             "127.0.0.1:5487",
 	BasePath:         "",
 	Schemes:          []string{},

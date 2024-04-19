@@ -13,7 +13,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.13.14"
+        "version": "2.14.0"
     },
     "host": "127.0.0.1:5487",
     "paths": {
@@ -347,6 +347,7 @@
                         "description": "send command template body",
                         "name": "command_template",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/e_command_template.CommandTemplateCreate"
                         }
@@ -1667,6 +1668,12 @@
                     "type": "string"
                 },
                 "variable": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "variable_key": {
                     "type": "array",
                     "items": {
                         "type": "integer"
