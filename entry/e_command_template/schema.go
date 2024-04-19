@@ -25,6 +25,7 @@ type CommandTemplate struct {
 	Monitor      *Monitor          `json:"monitor"`
 	Tags         json.RawMessage   `json:"tags"`
 	Variable     json.RawMessage   `json:"variable"`
+	VariableKey  json.RawMessage   `json:"variable_key"`
 	ParserReturn []ParserReturn    `json:"parser_return"`
 }
 

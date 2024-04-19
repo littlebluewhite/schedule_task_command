@@ -1,7 +1,9 @@
 package e_command_template
 
 import (
+	"github.com/goccy/go-json"
 	"schedule_task_command/dal/model"
+	"schedule_task_command/util"
 )
 
 func Format(ct []model.CommandTemplate) []CommandTemplate {
@@ -37,6 +39,7 @@ func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 		CreatedAt:    mct.CreatedAt,
 		Tags:         mct.Tags,
 		Variable:     mct.Variable,
+		VariableKey:  mct.VariableKey,
 		ParserReturn: parserReturn,
 	}
 	if mct.Http != nil {
@@ -100,6 +103,7 @@ func M2Entry(mct model.CommandTemplate) (ct CommandTemplate) {
 func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 	result := make([]*model.CommandTemplate, 0, len(c))
 	for _, item := range c {
+		variableKey := make([]string, 0, 8)
 		parserReturn := make([]model.ParserReturn, 0, len(item.ParserReturn))
 		for _, pr := range item.ParserReturn {
 			parserReturn = append(parserReturn, model.ParserReturn{
@@ -136,6 +140,9 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 				BodyType:          bodyType,
 				Body:              item.Http.Body,
 			}
+			variableKey = append(variableKey, util.GetStringVariables(item.Http.URL)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Http.Header)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Http.Body)...)
 		}
 		if item.Mqtt != nil {
 			i.Mqtt = &model.MqttCommand{
@@ -144,6 +151,9 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 				Message: item.Mqtt.Message,
 				Type:    item.Mqtt.Type,
 			}
+			variableKey = append(variableKey, util.GetStringVariables(item.Mqtt.Topic)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Mqtt.Header)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Mqtt.Message)...)
 		}
 		if item.Websocket != nil {
 			i.Websocket = &model.WebsocketCommand{
@@ -151,6 +161,9 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 				Header:  item.Websocket.Header,
 				Message: item.Websocket.Message,
 			}
+			variableKey = append(variableKey, util.GetStringVariables(item.Websocket.URL)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Websocket.Header)...)
+			variableKey = append(variableKey, util.GetStringVariables(*item.Websocket.Message)...)
 		}
 		if item.Redis != nil {
 			i.Redis = &model.RedisCommand{
@@ -160,6 +173,8 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 				Message:  item.Redis.Message,
 				Type:     item.Redis.Type,
 			}
+			variableKey = append(variableKey, util.GetStringVariables(*item.Redis.Topic)...)
+			variableKey = append(variableKey, util.GetByteVariables(item.Redis.Message)...)
 		}
 		if item.Monitor != nil {
 			mResult := make([]model.MCondition, 0, len(item.Monitor.MConditions))
@@ -180,6 +195,8 @@ func CreateConvert(c []*CommandTemplateCreate) []*model.CommandTemplate {
 				MConditions: mResult,
 			}
 		}
+		vkb, _ := json.Marshal(variableKey)
+		i.VariableKey = vkb
 		result = append(result, &i)
 	}
 	return result
@@ -281,6 +298,28 @@ func UpdateConvert(ctMap map[int]model.CommandTemplate, uct []*CommandTemplateUp
 				ct.Monitor.Interval = *u.Monitor.Interval
 			}
 		}
+		variableKey := make([]string, 0, 8)
+		if ct.Http != nil {
+			variableKey = append(variableKey, util.GetStringVariables(ct.Http.URL)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Http.Header)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Http.Body)...)
+		}
+		if ct.Mqtt != nil {
+			variableKey = append(variableKey, util.GetStringVariables(ct.Mqtt.Topic)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Mqtt.Header)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Mqtt.Message)...)
+		}
+		if ct.Websocket != nil {
+			variableKey = append(variableKey, util.GetStringVariables(ct.Websocket.URL)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Websocket.Header)...)
+			variableKey = append(variableKey, util.GetStringVariables(*ct.Websocket.Message)...)
+		}
+		if ct.Redis != nil {
+			variableKey = append(variableKey, util.GetStringVariables(*ct.Redis.Topic)...)
+			variableKey = append(variableKey, util.GetByteVariables(ct.Redis.Message)...)
+		}
+		vkb, _ := json.Marshal(variableKey)
+		ct.VariableKey = vkb
 		result = append(result, &ct)
 	}
 	return

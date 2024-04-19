@@ -36,6 +36,41 @@ func TestChangeStringVariables(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+func TestGetByteVariables(t *testing.T) {
+	t.Run("test1", func(t *testing.T) {
+		data := []byte("{name:{{name}}, id:{{id}}, last_name:{{name}}}")
+		data2 := GetByteVariables(data)
+		fmt.Println("data2: ", data2)
+		require.Contains(t, data2, "name")
+		require.Contains(t, data2, "id")
+	})
+	t.Run("test2", func(t *testing.T) {
+		data := GetByteVariables([]byte("name: {{name}}, id:{{id}}"))
+		fmt.Println("data: ", data)
+		require.Contains(t, data, "name")
+		require.Contains(t, data, "id")
+
+	})
+}
+
+func TestGetStringVariables(t *testing.T) {
+	t.Run("test1", func(t *testing.T) {
+		data := "{name:{{name}}, id:{{id}}, last_name:{{name}}}"
+		data2 := GetStringVariables(data)
+		fmt.Println("data2: ", data2)
+		require.Contains(t, data2, "name")
+		require.Contains(t, data2, "id")
+	})
+	t.Run("test2", func(t *testing.T) {
+		data := GetStringVariables("name: {{name}}, id:{{id}}")
+		fmt.Println("data: ", data)
+		require.Contains(t, data, "name")
+		require.Contains(t, data, "id")
+
+	})
+}
+
 func TestSlice(t *testing.T) {
 	t.Run("test1", func(t *testing.T) {
 		SliceT([]int{1, 2, 3, 4, 5, 6, 7, 8})

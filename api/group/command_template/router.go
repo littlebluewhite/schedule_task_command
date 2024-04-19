@@ -35,6 +35,7 @@ func RegisterRouter(g group) {
 	ct.Patch("/", h.UpdateCommandTemplate)
 	ct.Delete("/", h.DeleteCommandTemplate)
 	ct.Post("/execute/:id", h.ExecuteCommand)
+	ct.Post("/send/", h.SendCommandTemplate)
 }
 
 type group interface {

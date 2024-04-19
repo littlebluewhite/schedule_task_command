@@ -365,3 +365,14 @@ func (o *Operate) reloadTaskTemplate(ctx context.Context, q *query.Query, comman
 	}
 	return nil
 }
+
+func (o *Operate) Send(ctx context.Context, ctc e_command_template.CommandTemplateCreate) e_command.CommandPub {
+	mct := e_command_template.CreateConvert([]*e_command_template.CommandTemplateCreate{&ctc})
+	ct := e_command_template.M2Entry(*mct[0])
+	com := e_command.Command{
+		CommandData: ct,
+	}
+	com = o.commandS.TestExecute(ctx, com)
+	pubCom := e_command.ToPub(com)
+	return pubCom
+}

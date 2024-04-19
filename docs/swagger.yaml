@@ -1215,6 +1215,26 @@ paths:
       summary: execute command templates
       tags:
       - command_template
+  /api/command_template/send/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: send command template body
+        in: body
+        name: command_template
+        schema:
+          $ref: '#/definitions/e_command_template.CommandTemplateCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/e_command.Command'
+      summary: Test command and return result
+      tags:
+      - command_template
   /api/header_template/:
     delete:
       parameters:

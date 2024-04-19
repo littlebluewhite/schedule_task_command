@@ -338,6 +338,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/command_template/send/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "command_template"
+                ],
+                "summary": "Test command and return result",
+                "parameters": [
+                    {
+                        "description": "send command template body",
+                        "name": "command_template",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/e_command_template.CommandTemplateCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/e_command.Command"
+                        }
+                    }
+                }
+            }
+        },
         "/api/command_template/{id}": {
             "get": {
                 "description": "Get command templates by id",

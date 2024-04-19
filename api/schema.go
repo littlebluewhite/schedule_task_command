@@ -30,6 +30,7 @@ type CommandServer interface {
 	ExecuteReturnId(ctx context.Context, command e_command.Command) (id uint64, err error)
 	ReadFromHistory(id, commandTemplateId, start, stop, status string) ([]e_command.CommandPub, error)
 	CancelCommand(id uint64, message string) error
+	TestExecute(ctx context.Context, com e_command.Command) e_command.Command
 }
 
 type ScheduleSer interface {
