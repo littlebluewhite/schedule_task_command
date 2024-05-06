@@ -27,7 +27,9 @@ func newClusterRedis(redisConfig config.RedisConfig) *redis.ClusterClient {
 	address := make([]string, 0, 1)
 	address = append(address, fmt.Sprintf("%s:%s", redisConfig.Host, redisConfig.Port))
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs: address,
+		Addrs:    address,
+		Username: redisConfig.User,
+		Password: redisConfig.Password,
 	})
 	_, err := rdb.Ping(context.Background()).Result()
 	if err != nil {

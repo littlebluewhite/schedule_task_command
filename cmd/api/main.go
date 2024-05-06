@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"os/signal"
@@ -15,6 +16,7 @@ import (
 	"schedule_task_command/app/task_server"
 	"schedule_task_command/app/time_server"
 	"schedule_task_command/app/websocket_hub"
+	"schedule_task_command/docs"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/logFile"
@@ -37,7 +39,7 @@ func init() {
 }
 
 // @title           Schedule-Task-Command swagger API
-// @version         2.14.0
+// @version         0
 // @description     This is a schedule-command server.
 // @termsOfService  http://swagger.io/terms/
 
@@ -61,6 +63,11 @@ func main() {
 	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
 
 	ServerConfig := Config.Server
+
+	// swagger docs host
+	docsHost := fmt.Sprintf("%s:%s", ServerConfig.SwaggerHost, ServerConfig.Port)
+	docs.SwaggerInfo.Host = docsHost
+	docs.SwaggerInfo.Version = ServerConfig.Version
 
 	// DBs start includes SQL Cache
 	DBS := dbs.NewDbs(mainLog, false, Config)
