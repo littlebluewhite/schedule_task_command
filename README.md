@@ -99,7 +99,7 @@ https://gamma.app/public/Schedule-Task-Command-Time-9m16h8grxn7q4qw
       2. run api container
 
          `docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:latest -e TZ=Asia/Taipei`
-         `docker run --name schedule -p 5487:5487 -e TZ=Asia/Taipei -e SQL_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -e REDIS_PORT=7001 -e REDIS_IS_CLUSTER=True -v ${PWD}/docker/log:/app/log schedule:latest`
+         `docker run --name schedule -p 5487:5487 --network="host" -e TZ=Asia/Taipei -e SQL_HOST=192.168.1.11 -e INFLUXDB_HOST=192.168.1.11 -e REDIS_HOST=192.168.1.11 -e REDIS_PORT=7001 -e REDIS_IS_CLUSTER=True -e SERVER_SWAGGER_HOST=192.168.1.10 -v ${PWD}/docker/log:/app/log schedule:latest`
 
 # Log File
 
