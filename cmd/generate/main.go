@@ -18,7 +18,7 @@ func main() {
 		FieldCoverable: true,
 	})
 
-	db, err := sql.NewDB("mySQL", "gen_sql.log", config.SQLConfig{
+	db, err := sql.NewDB("mySQL", "gen_sql.my_log", config.SQLConfig{
 		Host:     "127.0.0.1",
 		Port:     "3306",
 		User:     "root",

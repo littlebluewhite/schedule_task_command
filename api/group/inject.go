@@ -20,12 +20,12 @@ import (
 	"schedule_task_command/api/group/time_template"
 	"schedule_task_command/api/group/ws"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) {
 	// Middleware
-	log := logFile.NewLogFile("api", "group.log")
+	log := my_log.NewLog("api/group")
 	fiberLog := getFiberLogFile(log)
 	app.Use(recover.New())
 	app.Use(logger.New(logger.Config{
@@ -42,14 +42,14 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) 
 		return c.Next()
 	})
 
-	// use middleware to write log
+	// use middleware to write my_log
 	o := NewOperate(dbs)
 	h := NewHandler(o, log)
 	Api.Use(func(c *fiber.Ctx) error {
 		err := c.Next()
 		err = o.WriteLog(c)
 		if err != nil {
-			log.Error().Println(err)
+			log.Errorln(err)
 		}
 		return err
 	})
@@ -71,10 +71,10 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) 
 	ws.RegisterRouter(g)
 }
 
-func getFiberLogFile(log logFile.LogFile) io.Writer {
-	fiberFile, err := os.OpenFile("./log/fiber.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+func getFiberLogFile(log api.Logger) io.Writer {
+	fiberFile, err := os.OpenFile("./my_log/fiber.my_log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Error().Fatal("can not open log file: " + err.Error())
+		log.Errorf("can not open my_log file: " + err.Error())
 	}
 	return io.MultiWriter(fiberFile, os.Stdout)
 }

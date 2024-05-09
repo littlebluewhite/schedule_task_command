@@ -5,7 +5,7 @@ import (
 	"schedule_task_command/api"
 	"schedule_task_command/api/group/task_template"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
@@ -13,7 +13,7 @@ func RegisterRouter(g group) {
 	commandS := taskS.GetCommandServer()
 	taskTemplateO := task_template.NewOperate(g.GetDbs(), taskS)
 	o := NewOperate(g.GetDbs(), commandS, taskTemplateO)
-	log := logFile.NewLogFile("router", "command_template.log")
+	log := my_log.NewLog("router/command_template")
 	app := g.GetApp()
 
 	ct := app.Group("/command_template")

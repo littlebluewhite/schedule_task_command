@@ -67,7 +67,7 @@ services:
     ports:
       - 5487:5487
     volumes:
-      - ./docker/log:/app/log
+      - ./docker/my_log:/app/my_log
     depends_on:
       mysql:
         condition: service_healthy

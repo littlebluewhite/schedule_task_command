@@ -6,12 +6,13 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"maps"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_module"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"schedule_task_command/util/redis_stream"
 	"strconv"
 	"sync"
@@ -22,7 +23,7 @@ import (
 type CommandServer struct {
 	dbs          dbs.Dbs
 	hm           HubManager
-	l            logFile.LogFile
+	l            api.Logger
 	c            map[uint64]e_command.Command
 	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
 	count        atomic.Uint64
@@ -30,7 +31,7 @@ type CommandServer struct {
 }
 
 func NewCommandServer(dbs dbs.Dbs, wh HubManager) *CommandServer {
-	l := logFile.NewLogFile("app", "command_server")
+	l := my_log.NewLog("app/command_server")
 	c := make(map[uint64]e_command.Command)
 	mu := new(sync.RWMutex)
 	return &CommandServer{
@@ -48,7 +49,7 @@ func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
 	c.initialCounter(ctx)
 	// stream command initial
 	c.initStreamComMap()
-	c.l.Info().Println("Command server started")
+	c.l.Infoln("Command server started")
 	go func() {
 		c.removeFinishedCommand(ctx, removeTime)
 	}()
@@ -61,7 +62,7 @@ func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
 	go func() {
 		_ = <-ctx.Done()
 		c.stopCounter()
-		c.l.Info().Println("command server stop gracefully")
+		c.l.Infoln("command server stop gracefully")
 	}()
 }
 
@@ -72,7 +73,7 @@ func (c *CommandServer) initialCounter(ctx context.Context) {
 		cc = &model.Counter{Name: "command", Value: 0}
 		e := qc.WithContext(ctx).Create(cc)
 		if e != nil {
-			c.l.Error().Println(e)
+			c.l.Errorln(e)
 		}
 	}
 	c.count.Store(uint64(cc.Value))
@@ -87,7 +88,7 @@ func (c *CommandServer) stopCounter() {
 	qc := query.Use(c.dbs.GetSql()).Counter
 	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("command")).Update(qc.Value, c.count.Load())
 	if err != nil {
-		c.l.Error().Println(err)
+		c.l.Errorln(err)
 	}
 }
 
@@ -96,24 +97,24 @@ func (c *CommandServer) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			c.l.Error().Println(err)
+			c.l.Errorln(err)
 		}
 		b := []byte(msg.Payload)
 		var com e_command.Command
 		err = json.Unmarshal(b, &com)
 		if err != nil {
-			c.l.Error().Println(SendToRedisErr)
+			c.l.Errorln(SendToRedisErr)
 			continue
 		}
 		_, err = c.ExecuteReturnId(ctx, com)
 		if err != nil {
-			c.l.Error().Println("Error executing Command")
+			c.l.Errorln("Error executing Command")
 		}
 	}
 }
 
 func (c *CommandServer) receiveStream(ctx context.Context) {
-	c.l.Info().Println("----------------------------------- start command receiveStream --------------------------------")
+	c.l.Infoln("----------------------------------- start command receiveStream --------------------------------")
 	rs := redis_stream.NewStreamRead(c.dbs.GetRdb(), "Command", "server", c.l)
 	rs.Start(ctx, c.streamComMap)
 }
@@ -138,7 +139,7 @@ func (c *CommandServer) ExecuteReturnId(ctx context.Context, com e_command.Comma
 	com = c.getVariables(com)
 	if com.Message != nil {
 		err = com.Message
-		c.l.Error().Println(err)
+		c.l.Errorln(err)
 		return
 	}
 	from := time.Now()
@@ -159,7 +160,7 @@ func (c *CommandServer) ExecuteWait(ctx context.Context, com e_command.Command) 
 		com.Variables = make(map[string]string)
 	}
 	if com.Message != nil {
-		c.l.Error().Println(com.Message)
+		c.l.Errorln(com.Message)
 		return com
 	}
 	from := time.Now()
@@ -181,7 +182,7 @@ func (c *CommandServer) TestExecute(ctx context.Context, com e_command.Command) 
 		com.Variables = make(map[string]string)
 	}
 	if com.Message != nil {
-		c.l.Error().Println(com.Message)
+		c.l.Errorln(com.Message)
 		return com
 	}
 	from := time.Now()
@@ -284,7 +285,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 	tp := e_command.ToPub(com)
 	jCom, err := json.Marshal(tp)
 	if err != nil {
-		c.l.Error().Printf("err: %v, ToPub: %+v", err, tp)
+		c.l.Errorf("err: %v, ToPub: %+v", err, tp)
 	}
 	templateId := fmt.Sprintf("%d", com.TemplateId)
 	p := influxdb2.NewPoint("command_history",
@@ -296,7 +297,7 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 		com.From,
 	)
 	if err = c.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		c.l.Error().Println(err)
+		c.l.Errorln(err)
 	}
 }
 
@@ -333,11 +334,11 @@ func (c *CommandServer) ReadFromHistory(id, comTemplateId, start, stop, status s
 			v := result.Record().Value()
 			vString, ok := v.(string)
 			if !ok {
-				c.l.Error().Printf("value: %v is not string", v)
+				c.l.Errorf("value: %v is not string", v)
 				continue
 			}
 			if e := json.Unmarshal([]byte(vString), &com); e != nil {
-				c.l.Error().Println(e)
+				c.l.Errorln(e)
 				continue
 			}
 			hc = append(hc, com)
@@ -365,7 +366,7 @@ func (c *CommandServer) rdbPub(ctx context.Context, com e_command.Command) (err 
 	cb, _ := json.Marshal(e_command.ToPub(com))
 	err = c.dbs.GetRdb().Publish(ctx, "CommandRec", cb).Err()
 	if err != nil {
-		c.l.Error().Println("redis publish error: ", err)
+		c.l.Errorln("redis publish error: ", err)
 		return
 	}
 	return

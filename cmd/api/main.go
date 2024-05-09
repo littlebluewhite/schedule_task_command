@@ -6,8 +6,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"os/signal"
-	"path/filepath"
-	"runtime"
 	"schedule_task_command/api"
 	"schedule_task_command/api/group"
 	"schedule_task_command/app/command_server"
@@ -19,24 +17,11 @@ import (
 	"schedule_task_command/docs"
 	_ "schedule_task_command/docs"
 	"schedule_task_command/util/config"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"strings"
 	"syscall"
 	"time"
 )
-
-var (
-	mainLog  logFile.LogFile
-	rootPath string
-)
-
-// 初始化配置
-func init() {
-	// log配置
-	mainLog = logFile.NewLogFile("", "main.log")
-	_, b, _, _ := runtime.Caller(0)
-	rootPath = filepath.Dir(filepath.Dir(filepath.Dir(b)))
-}
 
 // @title           Schedule-Task-Command swagger API
 // @version         0
@@ -53,14 +38,15 @@ func init() {
 // @host      127.0.0.1:5487
 
 func main() {
+	mainLog := my_log.NewLog("main")
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	mainLog.Info().Println("command module start")
+	mainLog.Infoln("command module start")
 
 	// read config
-	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
+	Config := config.NewConfig[config.Config]("./config", "config", config.Yaml)
 
 	ServerConfig := Config.Server
 
@@ -73,7 +59,7 @@ func main() {
 	DBS := dbs.NewDbs(mainLog, false, Config)
 	defer func() {
 		DBS.GetIdb().Close()
-		mainLog.Info().Println("influxDB Disconnect")
+		mainLog.Infoln("influxDB Disconnect")
 	}()
 
 	// create websocket manager
@@ -114,13 +100,13 @@ func main() {
 	serverShutdown := make(chan struct{})
 	go func() {
 		_ = <-ctx.Done()
-		mainLog.Info().Println("Gracefully shutting down api server")
+		mainLog.Infoln("Gracefully shutting down api server")
 		_ = apiServer.Shutdown()
 		serverShutdown <- struct{}{}
 	}()
 
 	if err := apiServer.Listen(":5487"); err != nil {
-		mainLog.Error().Fatalf("listen: %s\n", err)
+		mainLog.Errorf("listen: %s\n", err)
 	}
 
 	// Listen for the interrupt signal.
@@ -129,5 +115,5 @@ func main() {
 	// Restore default behavior on the interrupt signal and notify user of shutdown.
 	stop()
 	time.Sleep(1 * time.Second)
-	mainLog.Info().Println("Server exiting")
+	mainLog.Infoln("Server exiting")
 }

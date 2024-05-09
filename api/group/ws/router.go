@@ -5,11 +5,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
 	"schedule_task_command/entry/e_module"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
-	log := logFile.NewLogFile("router", "websocket.log")
+	log := my_log.NewLog("router/websocket")
 	app := g.GetApp()
 
 	hm := g.GetWebsocketHub()
@@ -28,13 +28,13 @@ func RegisterRouter(g group) {
 	ws.Get("/command", websocket.New(func(c *websocket.Conn) {
 		err := hm.WsConnect(e_module.Command, c)
 		if err != nil {
-			log.Error().Println(err)
+			log.Errorln(err)
 		}
 	}))
 	ws.Get("/task", websocket.New(func(c *websocket.Conn) {
 		err := hm.WsConnect(e_module.Task, c)
 		if err != nil {
-			log.Error().Println(err)
+			log.Errorln(err)
 		}
 	}))
 }

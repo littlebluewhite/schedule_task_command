@@ -14,12 +14,12 @@ import (
 )
 
 func NewDB(dirPath, fileName string, Config config.SQLConfig) (*gorm.DB, error) {
-	newPath := filepath.Join("./log", dirPath)
+	newPath := filepath.Join("./my_log", dirPath)
 	_ = os.MkdirAll(newPath, os.ModePerm)
 	newPath = filepath.Join(newPath, fileName)
 	file, err := os.OpenFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal("can not open log file: " + err.Error())
+		log.Fatal("can not open my_log file: " + err.Error())
 	}
 
 	newLogger := logger.New(

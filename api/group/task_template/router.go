@@ -4,13 +4,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
 	taskS := g.GetScheduleServer().GetTaskServer()
 	o := NewOperate(g.GetDbs(), taskS)
-	log := logFile.NewLogFile("router", "task_template.log")
+	log := my_log.NewLog("router/task_template")
 	app := g.GetApp()
 
 	tt := app.Group("/task_template")

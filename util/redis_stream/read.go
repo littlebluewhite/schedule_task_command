@@ -4,17 +4,17 @@ import (
 	"context"
 	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/api"
 )
 
 type RedisStream struct {
 	rdb        redis.UniversalClient
 	streamName string
 	groupName  string
-	l          logFile.LogFile
+	l          api.Logger
 }
 
-func NewStreamRead(rdb redis.UniversalClient, streamName string, groupName string, l logFile.LogFile) *RedisStream {
+func NewStreamRead(rdb redis.UniversalClient, streamName string, groupName string, l api.Logger) *RedisStream {
 	return &RedisStream{
 		rdb:        rdb,
 		streamName: streamName,
@@ -26,28 +26,28 @@ func NewStreamRead(rdb redis.UniversalClient, streamName string, groupName strin
 func (rs *RedisStream) Start(ctx context.Context, streamComMap map[string]func(map[string]interface{}) (string, error)) {
 	err := rs.streamInit(ctx)
 	if err != nil {
-		rs.l.Error().Println("receiveStream error: ", err)
+		rs.l.Errorln("receiveStream error: ", err)
 		return
 	}
 	for {
 		rsr, err := rs.ReadGroup(ctx)
-		rs.l.Info().Println("TimeTemplate get stream")
+		rs.l.Infoln("TimeTemplate get stream")
 		if err != nil {
-			rs.l.Error().Println("receiveStream error: ", err)
+			rs.l.Errorln("receiveStream error: ", err)
 			continue
 		}
 		go func(rsr map[string]interface{}) {
 			streamCom := streamComMap[rsr["command"].(string)]
 			result, err := streamCom(rsr)
 			if err != nil {
-				rs.l.Error().Println("deal stream error: ", err)
+				rs.l.Errorln("deal stream error: ", err)
 			}
 			if rsr["is_wait_call_back"].(string) == "1" {
 				err = rs.CallBack(ctx, rsr, result, err)
 				if err != nil {
-					rs.l.Error().Println("call back publish error: ", err)
+					rs.l.Errorln("call back publish error: ", err)
 				}
-				rs.l.Info().Println("return callback success")
+				rs.l.Infoln("return callback success")
 			}
 		}(rsr)
 	}

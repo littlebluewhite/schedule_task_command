@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofiber/contrib/websocket"
+	"schedule_task_command/api"
 	"schedule_task_command/entry/e_module"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 type Hub struct {
@@ -13,17 +14,17 @@ type Hub struct {
 	registerChan   chan *client
 	unregisterChan chan *client
 	broadcast      chan []byte
-	l              logFile.LogFile
+	l              api.Logger
 }
 
 func NewHub(module e_module.Module) *Hub {
-	name := fmt.Sprintf("%s_hub.log", module)
+	name := fmt.Sprintf("websocket/%s_hub", module)
 	return &Hub{
 		clients:        make(map[*client]struct{}),
 		registerChan:   make(chan *client),
 		unregisterChan: make(chan *client),
 		broadcast:      make(chan []byte),
-		l:              logFile.NewLogFile("websocket", name),
+		l:              my_log.NewLog(name),
 	}
 }
 
@@ -37,7 +38,7 @@ func (h *Hub) Run() {
 				delete(h.clients, cli)
 			}
 		case msg := <-h.broadcast:
-			h.l.Info().Printf("broadcast 2")
+			h.l.Infof("broadcast 2")
 			for cli := range h.clients {
 				go func(cli *client) {
 					cli.send(msg)
@@ -56,7 +57,7 @@ func (h *Hub) unRegister(cli *client) {
 }
 
 func (h *Hub) Broadcast(msg []byte) {
-	h.l.Info().Printf("broadcast 1")
+	h.l.Infof("broadcast 1")
 	h.broadcast <- msg
 }
 

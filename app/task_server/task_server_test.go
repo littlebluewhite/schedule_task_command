@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/require"
-	"path/filepath"
-	"runtime"
 	"schedule_task_command/api"
 	"schedule_task_command/app/command_server"
 	"schedule_task_command/app/dbs"
@@ -14,19 +12,17 @@ import (
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
 	"schedule_task_command/util/config"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"sync"
 	"testing"
 	"time"
 )
 
 func setUpServer() (ts *TaskServer[api.CommandServer]) {
-	l := logFile.NewLogFile("test", "taskServer.log")
+	l := my_log.NewLog("test/taskServer")
 
-	_, b, _, _ := runtime.Caller(0)
-	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
 	// read config
-	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
+	Config := config.NewConfig[config.Config]("../../config", "config", config.Yaml)
 	DBS := dbs.NewDbs(l, true, Config)
 	// create websocket manager
 	cs := command_server.NewCommandServer(DBS, nil)

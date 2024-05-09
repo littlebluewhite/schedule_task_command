@@ -5,20 +5,21 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/entry/e_time"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"sync"
 )
 
 type TimeServer struct {
 	dbs dbs.Dbs
-	l   logFile.LogFile
+	l   api.Logger
 	mu  *sync.RWMutex
 }
 
 func NewTimeServer(dbs dbs.Dbs) *TimeServer {
-	l := logFile.NewLogFile("app", "time_server")
+	l := my_log.NewLog("app/time_server")
 	mu := new(sync.RWMutex)
 	return &TimeServer{
 		dbs: dbs,
@@ -28,8 +29,8 @@ func NewTimeServer(dbs dbs.Dbs) *TimeServer {
 }
 
 func (t *TimeServer) Start(ctx context.Context) {
-	t.l.Info().Println("Time server started")
-	defer t.l.Error().Println("Time server stopped")
+	t.l.Infoln("Time server started")
+	defer t.l.Errorln("Time server stopped")
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go func(wg *sync.WaitGroup) {
@@ -44,13 +45,13 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			t.l.Error().Println(err)
+			t.l.Errorln(err)
 		}
 		b := []byte(msg.Payload)
 		var pt e_time.PublishTime
 		err = json.Unmarshal(b, &pt)
 		if err != nil {
-			t.l.Error().Println("Error executing Command")
+			t.l.Errorln("Error executing Command")
 		}
 		_, _ = t.Execute(pt)
 	}
@@ -88,7 +89,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 	isTime := fmt.Sprintf("%t", pt.IsTime)
 	jsonPt, err := json.Marshal(pt)
 	if err != nil {
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 	}
 	p := influxdb2.NewPoint("time_history",
 		map[string]string{"template_id": templateId, "is_time": isTime},
@@ -96,7 +97,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 		pt.Time,
 	)
 	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 	}
 }
 
@@ -132,7 +133,7 @@ func (t *TimeServer) ReadFromHistory(id, templateId, start, stop, isTime string)
 			var pt e_time.PublishTime
 			v := result.Record().Value()
 			if e := json.Unmarshal([]byte(v.(string)), &pt); e != nil {
-				t.l.Error().Println(e)
+				t.l.Errorln(e)
 			}
 			ht = append(ht, pt)
 		}
@@ -147,7 +148,7 @@ func (t *TimeServer) rdbPub(pt e_time.PublishTime) (e error) {
 	trb, _ := json.Marshal(pt)
 	e = t.dbs.GetRdb().Publish(ctx, "timeRec", trb).Err()
 	if e != nil {
-		t.l.Error().Println("redis Publish error")
+		t.l.Errorln("redis Publish error")
 		return
 	}
 	return

@@ -30,7 +30,7 @@ func NewOperate(dbs dbs.Dbs) *Operate {
 }
 
 func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
-	// write log
+	// write my_log
 	ctx := context.Background()
 	now := time.Now()
 	response := c.Response()
@@ -62,7 +62,7 @@ func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
 	if err != nil {
 		return
 	}
-	p := influxdb2.NewPoint("log",
+	p := influxdb2.NewPoint("my_log",
 		map[string]string{
 			"account":     l.Account,
 			"ip":          l.IP,
@@ -107,7 +107,7 @@ func (o *Operate) ReadLog(start, stop, account, ip, method, module, statusCode s
 	}
 	stmt := fmt.Sprintf(`from(bucket:"schedule")
 |> range(start: %s%s)
-|> filter(fn: (r) => r._measurement == "log")
+|> filter(fn: (r) => r._measurement == "my_log")
 |> filter(fn: (r) => r._field == "data")
 %s
 %s

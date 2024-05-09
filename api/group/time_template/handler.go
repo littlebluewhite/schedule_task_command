@@ -2,10 +2,10 @@ package time_template
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -19,10 +19,10 @@ type hOperate interface {
 }
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -39,10 +39,10 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 func (h *Handler) GetTimeTemplates(c *fiber.Ctx) error {
 	tt, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("GetTimeTemplates: ", err)
+		h.l.Errorln("GetTimeTemplates: ", err)
 		return util.Err(c, err, 0)
 	}
-	h.l.Info().Println("GetTimeTemplates: success")
+	h.l.Infoln("GetTimeTemplates: success")
 	return c.Status(200).JSON(e_time_template.Format(tt))
 }
 
@@ -57,16 +57,16 @@ func (h *Handler) GetTimeTemplates(c *fiber.Ctx) error {
 func (h *Handler) GetTimeTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("GetTimeTemplateById: ", err)
+		h.l.Errorln("GetTimeTemplateById: ", err)
 		return util.Err(c, err, 1)
 	}
 	tt, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
-		h.l.Error().Println("GetTimeTemplateById: ", err)
+		h.l.Errorln("GetTimeTemplateById: ", err)
 		return util.Err(c, err, 2)
 	}
 	result := e_time_template.Format(tt)
-	h.l.Info().Println("GetTimeTemplateById: success")
+	h.l.Infoln("GetTimeTemplateById: success")
 	return c.Status(200).JSON(result[0])
 }
 
@@ -81,12 +81,12 @@ func (h *Handler) GetTimeTemplateById(c *fiber.Ctx) error {
 func (h *Handler) AddTimeTemplate(c *fiber.Ctx) error {
 	entry := []*e_time_template.TimeTemplateCreate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("AddTimeTemplate: ", err)
+		h.l.Errorln("AddTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	tt, err := h.o.Create(entry)
 	if err != nil {
-		h.l.Error().Println("AddTimeTemplate: ", err)
+		h.l.Errorln("AddTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_time_template.Format(tt))
@@ -103,12 +103,12 @@ func (h *Handler) AddTimeTemplate(c *fiber.Ctx) error {
 func (h *Handler) UpdateTimeTemplate(c *fiber.Ctx) error {
 	entry := []*e_time_template.TimeTemplateUpdate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("UpdateTimeTemplate: ", err)
+		h.l.Errorln("UpdateTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Update(entry)
 	if err != nil {
-		h.l.Error().Println("UpdateTimeTemplate: ", err)
+		h.l.Errorln("UpdateTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("update successfully")
@@ -124,12 +124,12 @@ func (h *Handler) UpdateTimeTemplate(c *fiber.Ctx) error {
 func (h *Handler) DeleteTimeTemplate(c *fiber.Ctx) error {
 	entry := make([]int32, 0, 10)
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("DeleteTimeTemplate: ", err)
+		h.l.Errorln("DeleteTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Delete(entry)
 	if err != nil {
-		h.l.Error().Println("DeleteTimeTemplate: ", err)
+		h.l.Errorln("DeleteTimeTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
@@ -147,12 +147,12 @@ func (h *Handler) DeleteTimeTemplate(c *fiber.Ctx) error {
 func (h *Handler) CheckTime(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("CheckTime: ", err)
+		h.l.Errorln("CheckTime: ", err)
 		return util.Err(c, err, 0)
 	}
 	entry := CheckTime{}
 	if err = c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("CheckTime: ", err)
+		h.l.Errorln("CheckTime: ", err)
 		return util.Err(c, err, 0)
 	}
 	isTime, err := h.o.CheckTime(id, entry)

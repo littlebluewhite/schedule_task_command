@@ -2,7 +2,7 @@ package ping
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/api"
 	"time"
 )
 
@@ -11,10 +11,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -29,7 +29,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 // @Success     200 {object} ping.SwaggerPing
 // @Router      /api/ping/test [get]
 func (h *Handler) GetPing(c *fiber.Ctx) error {
-	h.l.Info().Println("get ping: example")
+	h.l.Infoln("get ping: example")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "test",
 	})
@@ -54,6 +54,6 @@ func (h *Handler) GetListPing(c *fiber.Ctx) error {
 			"age":  4,
 		},
 	}
-	h.l.Info().Println("get ping list: data: ", data)
+	h.l.Infoln("get ping list: data: ", data)
 	return c.Status(fiber.StatusOK).JSON(data)
 }

@@ -17,7 +17,7 @@ func main() {
 	flag.BoolVar(&to, "to", false, "to version")
 	flag.IntVar(&version, "version", -1, "version")
 	flag.Parse()
-	Config := config.NewConfig[config.Config](".", "config", "config", config.Yaml)
+	Config := config.NewConfig[config.Config]("./config", "config", config.Yaml)
 	var c config.SQLConfig
 	if t {
 		c = Config.TestSQL

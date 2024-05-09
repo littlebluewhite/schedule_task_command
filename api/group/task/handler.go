@@ -3,9 +3,9 @@ package task
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -18,10 +18,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -38,7 +38,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 func (h *Handler) GetTasks(c *fiber.Ctx) error {
 	tasks, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("Error getting tasks")
+		h.l.Errorln("Error getting tasks")
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.ToPubSlice(tasks))
@@ -56,12 +56,12 @@ func (h *Handler) GetTaskById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetTaskById: ", e)
+		h.l.Errorln("GetTaskById: ", e)
 		return util.Err(c, e, 1)
 	}
 	t, err := h.o.FindById(uint64(id))
 	if err != nil {
-		h.l.Error().Println("GetTaskById: ", err)
+		h.l.Errorln("GetTaskById: ", err)
 		return util.Err(c, err, 2)
 	}
 	return c.Status(200).JSON(t)
@@ -77,7 +77,7 @@ func (h *Handler) GetTaskById(c *fiber.Ctx) error {
 func (h *Handler) GetSimpleTasks(c *fiber.Ctx) error {
 	tasks, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("Error getting tasks")
+		h.l.Errorln("Error getting tasks")
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.ToSimpleTaskSlice(tasks))
@@ -95,12 +95,12 @@ func (h *Handler) GetSimpleTasksById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetTaskById: ", e)
+		h.l.Errorln("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
 	t, err := h.o.FindById(uint64(id))
 	if err != nil {
-		h.l.Error().Println("GetTaskById: ", err)
+		h.l.Errorln("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.TaskPubToSimpleTask(t))
@@ -118,12 +118,12 @@ func (h *Handler) GetStageItemStatus(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetTaskById: ", e)
+		h.l.Errorln("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
 	t, err := h.o.FindById(uint64(id))
 	if err != nil {
-		h.l.Error().Println("GetTaskById: ", err)
+		h.l.Errorln("GetTaskById: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task.ToStageItemStatus(t))
@@ -170,12 +170,12 @@ func (h *Handler) CancelTask(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetTaskById: ", e)
+		h.l.Errorln("GetTaskById: ", e)
 		return util.Err(c, e, 0)
 	}
 	entry := CancelBody{}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("CancelTask: ", err)
+		h.l.Errorln("CancelTask: ", err)
 		return util.Err(c, err, 0)
 	}
 	err = h.o.Cancel(uint64(id), entry.ClientMessage)

@@ -3,13 +3,13 @@ package time
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
 	timeS := g.GetScheduleServer().GetTimeServer()
 	o := NewOperate(timeS)
-	log := logFile.NewLogFile("router", "time.log")
+	log := my_log.NewLog("router/time")
 	app := g.GetApp()
 
 	tt := app.Group("/time")
