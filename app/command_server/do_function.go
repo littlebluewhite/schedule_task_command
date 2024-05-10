@@ -61,7 +61,7 @@ func (c *CommandServer) requestProtocol(ctx context.Context, com e_command.Comma
 						com.Status = e_command.Success
 					}
 				}
-				c.l.Info().Printf("id: %d \ncommand status: %v\nrequest result: %s\n", com.ID, com.Status, com.RespData)
+				c.l.Infof("id: %d \ncommand status: %v\nrequest result: %s\n", com.ID, com.Status, com.RespData)
 				if com.Status == e_command.Success {
 					// get return parser
 					com.Return = parserData(com)
@@ -119,7 +119,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 			return com
 		}
 		if e := json.Unmarshal(hh, &header); e != nil {
-			c.l.Error().Printf("id: %d header unmarshal failed", com.ID)
+			c.l.Errorf("id: %d header unmarshal failed", com.ID)
 		}
 	}
 	for _, item := range header {
@@ -133,9 +133,9 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	var resp *http.Response
 	resp1, e := client.Do(req)
 	if e != nil {
-		c.l.Error().Printf("id: %d request failed, template id: %d", com.ID, com.TemplateId)
+		c.l.Errorf("id: %d request failed, template id: %d", com.ID, com.TemplateId)
 		if resp1 == nil {
-			c.l.Error().Printf("request: %+v, and response is nil", req)
+			c.l.Errorf("request: %+v, and response is nil", req)
 			com.Status = e_command.Failure
 			com.Message = &RequestErr
 			return com
@@ -145,7 +145,7 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	com.StatusCode = resp.StatusCode
 	if respBody1, e := io.ReadAll(resp.Body); e != nil {
 		com.RespData = []byte{}
-		c.l.Error().Printf("id: %d request body failed", com.ID)
+		c.l.Errorf("id: %d request body failed", com.ID)
 		return com
 	} else {
 		com.RespData = respBody1
@@ -161,10 +161,10 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 	}
 	defer func() {
 		if e := resp.Body.Close(); e != nil {
-			c.l.Error().Println("Response body closed failed")
+			c.l.Errorln("Response body closed failed")
 		}
 	}()
-	c.l.Info().Printf("id: %d \nrequest result: %s, status code: %d\n", com.ID, com.RespData, com.StatusCode)
+	c.l.Infof("id: %d \nrequest result: %s, status code: %d\n", com.ID, com.RespData, com.StatusCode)
 	return com
 }
 

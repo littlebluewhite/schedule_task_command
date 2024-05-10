@@ -3,11 +3,11 @@ package command_template
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -23,10 +23,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -44,10 +44,10 @@ func (h *Handler) GetCommandTemplates(c *fiber.Ctx) error {
 	ct, err := h.o.List()
 	result := e_command_template.Format(ct)
 	if err != nil {
-		h.l.Error().Println("GetCommandTemplates: ", err)
+		h.l.Errorln("GetCommandTemplates: ", err)
 		return util.Err(c, err, 0)
 	}
-	h.l.Info().Printf("GetCommandTemplates: success: %+v", result)
+	h.l.Infof("GetCommandTemplates: success: %+v", result)
 	return c.Status(200).JSON(result)
 }
 
@@ -62,15 +62,15 @@ func (h *Handler) GetCommandTemplates(c *fiber.Ctx) error {
 func (h *Handler) GetCommandTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("GetCommandTemplateById: ", err)
+		h.l.Errorln("GetCommandTemplateById: ", err)
 		return util.Err(c, err, 1)
 	}
 	ht, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
-		h.l.Error().Println("GetCommandTemplateById: ", err)
+		h.l.Errorln("GetCommandTemplateById: ", err)
 		return util.Err(c, err, 2)
 	}
-	h.l.Info().Println("GetCommandTemplateById: success")
+	h.l.Infoln("GetCommandTemplateById: success")
 	return c.Status(200).JSON(e_command_template.Format(ht)[0])
 }
 
@@ -85,12 +85,12 @@ func (h *Handler) GetCommandTemplateById(c *fiber.Ctx) error {
 func (h *Handler) AddCommandTemplate(c *fiber.Ctx) error {
 	entry := []*e_command_template.CommandTemplateCreate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("AddCommandTemplate: ", err)
+		h.l.Errorln("AddCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	result, err := h.o.Create(entry)
 	if err != nil {
-		h.l.Error().Println("AddCommandTemplate: ", err)
+		h.l.Errorln("AddCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_command_template.Format(result))
@@ -107,12 +107,12 @@ func (h *Handler) AddCommandTemplate(c *fiber.Ctx) error {
 func (h *Handler) UpdateCommandTemplate(c *fiber.Ctx) error {
 	entry := []*e_command_template.CommandTemplateUpdate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("UpdateCommandTemplate: ", err)
+		h.l.Errorln("UpdateCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Update(entry)
 	if err != nil {
-		h.l.Error().Println("UpdateCommandTemplate: ", err)
+		h.l.Errorln("UpdateCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("update successfully")
@@ -128,12 +128,12 @@ func (h *Handler) UpdateCommandTemplate(c *fiber.Ctx) error {
 func (h *Handler) DeleteCommandTemplate(c *fiber.Ctx) error {
 	entry := make([]int32, 0, 10)
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("DeleteCommandTemplate: ", err)
+		h.l.Errorln("DeleteCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Delete(entry)
 	if err != nil {
-		h.l.Error().Println("DeleteCommandTemplate: ", err)
+		h.l.Errorln("DeleteCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
@@ -150,12 +150,12 @@ func (h *Handler) DeleteCommandTemplate(c *fiber.Ctx) error {
 func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("ExecuteCommand: ", err)
+		h.l.Errorln("ExecuteCommand: ", err)
 		return util.Err(c, err, 1)
 	}
 	entry := SendCommand{}
 	if err = c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("ExecuteCommand: ", err)
+		h.l.Errorln("ExecuteCommand: ", err)
 		return util.Err(c, err, 2)
 	}
 	st := e_command_template.SendCommandTemplate{
@@ -184,7 +184,7 @@ func (h *Handler) ExecuteCommand(c *fiber.Ctx) error {
 func (h *Handler) SendCommandTemplate(c *fiber.Ctx) error {
 	entry := e_command_template.CommandTemplateCreate{}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("SendCommandTemplate: ", err)
+		h.l.Errorln("SendCommandTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	com := h.o.Send(c.UserContext(), entry)

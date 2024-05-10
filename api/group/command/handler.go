@@ -3,9 +3,9 @@ package command
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -18,10 +18,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -38,7 +38,7 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 func (h *Handler) GetCommands(c *fiber.Ctx) error {
 	commands, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("Error getting commands")
+		h.l.Errorf("Error getting commands")
 	}
 	return c.Status(200).JSON(e_command.ToPubSlice(commands))
 }
@@ -55,12 +55,12 @@ func (h *Handler) GetCommandById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetCommandById: ", e)
+		h.l.Errorln("GetCommandById: ", e)
 		return util.Err(c, e, 1)
 	}
 	com, err := h.o.FindById(uint64(id))
 	if err != nil {
-		h.l.Error().Println("GetCommandById: ", err)
+		h.l.Errorln("GetCommandById: ", err)
 		return util.Err(c, err, 2)
 	}
 	return c.Status(200).JSON(com)
@@ -79,12 +79,12 @@ func (h *Handler) CancelCommand(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		e := errors.New("id is error")
-		h.l.Error().Println("GetCommandById: ", e)
+		h.l.Errorln("GetCommandById: ", e)
 		return util.Err(c, e, 0)
 	}
 	entry := CancelBody{}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("CancelTask: ", err)
+		h.l.Errorln("CancelTask: ", err)
 		return util.Err(c, err, 0)
 	}
 	err = h.o.Cancel(uint64(id), entry.ClientMessage)

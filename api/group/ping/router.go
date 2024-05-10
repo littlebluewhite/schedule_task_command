@@ -3,12 +3,12 @@ package ping
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
 	o := NewOperate(g.GetDbs())
-	log := logFile.NewLogFile("router", "ping.log")
+	log := my_log.NewLog("router/ping")
 	app := g.GetApp()
 
 	ping := app.Group("/ping")

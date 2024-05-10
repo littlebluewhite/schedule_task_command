@@ -1,3 +1,11 @@
+# Schedule_Task_Command_Time  version 2.15.0
+
+### General
+- use config to control swagger version and host
+- use logrus as new log 
+- modify README.MD
+
+
 # Schedule_Task_Command_Time  version 2.14.0
 
 ### General

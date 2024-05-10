@@ -3,12 +3,12 @@ package header_template
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/app/dbs"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {
 	o := NewOperate(g.GetDbs())
-	log := logFile.NewLogFile("router", "header_template.log")
+	log := my_log.NewLog("router/header_template")
 	app := g.GetApp()
 
 	ht := app.Group("/header_template")

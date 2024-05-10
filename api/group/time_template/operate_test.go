@@ -4,23 +4,20 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"gorm.io/datatypes"
-	"path/filepath"
-	"runtime"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/app/time_server"
 	"schedule_task_command/entry/e_time_data"
 	"schedule_task_command/entry/e_time_template"
 	"schedule_task_command/util/config"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"testing"
 	"time"
 )
 
-func setUpOperate() (o hOperate, l logFile.LogFile) {
-	l = logFile.NewLogFile("test", "Operate.log")
-	_, b, _, _ := runtime.Caller(0)
-	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
-	c := config.NewConfig(rootPath, "config", "config", config.Yaml)
+func setUpOperate() (o hOperate, l api.Logger) {
+	l = my_log.NewLog("test/Operate")
+	c := config.NewConfig("../../../config", "config", config.Yaml)
 	DBS := dbs.NewDbs(l, true, c)
 	timeS := time_server.NewTimeServer(DBS)
 	o = NewOperate(DBS, timeS)
@@ -30,7 +27,7 @@ func setUpOperate() (o hOperate, l logFile.LogFile) {
 func TestQuery(t *testing.T) {
 	o, l := setUpOperate()
 	t.Run("test find", func(t *testing.T) {
-		l.Info().Println("tset Operate time template list")
+		l.Infoln("tset Operate time template list")
 		var i int32 = 20
 		st1 := datatypes.NewTime(5, 12, 12, 0)
 		st2 := datatypes.NewTime(8, 12, 12, 0)
@@ -98,7 +95,7 @@ func TestQuery(t *testing.T) {
 		require.Equal(t, timeTemplates2[3].Name, "test4")
 	})
 	t.Run("test List", func(t *testing.T) {
-		l.Info().Println("test time templates list")
+		l.Infoln("test time templates list")
 		_, err := o.List()
 		require.Nil(t, err)
 	})
@@ -107,7 +104,7 @@ func TestQuery(t *testing.T) {
 func TestCreate(t *testing.T) {
 	o, l := setUpOperate()
 	t.Run("create success", func(t *testing.T) {
-		l.Info().Println("test Operate time template create")
+		l.Infoln("test Operate time template create")
 		var i int32 = 300
 		st := datatypes.NewTime(12, 15, 12, 0)
 		testTimeTemplate := []*e_time_template.TimeTemplateCreate{
@@ -128,7 +125,7 @@ func TestCreate(t *testing.T) {
 	})
 	t.Run("create fail", func(t *testing.T) {
 
-		l.Info().Println("test Operate time template create")
+		l.Infoln("test Operate time template create")
 		var i int32 = 300
 		st := datatypes.NewTime(8, 12, 12, 0)
 		testTimeTemplate := []*e_time_template.TimeTemplateCreate{
@@ -168,7 +165,7 @@ func TestUpdate(t *testing.T) {
 				},
 			},
 		}
-		l.Info().Println("test Operate time template update")
+		l.Infoln("test Operate time template update")
 		err := o.Update(testTimeTemplate)
 		require.Nil(t, err)
 	})
@@ -228,7 +225,7 @@ func TestDelete(t *testing.T) {
 				},
 			},
 		}
-		l.Info().Println("test Operate time template delete")
+		l.Infoln("test Operate time template delete")
 		timeTemplates, err := o.Create(testTimeTemplates)
 		require.Nil(t, err)
 		ids := make([]int32, 0, len(timeTemplates))

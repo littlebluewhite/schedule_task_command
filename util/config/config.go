@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/spf13/viper"
 	"log"
-	"path"
 	"strings"
 )
 
@@ -29,9 +28,9 @@ func loadConfig[T any](myPath string, fileName string, configType CType) (Config
 }
 
 func NewConfig[T Config](
-	rootPath, folder, fileName string, configType CType,
+	path, fileName string, configType CType,
 ) (cfg T) {
-	cfg = loadConfig[T](path.Join(rootPath, folder), fileName, configType)
+	cfg = loadConfig[T](path, fileName, configType)
 	return
 }
 

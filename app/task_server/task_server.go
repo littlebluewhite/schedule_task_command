@@ -6,13 +6,14 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"maps"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_module"
 	"schedule_task_command/entry/e_task"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"schedule_task_command/util/redis_stream"
 	"strconv"
 	"sync"
@@ -28,7 +29,7 @@ type commandServer interface {
 type TaskServer[T any] struct {
 	dbs          dbs.Dbs
 	hm           hubManager
-	l            logFile.LogFile
+	l            api.Logger
 	t            map[uint64]e_task.Task
 	cs           commandServer
 	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
@@ -37,7 +38,7 @@ type TaskServer[T any] struct {
 }
 
 func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer, wm hubManager) *TaskServer[T] {
-	l := logFile.NewLogFile("app", "task_server")
+	l := my_log.NewLog("app/task_server")
 	t := make(map[uint64]e_task.Task)
 	mu := new(sync.RWMutex)
 	return &TaskServer[T]{
@@ -56,7 +57,7 @@ func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	t.initialCounter(ctx)
 	// stream command initial
 	t.initStreamComMap()
-	t.l.Info().Println("Task server started")
+	t.l.Infoln("Task server started")
 	go func() {
 		t.removeFinishedTask(ctx, removeTime)
 	}()
@@ -72,7 +73,7 @@ func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	go func() {
 		_ = <-ctx.Done()
 		t.stopCounter()
-		t.l.Info().Println("task server stop gracefully")
+		t.l.Infoln("task server stop gracefully")
 	}()
 }
 
@@ -83,7 +84,7 @@ func (t *TaskServer[T]) initialCounter(ctx context.Context) {
 		tc = &model.Counter{Name: "task", Value: 0}
 		e := qc.WithContext(ctx).Create(tc)
 		if e != nil {
-			t.l.Error().Println(e)
+			t.l.Errorln(e)
 		}
 	}
 	t.count.Store(uint64(tc.Value))
@@ -100,7 +101,7 @@ func (t *TaskServer[T]) stopCounter() {
 	qc := query.Use(t.dbs.GetSql()).Counter
 	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("task")).Update(qc.Value, t.count.Load())
 	if err != nil {
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 	}
 }
 
@@ -109,24 +110,24 @@ func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			t.l.Error().Println(err)
+			t.l.Errorln(err)
 			continue
 		}
 		b := []byte(msg.Payload)
 		var s e_task.Task
 		err = json.Unmarshal(b, &s)
 		if err != nil {
-			t.l.Error().Println(SendToRedisErr)
+			t.l.Errorln(SendToRedisErr)
 		}
 		_, err = t.ExecuteReturnId(ctx, s)
 		if err != nil {
-			t.l.Error().Println("Error executing Task")
+			t.l.Errorln("Error executing Task")
 		}
 	}
 }
 
 func (t *TaskServer[T]) receiveStream(ctx context.Context) {
-	t.l.Info().Println("----------------------------------- start task receiveStream --------------------------------")
+	t.l.Infoln("----------------------------------- start task receiveStream --------------------------------")
 	rs := redis_stream.NewStreamRead(t.dbs.GetRdb(), "Task", "server", t.l)
 	rs.Start(ctx, t.streamComMap)
 }
@@ -165,7 +166,7 @@ func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (
 	task = t.getVariables(task)
 	if task.Message != nil {
 		err = task.Message
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 		return
 	}
 	from := time.Now()
@@ -183,7 +184,7 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 	// pass the variables
 	task = t.getVariables(task)
 	if task.Message != nil {
-		t.l.Error().Println(task.Message)
+		t.l.Errorln(task.Message)
 		return task
 	}
 	from := time.Now()
@@ -241,7 +242,7 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 	tp := e_task.ToPub(task)
 	jTask, err := json.Marshal(tp)
 	if err != nil {
-		t.l.Error().Printf("err: %v, ToPub: %+v", err, tp)
+		t.l.Errorf("err: %v, ToPub: %+v", err, tp)
 	}
 	templateId := fmt.Sprintf("%d", task.TemplateId)
 	p := influxdb2.NewPoint("task_history",
@@ -253,7 +254,7 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 		task.From,
 	)
 	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 	}
 }
 
@@ -290,11 +291,11 @@ func (t *TaskServer[T]) ReadFromHistory(id, taskTemplateId, start, stop, status 
 			v := result.Record().Value()
 			vString, ok := v.(string)
 			if !ok {
-				t.l.Error().Printf("value: %v is not string", v)
+				t.l.Errorf("value: %v is not string", v)
 				continue
 			}
 			if err = json.Unmarshal([]byte(vString), &task); err != nil {
-				t.l.Error().Println(err)
+				t.l.Errorln(err)
 				continue
 			}
 			ht = append(ht, task)
@@ -331,7 +332,7 @@ func (t *TaskServer[T]) rdbPub(ctx context.Context, task e_task.Task) (err error
 	trb, _ := json.Marshal(e_task.ToPub(task))
 	err = t.dbs.GetRdb().Publish(ctx, "taskRec", trb).Err()
 	if err != nil {
-		t.l.Error().Println("redis publish error: ", err)
+		t.l.Errorln("redis publish error: ", err)
 		return
 	}
 	return
@@ -359,10 +360,10 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 
 	err = redis_stream.StreamAdd(ctx, t.dbs.GetRdb(), "AlarmAPIModuleReceiver", values)
 	if err != nil {
-		t.l.Error().Println(err)
+		t.l.Errorln(err)
 		return
 	}
-	t.l.Info().Println("stream publish success")
+	t.l.Infoln("stream publish success")
 	return
 }
 

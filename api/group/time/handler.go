@@ -2,9 +2,9 @@ package time
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/entry/e_time"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -13,10 +13,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,

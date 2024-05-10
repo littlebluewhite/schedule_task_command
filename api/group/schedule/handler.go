@@ -2,10 +2,10 @@ package schedule
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_schedule"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -19,10 +19,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -39,10 +39,10 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 func (h *Handler) GetSchedules(c *fiber.Ctx) error {
 	s, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("GetheaderTemplates: ", err)
+		h.l.Errorln("GetheaderTemplates: ", err)
 		return util.Err(c, err, 0)
 	}
-	h.l.Info().Println("GetheaderTemplates: success")
+	h.l.Infoln("GetheaderTemplates: success")
 	return c.Status(200).JSON(e_schedule.Format(s))
 }
 
@@ -57,15 +57,15 @@ func (h *Handler) GetSchedules(c *fiber.Ctx) error {
 func (h *Handler) GetScheduleById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("GetScheduleById: ", err)
+		h.l.Errorln("GetScheduleById: ", err)
 		return util.Err(c, err, 1)
 	}
 	s, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
-		h.l.Error().Println("GetScheduleById: ", err)
+		h.l.Errorln("GetScheduleById: ", err)
 		return util.Err(c, err, 2)
 	}
-	h.l.Info().Println("GetScheduleById: success")
+	h.l.Infoln("GetScheduleById: success")
 	return c.Status(200).JSON(e_schedule.Format(s)[0])
 }
 
@@ -80,12 +80,12 @@ func (h *Handler) GetScheduleById(c *fiber.Ctx) error {
 func (h *Handler) AddSchedule(c *fiber.Ctx) error {
 	entry := []*e_schedule.ScheduleCreate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("AddSchedule: ", err)
+		h.l.Errorln("AddSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	s, err := h.o.Create(entry)
 	if err != nil {
-		h.l.Error().Println("AddSchedule: ", err)
+		h.l.Errorln("AddSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_schedule.Format(s))
@@ -102,12 +102,12 @@ func (h *Handler) AddSchedule(c *fiber.Ctx) error {
 func (h *Handler) UpdateSchedule(c *fiber.Ctx) error {
 	entry := []*e_schedule.ScheduleUpdate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("UpdateSchedule: ", err)
+		h.l.Errorln("UpdateSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Update(entry)
 	if err != nil {
-		h.l.Error().Println("UpdateSchedule: ", err)
+		h.l.Errorln("UpdateSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("update successfully")
@@ -123,12 +123,12 @@ func (h *Handler) UpdateSchedule(c *fiber.Ctx) error {
 func (h *Handler) DeleteSchedule(c *fiber.Ctx) error {
 	entry := make([]int32, 0, 10)
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("DeleteSchedule: ", err)
+		h.l.Errorln("DeleteSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Delete(entry)
 	if err != nil {
-		h.l.Error().Println("DeleteSchedule: ", err)
+		h.l.Errorln("DeleteSchedule: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")

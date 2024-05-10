@@ -3,10 +3,10 @@ package task_template
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/util"
-	"schedule_task_command/util/logFile"
 )
 
 type hOperate interface {
@@ -21,10 +21,10 @@ type hOperate interface {
 
 type Handler struct {
 	o hOperate
-	l logFile.LogFile
+	l api.Logger
 }
 
-func NewHandler(o hOperate, l logFile.LogFile) *Handler {
+func NewHandler(o hOperate, l api.Logger) *Handler {
 	return &Handler{
 		o: o,
 		l: l,
@@ -41,10 +41,10 @@ func NewHandler(o hOperate, l logFile.LogFile) *Handler {
 func (h *Handler) GetTaskTemplates(c *fiber.Ctx) error {
 	ht, err := h.o.List()
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplates: ", err)
+		h.l.Errorln("GetTaskTemplates: ", err)
 		return util.Err(c, err, 0)
 	}
-	h.l.Info().Println("GetTaskTemplates: success")
+	h.l.Infoln("GetTaskTemplates: success")
 	return c.Status(200).JSON(e_task_template.Format(ht))
 }
 
@@ -59,15 +59,15 @@ func (h *Handler) GetTaskTemplates(c *fiber.Ctx) error {
 func (h *Handler) GetTaskTemplateById(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
+		h.l.Errorln("GetTaskTemplateById: ", err)
 		return util.Err(c, err, 1)
 	}
 	ht, err := h.o.Find([]int32{int32(id)})
 	if err != nil {
-		h.l.Error().Println("GetTaskTemplateById: ", err)
+		h.l.Errorln("GetTaskTemplateById: ", err)
 		return util.Err(c, err, 2)
 	}
-	h.l.Info().Println("GetTaskTemplateById: success")
+	h.l.Infoln("GetTaskTemplateById: success")
 	return c.Status(200).JSON(e_task_template.Format(ht)[0])
 }
 
@@ -82,12 +82,12 @@ func (h *Handler) GetTaskTemplateById(c *fiber.Ctx) error {
 func (h *Handler) AddTaskTemplate(c *fiber.Ctx) error {
 	entry := []*e_task_template.TaskTemplateCreate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("AddTaskTemplate: ", err)
+		h.l.Errorln("AddTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	tt, err := h.o.Create(entry)
 	if err != nil {
-		h.l.Error().Println("AddTaskTemplate: ", err)
+		h.l.Errorln("AddTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON(e_task_template.Format(tt))
@@ -104,12 +104,12 @@ func (h *Handler) AddTaskTemplate(c *fiber.Ctx) error {
 func (h *Handler) UpdateTaskTemplate(c *fiber.Ctx) error {
 	entry := []*e_task_template.TaskTemplateUpdate{nil}
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("UpdateTaskTemplate: ", err)
+		h.l.Errorln("UpdateTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Update(entry)
 	if err != nil {
-		h.l.Error().Println("UpdateTaskTemplate: ", err)
+		h.l.Errorln("UpdateTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("update successfully")
@@ -125,12 +125,12 @@ func (h *Handler) UpdateTaskTemplate(c *fiber.Ctx) error {
 func (h *Handler) DeleteTaskTemplate(c *fiber.Ctx) error {
 	entry := make([]int32, 0, 10)
 	if err := c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("DeleteTaskTemplate: ", err)
+		h.l.Errorln("DeleteTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	err := h.o.Delete(entry)
 	if err != nil {
-		h.l.Error().Println("DeleteTaskTemplate: ", err)
+		h.l.Errorln("DeleteTaskTemplate: ", err)
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
@@ -147,12 +147,12 @@ func (h *Handler) DeleteTaskTemplate(c *fiber.Ctx) error {
 func (h *Handler) ExecuteTask(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		h.l.Error().Println("ExecuteTask: ", err)
+		h.l.Errorln("ExecuteTask: ", err)
 		return util.Err(c, err, 1)
 	}
 	entry := SendTask{}
 	if err = c.BodyParser(&entry); err != nil {
-		h.l.Error().Println("ExecuteTask: ", err)
+		h.l.Errorln("ExecuteTask: ", err)
 		return util.Err(c, err, 2)
 	}
 	st := e_task_template.SendTaskTemplate{

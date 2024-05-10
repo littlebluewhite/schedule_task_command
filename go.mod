@@ -12,9 +12,11 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.13.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/redis/go-redis/v9 v9.5.1
+	github.com/sirupsen/logrus v1.9.2
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.3
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/datatypes v1.2.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gen v0.3.25

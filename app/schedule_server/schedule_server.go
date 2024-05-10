@@ -3,6 +3,7 @@ package schedule_server
 import (
 	"context"
 	"fmt"
+	"schedule_task_command/api"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command_template"
@@ -10,20 +11,20 @@ import (
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 	"schedule_task_command/entry/e_time"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"sync"
 	"time"
 )
 
 type ScheduleServer[T, U any] struct {
 	dbs   dbs.Dbs
-	l     logFile.LogFile
+	l     api.Logger
 	taskS taskServer
 	timeS timeServer
 }
 
 func NewScheduleServer[T, U any](dbs dbs.Dbs, taskS taskServer, timeS timeServer) *ScheduleServer[T, U] {
-	l := logFile.NewLogFile("app", "schedule_server")
+	l := my_log.NewLog("app/schedule_server")
 	return &ScheduleServer[T, U]{
 		dbs:   dbs,
 		l:     l,
@@ -33,7 +34,7 @@ func NewScheduleServer[T, U any](dbs dbs.Dbs, taskS taskServer, timeS timeServer
 }
 
 func (s *ScheduleServer[T, U]) Start(ctx context.Context, interval, removeTime time.Duration) {
-	s.l.Info().Println("Schedule server started")
+	s.l.Infoln("Schedule server started")
 	go func() {
 		s.listen(ctx, interval)
 	}()
@@ -50,7 +51,7 @@ func (s *ScheduleServer[T, U]) listen(ctx context.Context, duration time.Duratio
 	for {
 		select {
 		case <-ctx.Done():
-			s.l.Info().Println("Schedule server stopped")
+			s.l.Infoln("Schedule server stopped")
 			return
 		case t := <-ticker.C:
 			go s.checkSchedule(ctx, t)
@@ -86,7 +87,7 @@ func (s *ScheduleServer[T, U]) checkSchedule(ctx context.Context, t time.Time) {
 				isTime, _ := s.timeS.Execute(pt)
 				if isTime {
 					// Task execute
-					s.l.Info().Printf("id: %s execute", scheduleId)
+					s.l.Infof("id: %s execute", scheduleId)
 					st := e_task_template.SendTaskTemplate{
 						TemplateId:     int(schedule.TaskTemplateID),
 						Source:         "Schedule",

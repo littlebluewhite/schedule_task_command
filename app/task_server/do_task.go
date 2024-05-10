@@ -200,7 +200,7 @@ func (t *TaskServer[T]) ts2Com(stage e_task_template.StageItem, triggerFrom []ma
 	// get variables
 	variables, err := getStageVariables(stage, task)
 	if err != nil {
-		t.l.Error().Printf("task id: %d, task template id: %d, stage id: %d, error: %v",
+		t.l.Errorf("task id: %d, task template id: %d, stage id: %d, error: %v",
 			task.ID, task.TemplateId, stage.ID, err)
 	}
 	c = e_command.Command{

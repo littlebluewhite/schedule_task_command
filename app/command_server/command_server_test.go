@@ -4,26 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/require"
-	"path/filepath"
-	"runtime"
 	"schedule_task_command/api/group/command"
 	"schedule_task_command/app/dbs"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/util"
 	"schedule_task_command/util/config"
-	"schedule_task_command/util/logFile"
+	"schedule_task_command/util/my_log"
 	"sync"
 	"testing"
 	"time"
 )
 
 func setUpServer() (cs *CommandServer, o *command.Operate) {
-
-	_, b, _, _ := runtime.Caller(0)
-	rootPath := filepath.Dir(filepath.Dir(filepath.Dir(b)))
-	Config := config.NewConfig[config.Config](rootPath, "config", "config", config.Yaml)
-	l := logFile.NewLogFile("test", "commandServer.log")
+	Config := config.NewConfig[config.Config]("../../config", "config", config.Yaml)
+	l := my_log.NewLog("test/commandServer")
 	DBS := dbs.NewDbs(l, true, Config)
 	cs = NewCommandServer(DBS, nil)
 	o = command.NewOperate(cs)
