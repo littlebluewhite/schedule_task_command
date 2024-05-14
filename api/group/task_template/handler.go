@@ -2,6 +2,8 @@ package task_template
 
 import (
 	"context"
+	"errors"
+	"github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
@@ -131,6 +133,10 @@ func (h *Handler) DeleteTaskTemplate(c *fiber.Ctx) error {
 	err := h.o.Delete(entry)
 	if err != nil {
 		h.l.Errorln("DeleteTaskTemplate: ", err)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1451 {
+			return util.Err(c, err, 10)
+		}
 		return util.Err(c, err, 0)
 	}
 	return c.Status(200).JSON("delete successfully")
