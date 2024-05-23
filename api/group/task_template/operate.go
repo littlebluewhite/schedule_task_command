@@ -325,7 +325,9 @@ func (o *Operate) streamExecuteTaskTemplate(rsc map[string]interface{}) (result 
 	if err != nil {
 		return
 	}
-	entry.Token = rsc["callback_token"].(string)
+	if rsc["callback_token"] != nil {
+		entry.Token = rsc["callback_token"].(string)
+	}
 	id, err := o.Execute(context.Background(), entry)
 	if err != nil {
 		return
