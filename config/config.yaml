@@ -29,7 +29,7 @@ testSQL:
 
 server:
   port: 5487
-  version: 2.15.1
+  version: 2.15.2
   swagger_host: 127.0.0.1
   read_timeout: 300  # s
   write_timeout: 300  # s
