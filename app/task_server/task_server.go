@@ -346,13 +346,14 @@ func (t *TaskServer[T]) StreamPub(ctx context.Context, task e_task.Task) (err er
 		"message":      task.Message,
 		"trigger_from": task.TriggerFrom,
 	}
+	timeNow := time.Now()
 	jd, _ := json.Marshal(data)
 	values := redis_stream.CreateRedisStreamCom()
 	values["command"] = "track_task"
-	values["timestamp"] = time.Now().Unix()
+	values["timestamp"] = timeNow.Unix()
 	values["data"] = jd
 	values["is_wait_call_back"] = 0
-	values["callback_token"] = ""
+	values["callback_token"] = fmt.Sprintf("%d_%d", task.ID, timeNow.UnixNano())
 	values["send_pattern"] = "1"
 	values["callback_timeout"] = 5
 	values["status_code"] = 1

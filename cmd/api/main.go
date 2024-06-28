@@ -6,6 +6,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"os/signal"
+	version "schedule_task_command"
 	"schedule_task_command/api"
 	"schedule_task_command/api/group"
 	"schedule_task_command/app/command_server"
@@ -53,7 +54,7 @@ func main() {
 	// swagger docs host
 	docsHost := fmt.Sprintf("%s:%s", ServerConfig.SwaggerHost, ServerConfig.Port)
 	docs.SwaggerInfo.Host = docsHost
-	docs.SwaggerInfo.Version = ServerConfig.Version
+	docs.SwaggerInfo.Version = version.Version
 
 	// DBs start includes SQL Cache
 	DBS := dbs.NewDbs(mainLog, false, Config)

@@ -20,7 +20,6 @@ type SQLConfig struct {
 
 type ServerConfig struct {
 	Port         string        `mapstructure:"port"`
-	Version      string        `mapstructure:"version"`
 	SwaggerHost  string        `mapstructure:"swagger_host"`
 	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout time.Duration `mapstructure:"write_timeout"`
