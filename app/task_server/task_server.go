@@ -72,7 +72,7 @@ func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	}()
 	go func() {
 		_ = <-ctx.Done()
-		t.stopCounter()
+		t.counterWrite()
 		t.l.Infoln("task server stop gracefully")
 	}()
 }
@@ -96,7 +96,7 @@ func (t *TaskServer[T]) initStreamComMap() {
 	}
 }
 
-func (t *TaskServer[T]) stopCounter() {
+func (t *TaskServer[T]) counterWrite() {
 	ctx := context.Background()
 	qc := query.Use(t.dbs.GetSql()).Counter
 	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("task")).Update(qc.Value, t.count.Load())

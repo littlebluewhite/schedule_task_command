@@ -61,7 +61,7 @@ func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
 	}()
 	go func() {
 		_ = <-ctx.Done()
-		c.stopCounter()
+		c.counterWrite()
 		c.l.Infoln("command server stop gracefully")
 	}()
 }
@@ -83,7 +83,7 @@ func (c *CommandServer) initStreamComMap() {
 	c.streamComMap = map[string]func(rsc map[string]interface{}) (string, error){}
 }
 
-func (c *CommandServer) stopCounter() {
+func (c *CommandServer) counterWrite() {
 	ctx := context.Background()
 	qc := query.Use(c.dbs.GetSql()).Counter
 	_, err := qc.WithContext(ctx).Where(qc.Name.Eq("command")).Update(qc.Value, c.count.Load())
@@ -219,6 +219,12 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 
 	// write to history in influxdb
 	c.writeToHistory(com)
+
+	// write counter to sql
+	go func() {
+		c.counterWrite()
+	}()
+
 	// publish to all channel
 	c.publishContainer(context.Background(), com)
 	return com

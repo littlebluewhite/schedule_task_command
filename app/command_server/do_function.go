@@ -8,6 +8,7 @@ import (
 	"github.com/goccy/go-json"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"schedule_task_command/entry/e_command"
 	"schedule_task_command/entry/e_command_template"
@@ -99,13 +100,26 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		}
 	}
 	header := make([]httpHeader, 0, 20)
-	url, e := util.ChangeStringVariables(h.URL, com.Variables)
+	fullUrl, e := util.ChangeStringVariables(h.URL, com.Variables)
 	if e != nil {
 		com.Status = e_command.Failure
 		com.Message = &URLVariables
 		return com
 	}
-	req, e := http.NewRequestWithContext(ctx, h.Method.String(), url, body)
+	// fullUrl has params
+	if index := strings.Index(fullUrl, "?"); index != -1 {
+		params := url.Values{}
+		rUrl := fullUrl[:index]
+		rParams := fullUrl[index+1:]
+		pSlice := strings.Split(rParams, "&")
+		for _, p := range pSlice {
+			keyValue := strings.Split(p, "=")
+			params.Add(keyValue[0], keyValue[1])
+		}
+		fullUrl = rUrl + "?" + params.Encode()
+	}
+
+	req, e := http.NewRequestWithContext(ctx, h.Method.String(), fullUrl, body)
 	if e != nil {
 		com.Status = e_command.Failure
 		com.Message = &HttpTimeout
