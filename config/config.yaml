@@ -26,6 +26,7 @@ testSQL:
 
 server:
   port: 5487
+  g_port: 55487
   swagger_host: 127.0.0.1
   read_timeout: 300  # s
   write_timeout: 300  # s

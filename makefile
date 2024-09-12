@@ -25,9 +25,6 @@ down_test:
 to:
 	go run cmd/migrate/main.go -to -version 1
 
-swagger-docs:
-	swag init --parseDependency --parseInternal --parseDepth 1 -d cmd/api
-
 build-m:
 	docker build -t schedule-migrate:latest -f deploy/migrate/linux/Dockerfile .
 
@@ -40,5 +37,5 @@ run-m:
 run-a:
 	docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:latest
 
-
-# docker exec -it <container-id> sh
+grpc:
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/task_template.proto

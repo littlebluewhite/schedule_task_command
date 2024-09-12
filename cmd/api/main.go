@@ -17,6 +17,7 @@ import (
 	"schedule_task_command/app/websocket_hub"
 	"schedule_task_command/docs"
 	_ "schedule_task_command/docs"
+	"schedule_task_command/proto/grpc_task_template"
 	"schedule_task_command/util/config"
 	"schedule_task_command/util/my_log"
 	"strings"
@@ -80,6 +81,9 @@ func main() {
 			ServerConfig.Interval*time.Second,
 			ServerConfig.CleanTime*time.Hour)
 	}()
+
+	// start gRPC server
+	go grpc_task_template.StartGRPCServer(ctx, mainLog, Config, taskServer, DBS)
 
 	var sb strings.Builder
 	sb.WriteString(":")

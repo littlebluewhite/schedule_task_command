@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = "schedule_task_command/proto";
+
+package proto;
+
+service TaskTemplateService {
+  rpc SendTaskTemplate(SendTaskTemplateRequest) returns (SendTaskTemplateResponse);
+}
+
+// Define the main request structure
+message SendTaskTemplateRequest {
+  uint64 template_id = 1;
+  string source = 2;
+  repeated TriggerFrom trigger_from = 3;
+  string trigger_account = 4;
+  string token = 5;
+  map<uint64, Variables> variables = 6;
+}
+
+// Define the TriggerFrom structure to represent a map-like structure
+message TriggerFrom {
+  map<string, string> key_value = 1;
+}
+
+// Define the Variables structure for the nested map
+message Variables {
+  map<string, string> key_value = 1;
+}
+
+
+message SendTaskTemplateResponse {
+  uint64 task_id = 1;
+}

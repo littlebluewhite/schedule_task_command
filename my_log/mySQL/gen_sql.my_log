@@ -1,0 +1,978 @@
+
+2024/09/12 11:49:27 
+[0.633ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[2.681ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[6.337ms] [rows:-] SELECT * FROM `time_data` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[1.921ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'time_data' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.278ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[0.339ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[1.017ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'time_data'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[info] got 9 columns from table <time_data>
+
+2024/09/12 11:49:27 
+[0.262ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.393ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[1.818ms] [rows:-] SELECT * FROM `time_template` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.565ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'time_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.226ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.409ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.391ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'time_template'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[info] got 7 columns from table <time_template>
+
+2024/09/12 11:49:27 
+[0.324ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.349ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[1.794ms] [rows:-] SELECT * FROM `header_template` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.558ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'header_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.253ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.314ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.388ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'header_template'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[info] got 3 columns from table <header_template>
+
+2024/09/12 11:49:27 
+[0.229ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.386ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[1.989ms] [rows:-] SELECT * FROM `https_command` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.651ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'https_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.206ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.331ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.344ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'https_command'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[info] got 9 columns from table <https_command>
+
+2024/09/12 11:49:27 
+[0.263ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.292ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[1.538ms] [rows:-] SELECT * FROM `websocket_command` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.750ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'websocket_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.200ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.265ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.352ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'websocket_command'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[info] got 5 columns from table <websocket_command>
+
+2024/09/12 11:49:27 
+[0.210ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.296ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[1.659ms] [rows:-] SELECT * FROM `mqtt_command` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.535ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'mqtt_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.227ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.311ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.334ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'mqtt_command'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[info] got 6 columns from table <mqtt_command>
+
+2024/09/12 11:49:27 
+[0.262ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.296ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[1.686ms] [rows:-] SELECT * FROM `redis_command` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.524ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'redis_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.211ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.304ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.309ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'redis_command'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[info] got 7 columns from table <redis_command>
+
+2024/09/12 11:49:27 
+[0.187ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.249ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[1.629ms] [rows:-] SELECT * FROM `m_condition` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.474ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'm_condition' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.213ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.328ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.321ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'm_condition'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[info] got 7 columns from table <m_condition>
+
+2024/09/12 11:49:27 
+[0.260ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.266ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[1.600ms] [rows:-] SELECT * FROM `monitor` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.426ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'monitor' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.185ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.308ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.274ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'monitor'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[info] got 5 columns from table <monitor>
+
+2024/09/12 11:49:27 
+[0.252ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.245ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[1.012ms] [rows:-] SELECT * FROM `parser_return` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.445ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'parser_return' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.182ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.239ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.306ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'parser_return'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[info] got 5 columns from table <parser_return>
+
+2024/09/12 11:49:27 
+[0.199ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.237ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[3.419ms] [rows:-] SELECT * FROM `command_template` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.512ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'command_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.198ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.241ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.318ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'command_template'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[info] got 19 columns from table <command_template>
+
+2024/09/12 11:49:27 
+[0.216ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.255ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.865ms] [rows:-] SELECT * FROM `stage_item` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.460ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'stage_item' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.177ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.237ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.281ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'stage_item'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[info] got 9 columns from table <stage_item>
+
+2024/09/12 11:49:27 
+[0.261ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.245ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[1.664ms] [rows:-] SELECT * FROM `task_template` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.453ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'task_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.194ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.266ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.290ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'task_template'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[info] got 7 columns from table <task_template>
+
+2024/09/12 11:49:27 
+[0.217ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.298ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[1.148ms] [rows:-] SELECT * FROM `task_template_stage` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.499ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'task_template_stage' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.184ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.218ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.253ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'task_template_stage'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[info] got 2 columns from table <task_template_stage>
+
+2024/09/12 11:49:27 
+[0.174ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.234ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[1.033ms] [rows:-] SELECT * FROM `schedule` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.388ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'schedule' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.177ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.266ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.246ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'schedule'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[info] got 10 columns from table <schedule>
+
+2024/09/12 11:49:27 
+[0.174ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.238ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[1.129ms] [rows:-] SELECT * FROM `counter` LIMIT 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.351ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'counter' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:49:27 
+[0.171ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.206ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.226ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'counter'
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[info] got 2 columns from table <counter>
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] Start generating code.
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <websocket_command> -> {model.WebsocketCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/websocket_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <redis_command> -> {model.RedisCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/redis_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <mqtt_command> -> {model.MqttCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/mqtt_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <task_template_stage> -> {model.TaskTemplateStage}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/task_template_stage.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <time_data> -> {model.TimeDatum}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/time_data.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <header_template> -> {model.HeaderTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/header_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <stage_item> -> {model.StageItem}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/stage_item.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <counter> -> {model.Counter}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/counter.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <time_template> -> {model.TimeTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/time_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <m_condition> -> {model.MCondition}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/m_condition.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <https_command> -> {model.HTTPSCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/https_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <command_template> -> {model.CommandTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/command_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <parser_return> -> {model.ParserReturn}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/parser_return.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <schedule> -> {model.Schedule}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/schedule.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <monitor> -> {model.Monitor}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/monitor.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <task_template> -> {model.TaskTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/task_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/task_template_stage.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/schedule.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/counter.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/redis_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/mqtt_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/parser_return.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/time_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/monitor.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/time_data.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/websocket_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/header_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/m_condition.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/https_command.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/stage_item.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/task_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/command_template.gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/gen.go
+
+2024/09/12 11:49:27 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] Generate code done.
+
+2024/09/12 11:55:35 
+[0.817ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[1.500ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[0.805ms] [rows:-] SELECT * FROM `time_data` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[2.131ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'time_data' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.290ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[0.443ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[1.756ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'time_data'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:35
+[info] got 9 columns from table <time_data>
+
+2024/09/12 11:55:35 
+[0.302ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.437ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[1.207ms] [rows:-] SELECT * FROM `time_template` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.770ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'time_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.236ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.351ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[0.672ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'time_template'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:39
+[info] got 7 columns from table <time_template>
+
+2024/09/12 11:55:35 
+[0.282ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.440ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.524ms] [rows:-] SELECT * FROM `header_template` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.593ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'header_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.214ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.335ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[0.395ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'header_template'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:43
+[info] got 3 columns from table <header_template>
+
+2024/09/12 11:55:35 
+[0.195ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.329ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.542ms] [rows:-] SELECT * FROM `https_command` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.609ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'https_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.195ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.407ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[0.312ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'https_command'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:44
+[info] got 9 columns from table <https_command>
+
+2024/09/12 11:55:35 
+[0.208ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.254ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.369ms] [rows:-] SELECT * FROM `websocket_command` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.412ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'websocket_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.167ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.194ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[0.390ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'websocket_command'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:48
+[info] got 5 columns from table <websocket_command>
+
+2024/09/12 11:55:35 
+[0.232ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.278ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.419ms] [rows:-] SELECT * FROM `mqtt_command` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.381ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'mqtt_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.142ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.246ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[0.735ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'mqtt_command'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:50
+[info] got 6 columns from table <mqtt_command>
+
+2024/09/12 11:55:35 
+[0.284ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.385ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.625ms] [rows:-] SELECT * FROM `redis_command` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.690ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'redis_command' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.217ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.369ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[0.316ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'redis_command'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:53
+[info] got 7 columns from table <redis_command>
+
+2024/09/12 11:55:35 
+[0.189ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.264ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.487ms] [rows:-] SELECT * FROM `m_condition` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.409ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'm_condition' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.184ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.208ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[0.258ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'm_condition'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:55
+[info] got 7 columns from table <m_condition>
+
+2024/09/12 11:55:35 
+[0.200ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.255ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.365ms] [rows:-] SELECT * FROM `monitor` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.267ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'monitor' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.155ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.246ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[0.215ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'monitor'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:56
+[info] got 5 columns from table <monitor>
+
+2024/09/12 11:55:35 
+[0.157ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.195ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.362ms] [rows:-] SELECT * FROM `parser_return` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.295ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'parser_return' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.155ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.208ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[0.307ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'parser_return'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:60
+[info] got 5 columns from table <parser_return>
+
+2024/09/12 11:55:35 
+[0.169ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.192ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.407ms] [rows:-] SELECT * FROM `command_template` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.334ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'command_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.153ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.183ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[0.211ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'command_template'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:62
+[info] got 19 columns from table <command_template>
+
+2024/09/12 11:55:35 
+[0.158ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.230ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.339ms] [rows:-] SELECT * FROM `stage_item` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.327ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'stage_item' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.161ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.199ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[0.205ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'stage_item'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:91
+[info] got 9 columns from table <stage_item>
+
+2024/09/12 11:55:35 
+[0.178ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.229ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.384ms] [rows:-] SELECT * FROM `task_template` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.367ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'task_template' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.166ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.223ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[0.242ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'task_template'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:99
+[info] got 7 columns from table <task_template>
+
+2024/09/12 11:55:35 
+[0.169ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.218ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.363ms] [rows:-] SELECT * FROM `task_template_stage` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.302ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'task_template_stage' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.153ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.206ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[0.231ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'task_template_stage'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:107
+[info] got 2 columns from table <task_template_stage>
+
+2024/09/12 11:55:35 
+[0.160ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.187ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.342ms] [rows:-] SELECT * FROM `schedule` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.308ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'schedule' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.147ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.205ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[0.197ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'schedule'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:109
+[info] got 10 columns from table <schedule>
+
+2024/09/12 11:55:35 
+[0.168ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.209ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.342ms] [rows:-] SELECT * FROM `counter` LIMIT 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.286ms] [rows:-] SELECT column_name, column_default, is_nullable = 'YES', data_type, character_maximum_length, column_type, column_key, extra, column_comment, numeric_precision, numeric_scale , datetime_precision FROM information_schema.columns WHERE table_schema = 'schedule_test' AND table_name = 'counter' ORDER BY ORDINAL_POSITION
+
+2024/09/12 11:55:35 
+[0.146ms] [rows:-] SELECT DATABASE()
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.200ms] [rows:1] SELECT SCHEMA_NAME from Information_schema.SCHEMATA where SCHEMA_NAME LIKE 'schedule_test%' ORDER BY SCHEMA_NAME='schedule_test' DESC,SCHEMA_NAME limit 1
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[0.231ms] [rows:-] SELECT table_schema, table_name, table_type, table_comment FROM information_schema.tables WHERE table_schema = 'schedule_test' AND table_name = 'counter'
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:116
+[info] got 2 columns from table <counter>
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] Start generating code.
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <monitor> -> {model.Monitor}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/monitor.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <task_template_stage> -> {model.TaskTemplateStage}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/task_template_stage.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <time_data> -> {model.TimeDatum}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/time_data.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <m_condition> -> {model.MCondition}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/m_condition.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <counter> -> {model.Counter}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/counter.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <websocket_command> -> {model.WebsocketCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/websocket_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <stage_item> -> {model.StageItem}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/stage_item.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <https_command> -> {model.HTTPSCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/https_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <time_template> -> {model.TimeTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/time_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <schedule> -> {model.Schedule}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/schedule.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <mqtt_command> -> {model.MqttCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/mqtt_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <parser_return> -> {model.ParserReturn}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/parser_return.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <redis_command> -> {model.RedisCommand}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/redis_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <header_template> -> {model.HeaderTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/header_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <task_template> -> {model.TaskTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/task_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate model file(table <command_template> -> {model.CommandTemplate}): /Users/wilson08/IdeaProjects/schedule_task_command/dal/model/command_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/https_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/parser_return.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/redis_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/counter.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/header_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/mqtt_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/task_template_stage.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/websocket_command.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/m_condition.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/time_data.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/schedule.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/monitor.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/time_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/task_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/stage_item.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/sdk/go1.23.0/src/runtime/asm_arm64.s:1223
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/command_template.gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] generate query file: /Users/wilson08/IdeaProjects/schedule_task_command/dal/query/gen.go
+
+2024/09/12 11:55:35 /Users/wilson08/IdeaProjects/schedule_task_command/cmd/generate/main.go:123
+[info] Generate code done.
