@@ -4,3 +4,4 @@
 /docker/
 /app/command_server/log/
 /app/task_server/log/
+/my_log/
