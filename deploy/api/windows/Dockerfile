@@ -6,7 +6,7 @@ RUN apk update && \
     apk add --no-cache gcc && \
     rm -rf /var/lib/apt/lists/* && \
     apk add musl-dev
-RUN go build -o main /app/cmd/api/main.go
+RUN go build -ldflags="-s -w" -o main /app/cmd/api/main.go
 
 # Run stage
 FROM alpine

@@ -2,7 +2,7 @@
 FROM golang:1.23-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN go build -o main /app/cmd/migrate/main.go
+RUN go build -ldflags="-s -w" -o main /app/cmd/migrate/main.go
 
 # Run stage
 FROM alpine

@@ -10,7 +10,7 @@ services:
       MYSQL_USER: wilson
       MYSQL_PASSWORD: 123456
     volumes:
-      - ./migration/000001_init.up.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./migrations/000001_init.up.sql:/docker-entrypoint-initdb.d/1.sql
       - ./docker/mysql:/var/lib/mysql
 
     healthcheck:
@@ -51,21 +51,20 @@ services:
       dockerfile: deploy/api/linux/Dockerfile
 #      dockerfile: deploy/api/windows/Dockerfile
     environment:
-      CONN_SQL_HOST: mysql
-      CONN_SQL_USER: root
-      CONN_SQL_PASSWORD: 123456
-      CONN_SQL_DB: schedule
-      CONN_INFLUXDB_HOST: influxdb
-      CONN_INFLUXDB_ORG: my-org
-      CONN_INFLUXDB_TOKEN: my-super-influxdb-auth-token
-      CONN_INFLUXDB_BUCKET: schedule
-      CONN_REDIS_HOST: redis
-      CONN_REDIS_PORT: 6379
-      CONN_REDIS_IS_CLUSTER: False
-      CONN_REDIS_DB: 15
+      SQL_HOST: mysql
+      SQL_USER: root
+      SQL_PASSWORD: 123456
+      SQL_DB: schedule
+      INFLUXDB_HOST: influxdb
+      INFLUXDB_ORG: my-org
+      INFLUXDB_TOKEN: my-super-influxdb-auth-token
+      INFLUXDB_BUCKET: schedule
+      REDIS_HOST: redis:6379
+      REDIS_DB: 15
 
     ports:
-      - 5487:5487
+      - "5487:5487"
+      - "55487:55487"
     volumes:
       - ./docker/my_log:/app/my_log
     depends_on:
