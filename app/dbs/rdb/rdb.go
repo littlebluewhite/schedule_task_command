@@ -6,6 +6,13 @@ import (
 	"github.com/redis/go-redis/v9"
 	"schedule_task_command/util/config"
 	"strings"
+	"sync"
+	"time"
+)
+
+var (
+	clientInstance redis.UniversalClient
+	once           sync.Once
 )
 
 func newSingleRedis(redisConfig config.RedisConfig, hostPort [][]string) *redis.Client {
@@ -15,6 +22,15 @@ func newSingleRedis(redisConfig config.RedisConfig, hostPort [][]string) *redis.
 	if err != nil {
 		panic(err)
 	}
+
+	// 設置連接池選項
+	opt.PoolSize = 5000     // 設置最大連接數，根據需求調整
+	opt.MinIdleConns = 5    // 設置最小閒置連接數
+	opt.MaxIdleConns = 1000 // 設置最大閒置連接數
+	opt.DialTimeout = 5 * time.Second
+	opt.ReadTimeout = 3 * time.Second
+	opt.WriteTimeout = 3 * time.Second
+
 	rdb := redis.NewClient(opt)
 	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
@@ -30,9 +46,15 @@ func newClusterRedis(redisConfig config.RedisConfig, hostPort [][]string) *redis
 		address = append(address, fmt.Sprintf("%s:%s", v[0], v[1]))
 	}
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:    address,
-		Username: redisConfig.User,
-		Password: redisConfig.Password,
+		Addrs:        address,
+		Username:     redisConfig.User,
+		Password:     redisConfig.Password,
+		PoolSize:     5000,
+		MinIdleConns: 5,
+		MaxIdleConns: 1000,
+		DialTimeout:  5 * time.Second,
+		ReadTimeout:  3 * time.Second,
+		WriteTimeout: 3 * time.Second,
 	})
 	_, err := rdb.Ping(context.Background()).Result()
 	if err != nil {
@@ -42,7 +64,7 @@ func newClusterRedis(redisConfig config.RedisConfig, hostPort [][]string) *redis
 	return rdb
 }
 
-func NewClient(config config.RedisConfig) redis.UniversalClient {
+func newClient(config config.RedisConfig) redis.UniversalClient {
 	host := strings.Split(config.Host, ",")
 	hostPort := make([][]string, 0, len(host))
 	for _, v := range host {
@@ -52,4 +74,11 @@ func NewClient(config config.RedisConfig) redis.UniversalClient {
 		return newSingleRedis(config, hostPort)
 	}
 	return newClusterRedis(config, hostPort)
+}
+
+func NewClient(config config.RedisConfig) redis.UniversalClient {
+	once.Do(func() {
+		clientInstance = newClient(config)
+	})
+	return clientInstance
 }
