@@ -65,7 +65,7 @@ func (t *TimeServer) Execute(pt e_time.PublishTime) (bool, error) {
 	t.writeToHistory(pt)
 
 	// send to redis channel
-	_ = t.rdbPub(pt)
+	//_ = t.rdbPub(pt)
 
 	if pt.Message != nil {
 		return false, pt.Message

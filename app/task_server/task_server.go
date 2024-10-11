@@ -71,6 +71,12 @@ func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 		t.cs.Start(ctx, removeTime)
 	}()
 	go func() {
+		for {
+			t.counterWrite()
+			time.Sleep(time.Second * 10)
+		}
+	}()
+	go func() {
 		_ = <-ctx.Done()
 		t.counterWrite()
 		t.l.Infoln("task server stop gracefully")
@@ -317,9 +323,9 @@ func (t *TaskServer[T]) writeTask(task e_task.Task) {
 }
 
 func (t *TaskServer[T]) publishContainer(ctx context.Context, task e_task.Task) {
-	go func() {
-		_ = t.rdbPub(ctx, task)
-	}()
+	//go func() {
+	//	_ = t.rdbPub(ctx, task)
+	//}()
 	go func() {
 		_ = t.StreamPub(ctx, task)
 	}()

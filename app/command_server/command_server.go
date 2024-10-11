@@ -60,6 +60,12 @@ func (c *CommandServer) Start(ctx context.Context, removeTime time.Duration) {
 		c.receiveStream(ctx)
 	}()
 	go func() {
+		for {
+			c.counterWrite()
+			time.Sleep(time.Second * 10)
+		}
+	}()
+	go func() {
 		_ = <-ctx.Done()
 		c.counterWrite()
 		c.l.Infoln("command server stop gracefully")
@@ -220,11 +226,6 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	// write to history in influxdb
 	c.writeToHistory(com)
 
-	// write counter to sql
-	go func() {
-		c.counterWrite()
-	}()
-
 	// publish to all channel
 	c.publishContainer(context.Background(), com)
 	return com
@@ -360,9 +361,9 @@ func (c *CommandServer) ReadFromHistory(id, comTemplateId, start, stop, status s
 }
 
 func (c *CommandServer) publishContainer(ctx context.Context, com e_command.Command) {
-	go func() {
-		_ = c.rdbPub(ctx, com)
-	}()
+	//go func() {
+	//	_ = c.rdbPub(ctx, com)
+	//}()
 	go func() {
 		c.sendWebsocket(com)
 	}()
