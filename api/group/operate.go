@@ -18,7 +18,7 @@ type Operate struct {
 }
 
 type logDB interface {
-	Writer() api.WriteAPIBlocking
+	Writer() api.WriteAPI
 	Querier() api.QueryAPI
 }
 
@@ -29,9 +29,8 @@ func NewOperate(dbs dbs.Dbs) *Operate {
 	return o
 }
 
-func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
+func (o *Operate) WriteLog(c *fiber.Ctx) {
 	// write my_log
-	ctx := context.Background()
 	now := time.Now()
 	response := c.Response()
 
@@ -73,10 +72,10 @@ func (o *Operate) WriteLog(c *fiber.Ctx) (err error) {
 		map[string]interface{}{"data": jL},
 		now,
 	)
-	if err = o.idb.Writer().WritePoint(ctx, p); err != nil {
-		return
-	}
-	return
+
+	go func() {
+		o.idb.Writer().WritePoint(p)
+	}()
 }
 
 func (o *Operate) ReadLog(start, stop, account, ip, method, module, statusCode string) (logs []e_log.Log, err error) {

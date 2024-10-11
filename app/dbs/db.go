@@ -26,7 +26,7 @@ type Dbs interface {
 
 type HistoryDB interface {
 	Close()
-	Writer() api2.WriteAPIBlocking
+	Writer() api2.WriteAPI
 	Querier() api2.QueryAPI
 }
 
@@ -84,7 +84,7 @@ func (d *dbs) initRdb(log api.Logger, Config config.RedisConfig) {
 }
 
 func (d *dbs) initIdb(log api.Logger, Config config.InfluxdbConfig) {
-	d.Idb = influxdb.NewInfluxdb(Config)
+	d.Idb = influxdb.NewInfluxdb(Config, log)
 	log.Infoln("InfluxDB Connection successful")
 }
 

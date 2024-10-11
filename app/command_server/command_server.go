@@ -224,7 +224,9 @@ func (c *CommandServer) doCommand(ctx context.Context, com e_command.Command) e_
 	c.writeCommand(com)
 
 	// write to history in influxdb
-	c.writeToHistory(com)
+	go func() {
+		c.writeToHistory(com)
+	}()
 
 	// publish to all channel
 	c.publishContainer(context.Background(), com)
@@ -288,7 +290,6 @@ Loop1:
 }
 
 func (c *CommandServer) writeToHistory(com e_command.Command) {
-	ctx := context.Background()
 	tp := e_command.ToPub(com)
 	jCom, err := json.Marshal(tp)
 	if err != nil {
@@ -303,9 +304,9 @@ func (c *CommandServer) writeToHistory(com e_command.Command) {
 		map[string]interface{}{"data": jCom},
 		com.From,
 	)
-	if err = c.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		c.l.Errorln(err)
-	}
+
+	// write to influxdb
+	c.dbs.GetIdb().Writer().WritePoint(p)
 }
 
 func (c *CommandServer) ReadFromHistory(id, comTemplateId, start, stop, status string) (hc []e_command.CommandPub, err error) {

@@ -55,7 +55,10 @@ func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Tas
 	// write task
 	t.writeTask(task)
 	// write to history in influxdb
-	t.writeToHistory(task)
+
+	go func() {
+		t.writeToHistory(task)
+	}()
 
 	go func() {
 		time.Sleep(300 * time.Millisecond)

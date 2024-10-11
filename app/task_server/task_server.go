@@ -244,7 +244,6 @@ Loop1:
 }
 
 func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
-	ctx := context.Background()
 	tp := e_task.ToPub(task)
 	jTask, err := json.Marshal(tp)
 	if err != nil {
@@ -259,9 +258,9 @@ func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
 		map[string]interface{}{"data": jTask},
 		task.From,
 	)
-	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		t.l.Errorln(err)
-	}
+
+	// write to influxdb
+	t.dbs.GetIdb().Writer().WritePoint(p)
 }
 
 func (t *TaskServer[T]) ReadFromHistory(id, taskTemplateId, start, stop, status string) (ht []e_task.TaskPub, err error) {

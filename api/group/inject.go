@@ -47,7 +47,7 @@ func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) 
 	h := NewHandler(o, log)
 	Api.Use(func(c *fiber.Ctx) error {
 		err := c.Next()
-		err = o.WriteLog(c)
+		o.WriteLog(c)
 		if err != nil {
 			log.Errorln(err)
 		}

@@ -62,7 +62,9 @@ func (t *TimeServer) Execute(pt e_time.PublishTime) (bool, error) {
 	pt = t.checkTime(pt)
 
 	// write to history
-	t.writeToHistory(pt)
+	go func() {
+		t.writeToHistory(pt)
+	}()
 
 	// send to redis channel
 	//_ = t.rdbPub(pt)
@@ -84,7 +86,6 @@ func (t *TimeServer) checkTime(pt e_time.PublishTime) e_time.PublishTime {
 }
 
 func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
-	ctx := context.Background()
 	templateId := fmt.Sprintf("%d", pt.TemplateId)
 	isTime := fmt.Sprintf("%t", pt.IsTime)
 	jsonPt, err := json.Marshal(pt)
@@ -96,9 +97,7 @@ func (t *TimeServer) writeToHistory(pt e_time.PublishTime) {
 		map[string]interface{}{"data": jsonPt},
 		pt.Time,
 	)
-	if err = t.dbs.GetIdb().Writer().WritePoint(ctx, p); err != nil {
-		t.l.Errorln(err)
-	}
+	t.dbs.GetIdb().Writer().WritePoint(p)
 }
 
 func (t *TimeServer) ReadFromHistory(id, templateId, start, stop, isTime string) (ht []e_time.PublishTime, err error) {
