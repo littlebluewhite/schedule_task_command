@@ -25,11 +25,10 @@ func (o *Operate) List() ([]e_task.Task, error) {
 }
 
 func (o *Operate) Find(ids []uint64) ([]e_task.Task, error) {
-	tm := o.taskS.ReadMap()
 	tl := make([]e_task.Task, 0, len(ids))
 	for _, id := range ids {
-		t, ok := tm[id]
-		if !ok {
+		t, err := o.taskS.ReadOne(id)
+		if err != nil {
 			return nil, errors.New(fmt.Sprintf("cannot find id: %d", id))
 		} else {
 			tl = append(tl, t)
@@ -58,9 +57,8 @@ func (o *Operate) GetHistory(id, templateId, start, stop, status string) ([]e_ta
 }
 
 func (o *Operate) FindById(id uint64) (t e_task.TaskPub, err error) {
-	tm := o.taskS.ReadMap()
-	task, ok := tm[id]
-	if ok {
+	task, err := o.taskS.ReadOne(id)
+	if err == nil {
 		t = e_task.ToPub(task)
 		return
 	}

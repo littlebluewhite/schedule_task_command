@@ -15,6 +15,7 @@ import (
 
 func (t *TaskServer[T]) doTask(ctx context.Context, task e_task.Task) e_task.Task {
 	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	task.Status = e_task.Process
 	task.CancelFunc = cancel
@@ -179,7 +180,11 @@ func (t *TaskServer[T]) doOneStage(ctx context.Context, s map[int32]stageMap, st
 		// command status is Cancel and task client message is empty
 		if comB.com.Status == e_command.Cancel && task.ClientMessage == "" {
 			// write client message
-			task.ClientMessage = t.ReadMap()[task.ID].ClientMessage
+			task2, err := t.ReadOne(task.ID)
+			if err != nil {
+				t.l.Errorln(err)
+			}
+			task.ClientMessage = task2.ClientMessage
 		}
 		// write task
 		t.writeTask(task)

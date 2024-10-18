@@ -3,7 +3,7 @@ package grpc_task_template
 import (
 	"context"
 	"fmt"
-	"schedule_task_command/app/dbs"
+	"schedule_task_command/api"
 	"schedule_task_command/entry/e_task"
 )
 
@@ -17,7 +17,7 @@ type TaskTemplateService struct {
 	o  *Operate
 }
 
-func NewTaskTemplateService(ts TaskServer, d dbs.Dbs) *TaskTemplateService {
+func NewTaskTemplateService(ts TaskServer, d api.Dbs) *TaskTemplateService {
 	return &TaskTemplateService{
 		ts: ts,
 		o:  NewOperate(d),

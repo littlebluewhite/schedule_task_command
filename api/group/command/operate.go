@@ -25,11 +25,10 @@ func (o *Operate) List() ([]e_command.Command, error) {
 }
 
 func (o *Operate) Find(ids []uint64) ([]e_command.Command, error) {
-	tm := o.commandS.ReadMap()
 	tl := make([]e_command.Command, 0, len(ids))
 	for _, id := range ids {
-		t, ok := tm[id]
-		if !ok {
+		t, err := o.commandS.ReadOne(id)
+		if err != nil {
 			return nil, errors.New(fmt.Sprintf("cannot find command id: %d", id))
 		} else {
 			tl = append(tl, t)
@@ -58,9 +57,8 @@ func (o *Operate) GetHistory(id, templateId, start, stop, status string) ([]e_co
 }
 
 func (o *Operate) FindById(id uint64) (c e_command.CommandPub, err error) {
-	cm := o.commandS.ReadMap()
-	com, ok := cm[id]
-	if ok {
+	com, err := o.commandS.ReadOne(id)
+	if err == nil {
 		c = e_command.ToPub(com)
 		return
 	}

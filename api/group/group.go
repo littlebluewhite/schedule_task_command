@@ -3,17 +3,16 @@ package group
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 )
 
 type Group struct {
 	app fiber.Router
-	dbs dbs.Dbs
+	dbs api.Dbs
 	ss  api.ScheduleSer
 	hm  api.HubManager
 }
 
-func NewAPIGroup(app fiber.Router, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) *Group {
+func NewAPIGroup(app fiber.Router, dbs api.Dbs, ss api.ScheduleSer, hm api.HubManager) *Group {
 	return &Group{
 		app: app,
 		dbs: dbs,
@@ -26,7 +25,7 @@ func (g *Group) GetApp() fiber.Router {
 	return g.app
 }
 
-func (g *Group) GetDbs() dbs.Dbs {
+func (g *Group) GetDbs() api.Dbs {
 	return g.dbs
 }
 

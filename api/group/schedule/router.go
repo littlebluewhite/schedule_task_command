@@ -3,7 +3,6 @@ package schedule
 import (
 	"github.com/gofiber/fiber/v2"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/util/my_log"
 )
 
@@ -29,6 +28,6 @@ func RegisterRouter(g group) {
 
 type group interface {
 	GetApp() fiber.Router
-	GetDbs() dbs.Dbs
+	GetDbs() api.Dbs
 	GetScheduleServer() api.ScheduleSer
 }

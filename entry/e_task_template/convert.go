@@ -1,7 +1,6 @@
 package e_task_template
 
 import (
-	"fmt"
 	"github.com/goccy/go-json"
 	"math"
 	"schedule_task_command/dal/model"
@@ -11,7 +10,7 @@ import (
 func Format(ct []model.TaskTemplate) []TaskTemplate {
 	result := make([]TaskTemplate, 0, len(ct))
 	for _, item := range ct {
-		fmt.Printf("%+v\n", item)
+		//fmt.Printf("%+v\n", item)
 		sResult := make([]StageItem, 0, len(item.StageItems))
 		for _, s := range item.StageItems {
 			m := s.Mode

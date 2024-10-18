@@ -8,7 +8,6 @@ import (
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_schedule"
@@ -21,7 +20,7 @@ type Operate struct {
 	ss    api.ScheduleSer
 }
 
-func NewOperate(dbs dbs.Dbs, ss api.ScheduleSer) *Operate {
+func NewOperate(dbs api.Dbs, ss api.ScheduleSer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),

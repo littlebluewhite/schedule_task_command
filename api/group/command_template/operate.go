@@ -9,7 +9,6 @@ import (
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
@@ -29,7 +28,7 @@ type taskTemplateOperate interface {
 	ReloadCache(ctx context.Context, q *query.Query, ids []int32) error
 }
 
-func NewOperate(dbs dbs.Dbs, commandS api.CommandServer, taskTemplateO taskTemplateOperate) *Operate {
+func NewOperate(dbs api.Dbs, commandS api.CommandServer, taskTemplateO taskTemplateOperate) *Operate {
 	o := &Operate{
 		db:            dbs.GetSql(),
 		cache:         dbs.GetCache(),

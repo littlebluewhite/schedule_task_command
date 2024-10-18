@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	"schedule_task_command/app/dbs"
+	api2 "schedule_task_command/api"
 	"schedule_task_command/entry/e_log"
 	"strconv"
 	"time"
@@ -22,7 +22,7 @@ type logDB interface {
 	Querier() api.QueryAPI
 }
 
-func NewOperate(dbs dbs.Dbs) *Operate {
+func NewOperate(dbs api2.Dbs) *Operate {
 	o := &Operate{
 		idb: dbs.GetIdb(),
 	}

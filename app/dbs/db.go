@@ -1,7 +1,6 @@
 package dbs
 
 import (
-	api2 "github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -13,32 +12,15 @@ import (
 	"time"
 )
 
-type Dbs interface {
-	initSql(log api.Logger, Config config.SQLConfig)
-	initCache()
-	initRdb(log api.Logger, config config.RedisConfig)
-	initIdb(log api.Logger, Config config.InfluxdbConfig)
-	GetSql() *gorm.DB
-	GetCache() *cache.Cache
-	GetRdb() redis.UniversalClient
-	GetIdb() HistoryDB
-}
-
-type HistoryDB interface {
-	Close()
-	Writer() api2.WriteAPI
-	Querier() api2.QueryAPI
-}
-
-type dbs struct {
+type Dbs struct {
 	Sql   *gorm.DB
 	Cache *cache.Cache
 	Rdb   redis.UniversalClient
-	Idb   HistoryDB
+	Idb   *influxdb.Influx
 }
 
-func NewDbs(log api.Logger, IsTest bool, config config.Config) Dbs {
-	d := &dbs{}
+func NewDbs(log api.Logger, IsTest bool, config config.Config) *Dbs {
+	d := &Dbs{}
 	if IsTest {
 		d.initTestSql(log, config.TestSQL)
 	} else {
@@ -51,7 +33,7 @@ func NewDbs(log api.Logger, IsTest bool, config config.Config) Dbs {
 }
 
 // DB start
-func (d *dbs) initTestSql(log api.Logger, Config config.SQLConfig) {
+func (d *Dbs) initTestSql(log api.Logger, Config config.SQLConfig) {
 	s, err := sql.NewDB("mySQL", "DB_test.my_log", Config)
 	if err != nil {
 		log.Errorln("DB Connection failed")
@@ -63,7 +45,7 @@ func (d *dbs) initTestSql(log api.Logger, Config config.SQLConfig) {
 }
 
 // DB start
-func (d *dbs) initSql(log api.Logger, Config config.SQLConfig) {
+func (d *Dbs) initSql(log api.Logger, Config config.SQLConfig) {
 	s, err := sql.NewDB("mySQL", "DB.my_log", Config)
 	if err != nil {
 		log.Errorln("DB Connection failed")
@@ -74,32 +56,37 @@ func (d *dbs) initSql(log api.Logger, Config config.SQLConfig) {
 	d.Sql = s
 }
 
-func (d *dbs) initCache() {
+func (d *Dbs) initCache() {
 	d.Cache = cache.New(5*time.Minute, 10*time.Minute)
 }
 
-func (d *dbs) initRdb(log api.Logger, Config config.RedisConfig) {
+func (d *Dbs) initRdb(log api.Logger, Config config.RedisConfig) {
 	d.Rdb = rdb.NewClient(Config)
 	log.Infoln("Redis Connection successful")
 }
 
-func (d *dbs) initIdb(log api.Logger, Config config.InfluxdbConfig) {
+func (d *Dbs) initIdb(log api.Logger, Config config.InfluxdbConfig) {
 	d.Idb = influxdb.NewInfluxdb(Config, log)
 	log.Infoln("InfluxDB Connection successful")
 }
 
-func (d *dbs) GetSql() *gorm.DB {
+func (d *Dbs) GetSql() *gorm.DB {
 	return d.Sql
 }
 
-func (d *dbs) GetCache() *cache.Cache {
+func (d *Dbs) GetCache() *cache.Cache {
 	return d.Cache
 }
 
-func (d *dbs) GetRdb() redis.UniversalClient {
+func (d *Dbs) GetRdb() redis.UniversalClient {
 	return d.Rdb
 }
 
-func (d *dbs) GetIdb() HistoryDB {
+func (d *Dbs) GetIdb() *influxdb.Influx {
 	return d.Idb
+}
+
+func (d *Dbs) Close() {
+	_ = d.Rdb.Close()
+	d.Idb.Close()
 }

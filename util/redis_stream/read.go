@@ -2,6 +2,7 @@ package redis_stream
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
@@ -35,6 +36,9 @@ func (rs *RedisStream) Start(ctx context.Context, streamComMap map[string]func(m
 		rs.l.Infoln("TimeTemplate get stream")
 		if err != nil {
 			rs.l.Errorln("receiveStream error: ", err)
+			if errors.Is(err, redis.ErrClosed) {
+				return
+			}
 			continue
 		}
 		go func(rsr map[string]interface{}) {

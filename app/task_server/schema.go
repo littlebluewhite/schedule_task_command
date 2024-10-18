@@ -11,6 +11,7 @@ import (
 
 type chs struct {
 	mu *sync.RWMutex
+	wg *sync.WaitGroup
 }
 
 type hubManager interface {
@@ -44,5 +45,4 @@ type StreamCancel struct {
 }
 
 var SendToRedisErr = util.MyErr("send task to redis cannot format")
-var TaskNotFind = util.MyErr("can not find task")
 var TaskCannotCancel = util.MyErr("task cannot be canceled")

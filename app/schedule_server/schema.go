@@ -14,6 +14,7 @@ type taskServer interface {
 	ExecuteWait(ctx context.Context, task e_task.Task) e_task.Task
 	ExecuteReturnId(ctx context.Context, task e_task.Task) (id uint64, err error)
 	ReadFromHistory(id, taskTemplateId, start, stop, status string) ([]e_task.TaskPub, error)
+	Close()
 }
 
 type timeServer interface {

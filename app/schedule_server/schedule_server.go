@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_command_template"
 	"schedule_task_command/entry/e_schedule"
@@ -17,33 +16,46 @@ import (
 )
 
 type ScheduleServer[T, U any] struct {
-	dbs   dbs.Dbs
+	dbs   api.Dbs
 	l     api.Logger
 	taskS taskServer
 	timeS timeServer
+	wg    *sync.WaitGroup
 }
 
-func NewScheduleServer[T, U any](dbs dbs.Dbs, taskS taskServer, timeS timeServer) *ScheduleServer[T, U] {
+func NewScheduleServer[T, U any](dbs api.Dbs, taskS taskServer, timeS timeServer) *ScheduleServer[T, U] {
 	l := my_log.NewLog("app/schedule_server")
 	return &ScheduleServer[T, U]{
 		dbs:   dbs,
 		l:     l,
 		taskS: taskS,
 		timeS: timeS,
+		wg:    new(sync.WaitGroup),
 	}
 }
 
 func (s *ScheduleServer[T, U]) Start(ctx context.Context, interval, removeTime time.Duration) {
 	s.l.Infoln("Schedule server started")
+
+	s.wg.Add(1)
 	go func() {
+		defer s.wg.Done()
 		s.listen(ctx, interval)
 	}()
+	s.wg.Add(1)
 	go func() {
+		defer s.wg.Done()
 		s.taskS.Start(ctx, removeTime)
 	}()
 	go func() {
 		s.timeS.Start(ctx)
 	}()
+}
+
+func (s *ScheduleServer[T, U]) Close() {
+	s.wg.Wait()
+	s.taskS.Close()
+	s.l.Infoln("Schedule server stop gracefully")
 }
 
 func (s *ScheduleServer[T, U]) listen(ctx context.Context, duration time.Duration) {

@@ -119,7 +119,6 @@ func TestCreate(t *testing.T) {
 			}},
 		}
 		result, err := o.Create(testTimeTemplate)
-		fmt.Println(result)
 		require.Nil(t, err)
 		require.Equal(t, result[0].Name, "test6")
 	})

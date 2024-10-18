@@ -3,17 +3,17 @@ package grpc_task_template
 import (
 	"errors"
 	"fmt"
-	"schedule_task_command/app/dbs"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
 )
 
 type Operate struct {
-	d dbs.Dbs
+	d api.Dbs
 }
 
-func NewOperate(d dbs.Dbs) *Operate {
+func NewOperate(d api.Dbs) *Operate {
 	return &Operate{
 		d: d,
 	}

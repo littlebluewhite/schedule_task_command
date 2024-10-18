@@ -4,7 +4,6 @@ import (
 	"fmt"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	api2 "schedule_task_command/api"
 	"schedule_task_command/util/config"
 )
 
@@ -14,7 +13,16 @@ type Influx struct {
 	querier api.QueryAPI
 }
 
-func NewInfluxdb(influxConfig config.InfluxdbConfig, log api2.Logger) *Influx {
+type Logger interface {
+	Infoln(args ...interface{})
+	Infof(s string, args ...interface{})
+	Errorln(args ...interface{})
+	Errorf(s string, args ...interface{})
+	Warnln(args ...interface{})
+	Warnf(s string, args ...interface{})
+}
+
+func NewInfluxdb(influxConfig config.InfluxdbConfig, log Logger) *Influx {
 	dsn := fmt.Sprintf("http://%s:%s", influxConfig.Host, influxConfig.Port)
 	writeOptions := influxdb2.DefaultOptions().SetBatchSize(500).SetFlushInterval(10000)
 	client := influxdb2.NewClientWithOptions(dsn, influxConfig.Token, writeOptions)

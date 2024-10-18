@@ -7,7 +7,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
-	"schedule_task_command/app/dbs"
+	"schedule_task_command/api"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_header_template"
@@ -19,7 +19,7 @@ type Operate struct {
 	cache *cache.Cache
 }
 
-func NewOperate(dbs dbs.Dbs) *Operate {
+func NewOperate(dbs api.Dbs) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),

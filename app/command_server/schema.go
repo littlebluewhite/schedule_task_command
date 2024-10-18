@@ -8,6 +8,7 @@ import (
 
 type chs struct {
 	mu *sync.RWMutex
+	wg *sync.WaitGroup
 }
 
 type HubManager interface {

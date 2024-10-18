@@ -119,6 +119,7 @@ func main() {
 
 	// Restore default behavior on the interrupt signal and notify user of shutdown.
 	stop()
-	time.Sleep(1 * time.Second)
+	DBS.Close()
+	scheduleServer.Close()
 	mainLog.Infoln("Server exiting")
 }

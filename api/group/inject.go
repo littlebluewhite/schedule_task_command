@@ -19,11 +19,10 @@ import (
 	"schedule_task_command/api/group/time"
 	"schedule_task_command/api/group/time_template"
 	"schedule_task_command/api/group/ws"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/util/my_log"
 )
 
-func Inject(app *fiber.App, dbs dbs.Dbs, ss api.ScheduleSer, hm api.HubManager) {
+func Inject(app *fiber.App, dbs api.Dbs, ss api.ScheduleSer, hm api.HubManager) {
 	// Middleware
 	log := my_log.NewLog("api/group")
 	fiberLog := getFiberLogFile(log)

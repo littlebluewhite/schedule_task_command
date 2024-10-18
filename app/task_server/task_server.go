@@ -2,12 +2,12 @@ package task_server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"maps"
+	"github.com/redis/go-redis/v9"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_command"
@@ -24,31 +24,31 @@ import (
 type commandServer interface {
 	Start(ctx context.Context, removeTime time.Duration)
 	ExecuteWait(ctx context.Context, com e_command.Command) e_command.Command
+	Close()
 }
 
 type TaskServer[T any] struct {
-	dbs          dbs.Dbs
+	dbs          api.Dbs
 	hm           hubManager
 	l            api.Logger
-	t            map[uint64]e_task.Task
+	t            sync.Map
 	cs           commandServer
 	streamComMap map[string]func(rsc map[string]interface{}) (string, error)
 	count        atomic.Uint64
 	chs          chs
 }
 
-func NewTaskServer[T any](dbs dbs.Dbs, cs commandServer, wm hubManager) *TaskServer[T] {
+func NewTaskServer[T any](dbs api.Dbs, cs commandServer, wm hubManager) *TaskServer[T] {
 	l := my_log.NewLog("app/task_server")
-	t := make(map[uint64]e_task.Task)
-	mu := new(sync.RWMutex)
 	return &TaskServer[T]{
 		dbs: dbs,
 		hm:  wm,
 		l:   l,
-		t:   t,
+		t:   sync.Map{},
 		cs:  cs,
 		chs: chs{
-			mu: mu,
+			mu: new(sync.RWMutex),
+			wg: new(sync.WaitGroup),
 		},
 	}
 }
@@ -58,29 +58,51 @@ func (t *TaskServer[T]) Start(ctx context.Context, removeTime time.Duration) {
 	// stream command initial
 	t.initStreamComMap()
 	t.l.Infoln("Task server started")
+
+	t.chs.wg.Add(1)
 	go func() {
+		defer t.chs.wg.Done()
 		t.removeFinishedTask(ctx, removeTime)
 	}()
+
+	t.chs.wg.Add(1)
 	go func() {
+		defer t.chs.wg.Done()
 		t.rdbSub(ctx)
 	}()
+	t.chs.wg.Add(1)
 	go func() {
+		defer t.chs.wg.Done()
 		t.receiveStream(ctx)
 	}()
+
+	t.chs.wg.Add(1)
 	go func() {
+		defer t.chs.wg.Done()
 		t.cs.Start(ctx, removeTime)
 	}()
+
+	t.chs.wg.Add(1)
 	go func() {
+		ticker := time.NewTicker(time.Second * 10)
+		defer ticker.Stop()
+		defer t.chs.wg.Done()
 		for {
-			t.counterWrite()
-			time.Sleep(time.Second * 10)
+			select {
+			case <-ctx.Done():
+				t.counterWrite()
+				return
+			case <-ticker.C:
+				t.counterWrite()
+			}
 		}
 	}()
-	go func() {
-		_ = <-ctx.Done()
-		t.counterWrite()
-		t.l.Infoln("task server stop gracefully")
-	}()
+}
+
+func (t *TaskServer[T]) Close() {
+	t.cs.Close()
+	t.chs.wg.Wait()
+	t.l.Infoln("task server stop gracefully")
 }
 
 func (t *TaskServer[T]) initialCounter(ctx context.Context) {
@@ -113,22 +135,37 @@ func (t *TaskServer[T]) counterWrite() {
 
 func (t *TaskServer[T]) rdbSub(ctx context.Context) {
 	pubsub := t.dbs.GetRdb().Subscribe(ctx, "sendTask")
+	defer func(pubsub *redis.PubSub) {
+		err := pubsub.Close()
+		if err != nil {
+			t.l.Errorln(err)
+		}
+	}(pubsub)
 	for {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				t.l.Infoln("rdbSub receive canceled")
+				return
+			}
 			t.l.Errorln(err)
+			if errors.Is(err, redis.ErrClosed) {
+				return
+			}
 			continue
 		}
-		b := []byte(msg.Payload)
-		var s e_task.Task
-		err = json.Unmarshal(b, &s)
-		if err != nil {
-			t.l.Errorln(SendToRedisErr)
-		}
-		_, err = t.ExecuteReturnId(ctx, s)
-		if err != nil {
-			t.l.Errorln("Error executing Task")
-		}
+
+		// deal with message
+		go func(payload string) {
+			var s e_task.Task
+			if e := json.Unmarshal([]byte(payload), &s); e != nil {
+				t.l.Errorln(SendToRedisErr)
+				return
+			}
+			if _, e := t.ExecuteReturnId(ctx, s); e != nil {
+				t.l.Errorln("Error executing Task:", e)
+			}
+		}(msg.Payload)
 	}
 }
 
@@ -152,18 +189,41 @@ func (t *TaskServer[T]) streamCancelTask(rsc map[string]interface{}) (result str
 }
 
 func (t *TaskServer[T]) ReadMap() map[uint64]e_task.Task {
-	t.chs.mu.RLock()
-	defer t.chs.mu.RUnlock()
-	return maps.Clone(t.t)
+	result := make(map[uint64]e_task.Task)
+	t.t.Range(func(key, value interface{}) bool {
+		id, ok1 := key.(uint64)
+		task, ok2 := value.(e_task.Task)
+		if ok1 && ok2 {
+			result[id] = task
+		}
+		return true
+	})
+	return result
+}
+
+func (t *TaskServer[T]) ReadOne(id uint64) (e_task.Task, error) {
+	if task, ok := t.t.Load(id); ok {
+		return task.(e_task.Task), nil
+	} else {
+		return e_task.Task{}, errors.New(fmt.Sprintf("cannot find id: %d", id))
+	}
+}
+
+func (t *TaskServer[T]) DeleteOne(id uint64) {
+	t.t.Delete(id)
 }
 
 func (t *TaskServer[T]) GetList() []e_task.Task {
-	tl := make([]e_task.Task, 0, len(t.t))
-	m := t.ReadMap()
-	for _, v := range m {
-		tl = append(tl, v)
-	}
-	return tl
+	result := make([]e_task.Task, 0, 1000)
+	t.t.Range(func(key, value interface{}) bool {
+		_, ok1 := key.(uint64)
+		task, ok2 := value.(e_task.Task)
+		if ok1 && ok2 {
+			result = append(result, task)
+		}
+		return true
+	})
+	return result
 }
 
 func (t *TaskServer[T]) ExecuteReturnId(ctx context.Context, task e_task.Task) (id uint64, err error) {
@@ -205,10 +265,9 @@ func (t *TaskServer[T]) ExecuteWait(ctx context.Context, task e_task.Task) e_tas
 }
 
 func (t *TaskServer[T]) CancelTask(id uint64, message string) error {
-	m := t.ReadMap()
-	task, ok := m[id]
-	if !ok {
-		return TaskNotFind
+	task, err := t.ReadOne(id)
+	if err != nil {
+		return err
 	}
 	if task.Status != e_task.Process {
 		return TaskCannotCancel
@@ -219,28 +278,32 @@ func (t *TaskServer[T]) CancelTask(id uint64, message string) error {
 	return nil
 }
 
-func (t *TaskServer[T]) removeFinishedTask(ctx context.Context, s time.Duration) {
-Loop1:
+func (t *TaskServer[T]) removeFinishedTask(ctx context.Context, removeTime time.Duration) {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
 	for {
 		select {
 		case <-ctx.Done():
-			break Loop1
-		default:
-			t.chs.mu.Lock()
-			now := time.Now()
-			for tId, item := range t.t {
-				// task is not finished
-				if item.To == nil {
-					continue
-				}
-				if item.Status != e_task.Process && item.To.Add(s).Before(now) {
-					delete(t.t, tId)
-				}
-			}
-			t.chs.mu.Unlock()
-			time.Sleep(s)
+			t.l.Infoln("removeFinishedTask goroutine exiting")
+			return
+		case <-ticker.C:
+			t.cleanupTasks(removeTime)
 		}
 	}
+}
+
+func (t *TaskServer[T]) cleanupTasks(removeTime time.Duration) {
+	now := time.Now()
+	t.t.Range(func(key, value interface{}) bool {
+		id, ok1 := key.(uint64)
+		task, ok2 := value.(e_task.Task)
+		if ok1 && ok2 {
+			if task.To != nil && task.Status != e_task.Process && task.To.Add(removeTime).Before(now) {
+				t.t.Delete(id)
+			}
+		}
+		return true
+	})
 }
 
 func (t *TaskServer[T]) writeToHistory(task e_task.Task) {
@@ -316,9 +379,7 @@ func (t *TaskServer[T]) ReadFromHistory(id, taskTemplateId, start, stop, status 
 }
 
 func (t *TaskServer[T]) writeTask(task e_task.Task) {
-	t.chs.mu.Lock()
-	defer t.chs.mu.Unlock()
-	t.t[task.ID] = task
+	t.t.Store(task.ID, task)
 }
 
 func (t *TaskServer[T]) publishContainer(ctx context.Context, task e_task.Task) {

@@ -6,19 +6,18 @@ import (
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/entry/e_time"
 	"schedule_task_command/util/my_log"
 	"sync"
 )
 
 type TimeServer struct {
-	dbs dbs.Dbs
+	dbs api.Dbs
 	l   api.Logger
 	mu  *sync.RWMutex
 }
 
-func NewTimeServer(dbs dbs.Dbs) *TimeServer {
+func NewTimeServer(dbs api.Dbs) *TimeServer {
 	l := my_log.NewLog("app/time_server")
 	mu := new(sync.RWMutex)
 	return &TimeServer{
@@ -46,6 +45,7 @@ func (t *TimeServer) rdbSub(ctx context.Context) {
 		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
 			t.l.Errorln(err)
+			return
 		}
 		b := []byte(msg.Payload)
 		var pt e_time.PublishTime

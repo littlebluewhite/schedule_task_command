@@ -10,7 +10,6 @@ import (
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
 	"schedule_task_command/dal/model"
 	"schedule_task_command/dal/query"
 	"schedule_task_command/entry/e_task"
@@ -26,7 +25,7 @@ type Operate struct {
 	taskS api.TaskServer
 }
 
-func NewOperate(dbs dbs.Dbs, taskS api.TaskServer) *Operate {
+func NewOperate(dbs api.Dbs, taskS api.TaskServer) *Operate {
 	o := &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
@@ -178,6 +177,7 @@ func (o *Operate) Create(c []*e_task_template.TaskTemplateCreate) ([]model.TaskT
 
 func (o *Operate) Update(u []*e_task_template.TaskTemplateUpdate) error {
 	cacheMap := o.getCacheMap()
+	print(u)
 	tt, e := e_task_template.UpdateConvert(cacheMap, u)
 	if e != nil {
 		return e

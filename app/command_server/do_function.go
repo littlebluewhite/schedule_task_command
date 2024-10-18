@@ -142,10 +142,8 @@ func (c *CommandServer) doHttp(ctx context.Context, com e_command.Command) e_com
 		}
 	}
 	req.Header.Set("Content-Type", contentType)
-	fmt.Println(req.Header)
-	client := &http.Client{}
 	var resp *http.Response
-	resp1, e := client.Do(req)
+	resp1, e := c.httpClient.Do(req)
 	if e != nil {
 		c.l.Errorf("id: %d request failed, template id: %d", com.ID, com.TemplateId)
 		if resp1 == nil {

@@ -6,12 +6,12 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
-	"schedule_task_command/app/dbs"
+	"schedule_task_command/api"
 	"schedule_task_command/util/config"
 )
 
 func StartGRPCServer(ctx context.Context, mainLog *logrus.Logger,
-	Config config.Config, ts TaskServer, d dbs.Dbs) {
+	Config config.Config, ts TaskServer, d api.Dbs) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", Config.Server.GPort))
 	if err != nil {
 		mainLog.Fatalf("failed to listen: %v", err)

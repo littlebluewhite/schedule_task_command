@@ -2,7 +2,9 @@ package time_template
 
 import (
 	"context"
+	"errors"
 	"github.com/goccy/go-json"
+	"github.com/redis/go-redis/v9"
 	"schedule_task_command/api"
 	"schedule_task_command/util/redis_stream"
 )
@@ -12,22 +14,40 @@ func rdbSub(o *Operate, l api.Logger) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	pubsub := o.rdb.Subscribe(ctx, "sendTimeTemplate")
-	for {
-		msg, err := pubsub.ReceiveMessage(ctx)
+
+	defer func(pubsub *redis.PubSub) {
+		err := pubsub.Close()
 		if err != nil {
 			l.Errorln(err)
 		}
-		b := []byte(msg.Payload)
-		var s SendTime
-		err = json.Unmarshal(b, &s)
+	}(pubsub)
+	for {
+		msg, err := pubsub.ReceiveMessage(ctx)
 		if err != nil {
-			l.Errorln("send data is not correctly")
+			if errors.Is(err, context.Canceled) {
+				l.Infoln("rdbSub receive canceled")
+				return
+			}
+			l.Errorln(err)
+			if errors.Is(err, redis.ErrClosed) {
+				return
+			}
+			continue
 		}
-		pt := o.generatePublishTime(s)
-		_, err = o.timeS.Execute(pt)
-		if err != nil {
-			l.Errorln("Error executing time from timeTemplate")
-		}
+
+		// deal with message
+		go func(payload string, ctx context.Context) {
+			var s SendTime
+			if e := json.Unmarshal([]byte(payload), &s); e != nil {
+				l.Errorln("send data is not correctly")
+				return
+			}
+			pt := o.generatePublishTime(s)
+			_, e := o.timeS.Execute(pt)
+			if e != nil {
+				l.Errorln("Error executing Task from taskTemplate")
+			}
+		}(msg.Payload, ctx)
 	}
 }
 

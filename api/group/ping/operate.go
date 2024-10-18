@@ -3,7 +3,7 @@ package ping
 import (
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gorm"
-	"schedule_task_command/app/dbs"
+	"schedule_task_command/api"
 )
 
 type Operate struct {
@@ -11,7 +11,7 @@ type Operate struct {
 	cache *cache.Cache
 }
 
-func NewOperate(dbs dbs.Dbs) *Operate {
+func NewOperate(dbs api.Dbs) *Operate {
 	return &Operate{
 		db:    dbs.GetSql(),
 		cache: dbs.GetCache(),
