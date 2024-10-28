@@ -7,6 +7,7 @@ import (
 	"schedule_task_command/dal/model"
 	"schedule_task_command/entry/e_task"
 	"schedule_task_command/entry/e_task_template"
+	"time"
 )
 
 type Operate struct {
@@ -20,11 +21,12 @@ func NewOperate(d api.Dbs) *Operate {
 }
 
 func (o *Operate) GenerateTask(st *SendTaskTemplateRequest) (task e_task.Task) {
+	t := time.Now()
 	task = e_task.Task{
 		TemplateId:     int(st.TemplateId),
 		Source:         st.Source,
 		TriggerAccount: st.TriggerAccount,
-		Token:          st.Token,
+		Token:          fmt.Sprintf("task-%d-%d", st.TemplateId, t.Unix()),
 	}
 
 	// Convert TriggerFrom to the expected []map[string]string type

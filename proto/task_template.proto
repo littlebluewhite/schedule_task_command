@@ -14,8 +14,7 @@ message SendTaskTemplateRequest {
   string source = 2;
   repeated TriggerFrom trigger_from = 3;
   string trigger_account = 4;
-  string token = 5;
-  map<uint64, Variables> variables = 6;
+  map<int64, Variables> variables = 5;
 }
 
 // Define the TriggerFrom structure to represent a map-like structure
