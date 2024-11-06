@@ -38,4 +38,4 @@ run-a:
 	docker run --name schedule -p 5487:5487 --network="host" -v ${PWD}/docker/log:/app/log schedule:latest
 
 grpc:
-	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/task_template.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/schedule_task_command.proto

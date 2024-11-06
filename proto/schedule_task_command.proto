@@ -4,8 +4,14 @@ option go_package = "github.com/littlebluewhite/schedule_task_command/proto";
 
 package proto;
 
+import "google/protobuf/timestamp.proto";
+
 service TaskTemplateService {
   rpc SendTaskTemplate(SendTaskTemplateRequest) returns (SendTaskTemplateResponse);
+}
+
+service TimeTemplateService {
+  rpc SendTimeTemplate(SendTimeTemplateRequest) returns (SendTimeTemplateResponse);
 }
 
 // Define the main request structure
@@ -27,7 +33,17 @@ message Variables {
   map<string, string> key_value = 1;
 }
 
-
 message SendTaskTemplateResponse {
   uint64 task_id = 1;
+}
+
+message SendTimeTemplateRequest {
+  uint64 template_id = 1;
+  repeated TriggerFrom trigger_from = 2;
+  string trigger_account = 3;
+  google.protobuf.Timestamp time = 4;
+}
+
+message SendTimeTemplateResponse {
+  bool is_time = 1;
 }

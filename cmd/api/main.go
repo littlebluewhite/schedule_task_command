@@ -83,7 +83,7 @@ func main() {
 	}()
 
 	// start gRPC server
-	go grpc_task_template.StartGRPCServer(ctx, mainLog, Config, taskServer, DBS)
+	go grpc_task_template.StartGRPCServer(ctx, mainLog, Config, taskServer, timeServer, DBS)
 
 	var sb strings.Builder
 	sb.WriteString(":")

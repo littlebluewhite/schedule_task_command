@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.28.0
-// source: proto/task_template.proto
+// source: proto/schedule_task_command.proto
 
 package grpc_task_template
 
@@ -117,5 +117,107 @@ var TaskTemplateService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/task_template.proto",
+	Metadata: "proto/schedule_task_command.proto",
+}
+
+const (
+	TimeTemplateService_SendTimeTemplate_FullMethodName = "/proto.TimeTemplateService/SendTimeTemplate"
+)
+
+// TimeTemplateServiceClient is the client API for TimeTemplateService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TimeTemplateServiceClient interface {
+	SendTimeTemplate(ctx context.Context, in *SendTimeTemplateRequest, opts ...grpc.CallOption) (*SendTimeTemplateResponse, error)
+}
+
+type timeTemplateServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTimeTemplateServiceClient(cc grpc.ClientConnInterface) TimeTemplateServiceClient {
+	return &timeTemplateServiceClient{cc}
+}
+
+func (c *timeTemplateServiceClient) SendTimeTemplate(ctx context.Context, in *SendTimeTemplateRequest, opts ...grpc.CallOption) (*SendTimeTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SendTimeTemplateResponse)
+	err := c.cc.Invoke(ctx, TimeTemplateService_SendTimeTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TimeTemplateServiceServer is the server API for TimeTemplateService service.
+// All implementations must embed UnimplementedTimeTemplateServiceServer
+// for forward compatibility.
+type TimeTemplateServiceServer interface {
+	SendTimeTemplate(context.Context, *SendTimeTemplateRequest) (*SendTimeTemplateResponse, error)
+	mustEmbedUnimplementedTimeTemplateServiceServer()
+}
+
+// UnimplementedTimeTemplateServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedTimeTemplateServiceServer struct{}
+
+func (UnimplementedTimeTemplateServiceServer) SendTimeTemplate(context.Context, *SendTimeTemplateRequest) (*SendTimeTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendTimeTemplate not implemented")
+}
+func (UnimplementedTimeTemplateServiceServer) mustEmbedUnimplementedTimeTemplateServiceServer() {}
+func (UnimplementedTimeTemplateServiceServer) testEmbeddedByValue()                             {}
+
+// UnsafeTimeTemplateServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TimeTemplateServiceServer will
+// result in compilation errors.
+type UnsafeTimeTemplateServiceServer interface {
+	mustEmbedUnimplementedTimeTemplateServiceServer()
+}
+
+func RegisterTimeTemplateServiceServer(s grpc.ServiceRegistrar, srv TimeTemplateServiceServer) {
+	// If the following call pancis, it indicates UnimplementedTimeTemplateServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&TimeTemplateService_ServiceDesc, srv)
+}
+
+func _TimeTemplateService_SendTimeTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendTimeTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TimeTemplateServiceServer).SendTimeTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TimeTemplateService_SendTimeTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TimeTemplateServiceServer).SendTimeTemplate(ctx, req.(*SendTimeTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// TimeTemplateService_ServiceDesc is the grpc.ServiceDesc for TimeTemplateService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var TimeTemplateService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.TimeTemplateService",
+	HandlerType: (*TimeTemplateServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendTimeTemplate",
+			Handler:    _TimeTemplateService_SendTimeTemplate_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/schedule_task_command.proto",
 }

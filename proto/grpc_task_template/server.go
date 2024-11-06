@@ -11,16 +11,18 @@ import (
 )
 
 func StartGRPCServer(ctx context.Context, mainLog *logrus.Logger,
-	Config config.Config, ts TaskServer, d api.Dbs) {
+	Config config.Config, ts TaskServer, ts2 TimeServer, d api.Dbs) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", Config.Server.GPort))
 	if err != nil {
 		mainLog.Fatalf("failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
+	operate := NewOperate(d)
 
 	// Register gRPC services
-	RegisterTaskTemplateServiceServer(grpcServer, NewTaskTemplateService(ts, d))
+	RegisterTaskTemplateServiceServer(grpcServer, NewTaskTemplateService(ts, operate))
+	RegisterTimeTemplateServiceServer(grpcServer, NewTimeTemplateService(ts2, operate))
 
 	mainLog.Infof("gRPC server started on port %s", Config.Server.GPort)
 
