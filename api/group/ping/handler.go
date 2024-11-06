@@ -2,7 +2,7 @@ package ping
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/api"
 	"time"
 )
 

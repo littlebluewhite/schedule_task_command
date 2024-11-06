@@ -3,8 +3,8 @@ package util
 import (
 	"fmt"
 	"github.com/goccy/go-json"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
 	"github.com/stretchr/testify/require"
-	"schedule_task_command/dal/model"
 	"testing"
 	"time"
 )

@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/littlebluewhite/schedule_task_command/proto/grpc_task_template"
 	"log"
-	"schedule_task_command/proto/grpc_task_template"
 	"time"
 
 	"google.golang.org/grpc"
@@ -33,8 +33,7 @@ func main() {
 			{KeyValue: map[string]string{"key1": "value1", "key2": "value2"}},
 		},
 		TriggerAccount: "example_account",
-		Token:          "example_token",
-		Variables: map[uint64]*grpc_task_template.Variables{
+		Variables: map[int64]*grpc_task_template.Variables{
 			1: {KeyValue: map[string]string{"var1": "value1"}},
 		},
 	}

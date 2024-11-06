@@ -3,7 +3,7 @@ package e_command_template
 import (
 	"fmt"
 	"github.com/goccy/go-json"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"time"
 )
 

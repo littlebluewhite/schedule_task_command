@@ -1,6 +1,6 @@
 package e_header_template
 
-import "schedule_task_command/dal/model"
+import "github.com/littlebluewhite/schedule_task_command/dal/model"
 
 func CreateConvert(c []*HeaderTemplateCreate) []*model.HeaderTemplate {
 	result := make([]*model.HeaderTemplate, 0, len(c))

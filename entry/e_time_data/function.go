@@ -2,8 +2,8 @@ package e_time_data
 
 import (
 	"github.com/goccy/go-json"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"gorm.io/datatypes"
-	"schedule_task_command/util"
 	"time"
 )
 

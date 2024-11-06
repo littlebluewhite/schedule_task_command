@@ -3,10 +3,10 @@ package grpc_task_template
 import (
 	"errors"
 	"fmt"
-	"schedule_task_command/api"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_task"
-	"schedule_task_command/entry/e_task_template"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
 	"time"
 )
 

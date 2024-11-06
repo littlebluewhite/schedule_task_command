@@ -2,7 +2,7 @@ package e_task
 
 import (
 	"github.com/goccy/go-json"
-	"schedule_task_command/entry/e_task_template"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
 	"time"
 )
 

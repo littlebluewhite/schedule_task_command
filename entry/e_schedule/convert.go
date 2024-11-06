@@ -1,8 +1,8 @@
 package e_schedule
 
 import (
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_time_data"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time_data"
 )
 
 func Format(sd []model.Schedule) []Schedule {

@@ -3,8 +3,8 @@ package command
 import (
 	"errors"
 	"fmt"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_command"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command"
 	"strconv"
 )
 

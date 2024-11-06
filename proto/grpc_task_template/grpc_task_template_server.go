@@ -3,8 +3,8 @@ package grpc_task_template
 import (
 	"context"
 	"fmt"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
 )
 
 type TaskServer interface {

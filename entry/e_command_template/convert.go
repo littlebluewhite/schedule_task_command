@@ -2,8 +2,8 @@ package e_command_template
 
 import (
 	"github.com/goccy/go-json"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 func Format(ct []model.CommandTemplate) []CommandTemplate {

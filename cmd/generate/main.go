@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/sql"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"gorm.io/gen"
 	"gorm.io/gen/field"
-	"schedule_task_command/app/dbs/sql"
-	"schedule_task_command/util/config"
 )
 
 func main() {

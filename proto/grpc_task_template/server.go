@@ -3,11 +3,11 @@ package grpc_task_template
 import (
 	"context"
 	"fmt"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
-	"schedule_task_command/api"
-	"schedule_task_command/util/config"
 )
 
 func StartGRPCServer(ctx context.Context, mainLog *logrus.Logger,

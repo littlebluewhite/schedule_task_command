@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"schedule_task_command/app/dbs/influxdb"
-	"schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/influxdb"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 		Token:  "my-super-influxdb-auth-token",
 		Bucket: "node_object",
 	}
-	idb := influxdb.NewInfluxdb(influxdbConfig)
+	idb := influxdb.NewInfluxdb(influxdbConfig, my_log.NewLog("test/influxdb"))
 	defer idb.Close()
 	//p := influxdb2.NewPoint("test",
 	//	map[string]string{"id": "1", "name": "alarm SOP", "user": "wilson"},

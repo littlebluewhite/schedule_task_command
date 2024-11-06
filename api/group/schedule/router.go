@@ -2,8 +2,8 @@ package schedule
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/util/my_log"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {

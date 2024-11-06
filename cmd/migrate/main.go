@@ -4,8 +4,8 @@ import (
 	"flag"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"schedule_task_command/util/config"
-	"schedule_task_command/util/migrate"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/migrate"
 )
 
 func main() {

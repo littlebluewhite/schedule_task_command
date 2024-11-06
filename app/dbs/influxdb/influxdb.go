@@ -4,7 +4,7 @@ import (
 	"fmt"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	"schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 )
 
 type Influx struct {

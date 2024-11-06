@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/goccy/go-json"
+	"github.com/littlebluewhite/schedule_task_command/api/group/time_template"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/rdb"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"github.com/redis/go-redis/v9"
-	"schedule_task_command/api/group/time_template"
-	"schedule_task_command/app/dbs/rdb"
-	"schedule_task_command/util/config"
 	"sync"
 	"time"
 )
@@ -15,10 +15,8 @@ import (
 func main() {
 	w := &sync.WaitGroup{}
 	redisConfig := config.RedisConfig{
-		Host:      "127.0.0.1",
-		Ports:     []string{"6379"},
-		DB:        "0",
-		IsCluster: false,
+		Host: "127.0.0.1:6379",
+		DB:   "0",
 	}
 	r := rdb.NewClient(redisConfig)
 	ctx, cancel := context.WithCancel(context.Background())

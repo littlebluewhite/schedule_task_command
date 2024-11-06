@@ -2,15 +2,15 @@ package time_template
 
 import (
 	"fmt"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs"
+	"github.com/littlebluewhite/schedule_task_command/app/time_server"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time_data"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time_template"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 	"github.com/stretchr/testify/require"
 	"gorm.io/datatypes"
-	"schedule_task_command/api"
-	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/time_server"
-	"schedule_task_command/entry/e_time_data"
-	"schedule_task_command/entry/e_time_template"
-	"schedule_task_command/util/config"
-	"schedule_task_command/util/my_log"
 	"testing"
 	"time"
 )

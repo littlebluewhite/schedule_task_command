@@ -3,9 +3,9 @@ package ws
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_module"
-	"schedule_task_command/util/my_log"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_module"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 )
 
 func RegisterRouter(g group) {

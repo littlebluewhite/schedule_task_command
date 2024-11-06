@@ -5,10 +5,10 @@ import (
 	"errors"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_task_template"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

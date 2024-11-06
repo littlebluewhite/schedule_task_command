@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"log"
 	"path/filepath"
 	"runtime"
-	"schedule_task_command/util/config"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"

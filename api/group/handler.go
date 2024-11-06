@@ -2,9 +2,9 @@ package group
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_log"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_log"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

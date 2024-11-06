@@ -3,9 +3,9 @@ package task
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_task"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

@@ -2,8 +2,8 @@ package task_server
 
 import (
 	"fmt"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
 	"github.com/stretchr/testify/require"
-	"schedule_task_command/entry/e_task_template"
 	"testing"
 )
 

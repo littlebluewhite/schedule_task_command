@@ -1,14 +1,14 @@
 package dbs
 
 import (
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/influxdb"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/rdb"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/sql"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
-	"schedule_task_command/api"
-	"schedule_task_command/app/dbs/influxdb"
-	"schedule_task_command/app/dbs/rdb"
-	"schedule_task_command/app/dbs/sql"
-	"schedule_task_command/util/config"
 	"time"
 )
 

@@ -3,12 +3,12 @@ package task_server
 import (
 	"context"
 	"fmt"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_command_template"
-	"schedule_task_command/entry/e_task"
-	"schedule_task_command/entry/e_task_template"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command_template"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"sort"
 	"time"
 )

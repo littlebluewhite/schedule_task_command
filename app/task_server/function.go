@@ -2,9 +2,9 @@ package task_server
 
 import (
 	"github.com/goccy/go-json"
-	"schedule_task_command/entry/e_task"
-	"schedule_task_command/entry/e_task_template"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task_template"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"strconv"
 )
 

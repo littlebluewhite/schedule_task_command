@@ -2,9 +2,9 @@ package time
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_time"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

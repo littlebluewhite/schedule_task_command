@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"schedule_task_command/app/dbs/influxdb"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/influxdb"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func main() {
 		Token:  "my-super-influxdb-auth-token",
 		Bucket: "schedule",
 	}
-	idb := influxdb.NewInfluxdb(influxdbConfig)
+	idb := influxdb.NewInfluxdb(influxdbConfig, my_log.NewLog("test/influxdb_sample"))
 	defer idb.Close()
 	p := influxdb2.NewPoint("schedule_history",
 		map[string]string{"id": "2", "name": "alarm SOP", "user": "wilson"},
@@ -32,13 +33,9 @@ func main() {
 		map[string]string{"id": "1", "name": "alarm SOP", "user": "wilson"},
 		map[string]interface{}{"complete": 1, "duration": 2},
 		time.Now())
-	if err := idb.Writer().WritePoint(ctx, p); err != nil {
-		panic(err)
-	}
+	idb.Writer().WritePoint(p)
 
-	if err := idb.Writer().WritePoint(ctx, p2); err != nil {
-		panic(err)
-	}
+	idb.Writer().WritePoint(p2)
 
 	result, err := idb.Querier().Query(ctx, `from(bucket:"schedule")
 |> range(start: -2h)

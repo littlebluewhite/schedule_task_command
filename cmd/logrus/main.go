@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 	"github.com/sirupsen/logrus"
-	"schedule_task_command/util/my_log"
 )
 
 func main() {

@@ -3,8 +3,8 @@ package e_schedule
 import (
 	"fmt"
 	"github.com/goccy/go-json"
-	"schedule_task_command/entry/e_time_data"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time_data"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"time"
 )
 

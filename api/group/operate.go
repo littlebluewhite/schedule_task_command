@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	api2 "schedule_task_command/api"
-	"schedule_task_command/entry/e_log"
+	api2 "github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_log"
 	"strconv"
 	"time"
 )

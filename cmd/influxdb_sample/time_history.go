@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/goccy/go-json"
-	"schedule_task_command/app/dbs/influxdb"
-	"schedule_task_command/entry/e_time"
-	"schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs/influxdb"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 		Token:  "my-super-influxdb-auth-token",
 		Bucket: "schedule",
 	}
-	idb := influxdb.NewInfluxdb(influxdbConfig)
+	idb := influxdb.NewInfluxdb(influxdbConfig, my_log.NewLog("test/influxdb"))
 	defer idb.Close()
 	ht := make([]e_time.PublishTime, 0, 20)
 	start := "-8d"

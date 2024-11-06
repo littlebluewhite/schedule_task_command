@@ -1,7 +1,7 @@
 package time_template
 
 import (
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/util"
 	"time"
 )
 

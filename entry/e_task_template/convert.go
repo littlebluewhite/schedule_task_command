@@ -2,9 +2,9 @@ package e_task_template
 
 import (
 	"github.com/goccy/go-json"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command_template"
 	"math"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_command_template"
 )
 
 func Format(ct []model.TaskTemplate) []TaskTemplate {

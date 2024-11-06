@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_time"
-	"schedule_task_command/util/my_log"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 	"sync"
 )
 

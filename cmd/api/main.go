@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	version "github.com/littlebluewhite/schedule_task_command"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/api/group"
+	"github.com/littlebluewhite/schedule_task_command/app/command_server"
+	"github.com/littlebluewhite/schedule_task_command/app/dbs"
+	"github.com/littlebluewhite/schedule_task_command/app/schedule_server"
+	"github.com/littlebluewhite/schedule_task_command/app/task_server"
+	"github.com/littlebluewhite/schedule_task_command/app/time_server"
+	"github.com/littlebluewhite/schedule_task_command/app/websocket_hub"
+	"github.com/littlebluewhite/schedule_task_command/docs"
+	_ "github.com/littlebluewhite/schedule_task_command/docs"
+	"github.com/littlebluewhite/schedule_task_command/proto/grpc_task_template"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 	"os/signal"
-	version "schedule_task_command"
-	"schedule_task_command/api"
-	"schedule_task_command/api/group"
-	"schedule_task_command/app/command_server"
-	"schedule_task_command/app/dbs"
-	"schedule_task_command/app/schedule_server"
-	"schedule_task_command/app/task_server"
-	"schedule_task_command/app/time_server"
-	"schedule_task_command/app/websocket_hub"
-	"schedule_task_command/docs"
-	_ "schedule_task_command/docs"
-	"schedule_task_command/proto/grpc_task_template"
-	"schedule_task_command/util/config"
-	"schedule_task_command/util/my_log"
 	"strings"
 	"syscall"
 	"time"
@@ -93,7 +93,7 @@ func main() {
 		fiber.Config{
 			ReadTimeout:  ServerConfig.ReadTimeout * time.Minute,
 			WriteTimeout: ServerConfig.WriteTimeout * time.Minute,
-			AppName:      "schedule_task_command",
+			AppName:      "github.com/littlebluewhite/schedule_task_command",
 			JSONEncoder:  json.Marshal,
 			JSONDecoder:  json.Unmarshal,
 		},

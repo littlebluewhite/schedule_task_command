@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
 )
 
 func newWebsocketCommand(db *gorm.DB, opts ...gen.DOOption) websocketCommand {

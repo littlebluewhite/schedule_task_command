@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofiber/contrib/websocket"
-	"schedule_task_command/api"
-	"schedule_task_command/entry/e_module"
-	"schedule_task_command/util/my_log"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_module"
+	"github.com/littlebluewhite/schedule_task_command/util/my_log"
 )
 
 type Hub struct {

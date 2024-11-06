@@ -3,11 +3,11 @@ package command_template
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_command_template"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command_template"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

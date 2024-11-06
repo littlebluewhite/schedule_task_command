@@ -2,8 +2,8 @@ package schedule_server
 
 import (
 	"context"
-	"schedule_task_command/entry/e_task"
-	"schedule_task_command/entry/e_time"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_time"
 	"time"
 )
 

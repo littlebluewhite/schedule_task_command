@@ -2,10 +2,10 @@ package schedule
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"schedule_task_command/api"
-	"schedule_task_command/dal/model"
-	"schedule_task_command/entry/e_schedule"
-	"schedule_task_command/util"
+	"github.com/littlebluewhite/schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_schedule"
+	"github.com/littlebluewhite/schedule_task_command/util"
 )
 
 type hOperate interface {

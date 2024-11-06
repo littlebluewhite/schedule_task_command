@@ -3,7 +3,7 @@ package websocket_hub
 import (
 	"context"
 	"github.com/gofiber/contrib/websocket"
-	"schedule_task_command/api"
+	"github.com/littlebluewhite/schedule_task_command/api"
 )
 
 type client struct {

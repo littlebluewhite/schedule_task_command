@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "schedule_task_command/proto";
+option go_package = "github.com/littlebluewhite/schedule_task_command/proto";
 
 package proto;
 

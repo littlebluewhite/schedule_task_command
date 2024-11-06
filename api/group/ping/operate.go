@@ -1,9 +1,9 @@
 package ping
 
 import (
+	"github.com/littlebluewhite/schedule_task_command/api"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/gorm"
-	"schedule_task_command/api"
 )
 
 type Operate struct {

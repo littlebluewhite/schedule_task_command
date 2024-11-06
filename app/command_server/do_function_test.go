@@ -2,10 +2,10 @@ package command_server
 
 import (
 	"fmt"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command_template"
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"
-	"schedule_task_command/entry/e_command_template"
 	"testing"
 )
 

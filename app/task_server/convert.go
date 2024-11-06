@@ -1,8 +1,8 @@
 package task_server
 
 import (
-	"schedule_task_command/entry/e_command"
-	"schedule_task_command/entry/e_task"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_task"
 )
 
 func stageMap2taskStage(stages map[int32]stageMap) map[int32]e_task.Stage {

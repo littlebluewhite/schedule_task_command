@@ -1,7 +1,7 @@
 package command_server
 
 import (
-	"schedule_task_command/entry/e_command"
+	"github.com/littlebluewhite/schedule_task_command/entry/e_command"
 	"strconv"
 )
 

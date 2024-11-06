@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"schedule_task_command/dal/model"
+	"github.com/littlebluewhite/schedule_task_command/dal/model"
 )
 
 func newMqttCommand(db *gorm.DB, opts ...gen.DOOption) mqttCommand {

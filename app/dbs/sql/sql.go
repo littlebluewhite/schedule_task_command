@@ -2,6 +2,7 @@ package sql
 
 import (
 	"fmt"
+	"github.com/littlebluewhite/schedule_task_command/util/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -9,7 +10,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"schedule_task_command/util/config"
 	"time"
 )
 
